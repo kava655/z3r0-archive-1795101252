@@ -1,0 +1,1472 @@
+ self.wfile.write(json.dumps({'admin': role == 'admin', 'config': load_config()}).encode())
+            elif self.path.startswith('/data'):
+                self.send_response(200); self.send_header('Content-type', 'application/json'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+                if os.path.exists(DATA_FILE):
+                    with open(DATA_FILE, 'rb') as f: self.wfile.write(f.read())
+                else: self.wfile.write(b'{"entities":[],"relations":[]}')
+            elif self.path == '/cytoscape.min.js':
+                with open(os.path.join(DIR, 'cytoscape.min.js'), 'rb') as f: 
+                    self.send_response(200); self.send_header('Content-type', 'application/javascript'); self.end_headers(); self.wfile.write(f.read())
+            elif self.path.startswith('/tunnel_status'):
+                self.send_response(200); self.send_header('Content-type', 'application/json'); self.end_headers(); self.wfile.write(json.dumps({'url': tunnel_url}).encode())
+            elif self.path.startswith('/logout'):
+                self.send_response(302); self.send_header('Set-Cookie', 'session_admin=; Path=/; Max-Age=0'); self.send_header('Set-Cookie', 'session_guest=; Path=/; Max-Age=0'); self.send_header('Location', '/'); self.end_headers()
+            else: self.send_error(404)
+
+        def do_POST(self):
+            global tunnel_process, tunnel_url
+            if self.path == '/login':
+                l = int(self.headers.get('Content-Length', 0)); post = self.rfile.read(l).decode()
+                pw = urllib.parse.parse_qs(post).get('password', [''])[0]
+                print(f"DEBUG LOGIN ATTEMPT: {pw}")
+                if pw == ADMIN_PASS:
+                    print("DEBUG: ADMIN MATCHED")
+                    self.send_response(302); self.send_header('Set-Cookie', f'session_admin=1; Path=/; Max-Age=86400'); self.send_header('Set-Cookie', 'session_guest=; Path=/; Max-Age=0'); self.send_header('Location', '/'); self.end_headers()
+                elif pw == load_config()['guest_pass']:
+                    print("DEBUG: GUEST MATCHED")
+                    self.send_response(302); self.send_header('Set-Cookie', f'session_guest=1; Path=/; Max-Age=86400'); self.send_header('Set-Cookie', 'session_admin=; Path=/; Max-Age=0'); self.send_header('Location', '/'); self.end_headers()
+                else:
+                    self.send_response(302); self.send_header('Location', '/'); self.end_headers()
+            elif self.path == '/save':
+                l = int(self.headers.get('Content-Length', 0)); body = self.rfile.read(l)
+                with open(DATA_FILE, 'wb') as f: f.write(body)
+                self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+            elif self.path == '/config':
+                l = int(self.headers.get('Content-Length', 0)); body = self.rfile.read(l)
+                with open(CONFIG_FILE, 'w') as f: f.write(body.decode())
+                self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+            elif self.path == '/start_tunnel':
+                if tunnel_process is None or tunnel_process.poll() is not None:
+                    tunnel_url = None
+                    tunnel_process = subprocess.Popen(['cloudflared', 'tunnel', '--url', f'http://localhost:{PORT}'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+                    threading.Thread(target=read_tunnel, args=(tunnel_process,), daemon=True).start()
+                self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+            elif self.path == '/stop_tunnel':
+                if tunnel_process: tunnel_process.terminate(); tunnel_process = None; tunnel_url = None
+                self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+            else: self.send_error(404)
+
+        def log_message(self, format, *args): pass
+
+    if __name__ == '__main__':
+        if not os.path.exists(CONFIG_FILE):
+            with open(CONFIG_FILE, 'w') as f: json.dump(DEFAULT_CONFIG, f)
+        print(f"✅ التطبيق يعمل الآن على المنفذ {PORT}!")
+        socketserver.TCPServer.allow_reuse_address = True
+        with socketserver.TCPServer(("", PORT), Handler) as httpd: httpd.serve_forever()
+    ```
+
+    Wait, this is too complex to paste via `cat` in Termux due to size.
+--
+
+    I will provide a `cat > app.py` command. The user just copies and pastes it.
+
+    Then I will provide a `cat > index.html` command? No, just modify `index.html`.
+    Actually, changing `index.html` is not needed if `app.py` works. The issue is clearly in `app.py`'s `get_role` or the cookie not being saved.
+
+    Let's write a clean `app.py`.
+
+    ```python
+    # app.py
+    import os, json, http.server, socketserver, urllib.parse, subprocess, re, threading, time, socket
+
+    PORT = 9090
+    ADMIN_PASS = "123456"
+    DIR = os.path.dirname(os.path.abspath(__file__))
+    DATA_FILE = os.path.join(DIR, "data.json")
+    CONFIG_FILE = os.path.join(DIR, "config.json")
+    tunnel_url = None
+    tunnel_process = None
+    DEFAULT_CONFIG = {"guest_pass": "0000", "guest_can_edit": False, "guest_can_see_secrets": False, "shield_enabled": True}
+
+    def load_config():
+        if os.path.exists(CONFIG_FILE):
+            try:
+                with open(CONFIG_FILE, 'r') as f: return json.load(f)
+            except: pass
+        return DEFAULT_CONFIG.copy()
+
+    def read_tunnel(process):
+        global tunnel_url
+        for line in iter(process.stdout.readline, ''):
+            match = re.search(r'https://[a-zA-Z0-9-]+\.trycloudflare\.com', line)
+            if match: tunnel_url = match.group(0)
+
+    class Handler(http.server.SimpleHTTPRequestHandler):
+        def get_role(self):
+            cookie = self.headers.get('Cookie', '')
+            if 'role=admin' in cookie: return 'admin'
+            if 'role=guest' in cookie: return 'guest'
+            return None
+
+        def do_GET(self):
+            role = self.get_role()
+            print(f"GET {self.path} | Role: {role}", flush=True)
+            if self.path == '/' or self.path.startswith('/index.html'):
+                if not role:
+                    self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+                    with open(os.path.join(DIR, 'login.html'), 'rb') as f: self.wfile.write(f.read()); return
+                self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+                with open(os.path.join(DIR, 'index.html'), 'rb') as f: self.wfile.write(f.read())
+            elif self.path.startswith('/check_auth'):
+                self.send_response(200); self.send_header('Content-type', 'application/json'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+                self.wfile.write(json.dumps({'admin': role == 'admin', 'config': load_config()}).encode())
+            elif self.path.startswith('/data'):
+                self.send_response(200); self.send_header('Content-type', 'application/json'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+                if os.path.exists(DATA_FILE):
+                    with open(DATA_FILE, 'rb') as f: self.wfile.write(f.read())
+                else: self.wfile.write(b'{"entities":[],"relations":[]}')
+            elif self.path == '/cytoscape.min.js':
+                with open(os.path.join(DIR, 'cytoscape.min.js'), 'rb') as f: 
+                    self.send_response(200); self.send_header('Content-type', 'application/javascript'); self.end_headers(); self.wfile.write(f.read())
+            elif self.path.startswith('/tunnel_status'):
+                self.send_response(200); self.send_header('Content-type', 'application/json'); self.end_headers(); self.wfile.write(json.dumps({'url': tunnel_url}).encode())
+            elif self.path.startswith('/logout'):
+                self.send_response(302); self.send_header('Set-Cookie', 'role=; Path=/; Max-Age=0'); self.send_header('Location', '/'); self.end_headers()
+            else: self.send_error(404)
+
+        def do_POST(self):
+            global tunnel_process, tunnel_url
+            print(f"POST {self.path}", flush=True)
+            if self.path == '/login':
+                l = int(self.headers.get('Content-Length', 0)); post = self.rfile.read(l).decode()
+                pw = urllib.parse.parse_qs(post).get('password', [''])[0]
+                print(f"LOGIN ATTEMPT: {pw}", flush=True)
+                if pw == ADMIN_PASS:
+                    print("-> ADMIN LOGGED IN", flush=True)
+                    self.send_response(302); self.send_header('Set-Cookie', 'role=admin; Path=/; Max-Age=86400'); self.send_header('Location', '/'); self.end_headers()
+                elif pw == load_config()['guest_pass']:
+                    print("-> GUEST LOGGED IN", flush=True)
+                    self.send_response(302); self.send_header('Set-Cookie', 'role=guest; Path=/; Max-Age=86400'); self.send_header('Location', '/'); self.end_headers()
+                else:
+                    print("-> INVALID PASSWORD", flush=True)
+                    self.send_response(302); self.send_header('Location', '/'); self.end_headers()
+            elif self.path == '/save':
+                l = int(self.headers.get('Content-Length', 0)); body = self.rfile.read(l)
+                with open(DATA_FILE, 'wb') as f: f.write(body)
+                self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+            elif self.path == '/config':
+                l = int(self.headers.get('Content-Length', 0)); body = self.rfile.read(l)
+                with open(CONFIG_FILE, 'w') as f: f.write(body.decode())
+                self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+            elif self.path == '/start_tunnel':
+                if tunnel_process is None or tunnel_process.poll() is not None:
+                    tunnel_url = None
+                    tunnel_process = subprocess.Popen(['cloudflared', 'tunnel', '--url', f'http://localhost:{PORT}'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+                    threading.Thread(target=read_tunnel, args=(tunnel_process,), daemon=True).start()
+                self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+            elif self.path == '/stop_tunnel':
+                if tunnel_process: tunnel_process.terminate(); tunnel_process = None; tunnel_url = None
+                self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+            else: self.send_error(404)
+
+        def log_message(self, format, *args): pass
+
+    if __name__ == '__main__':
+        if not os.path.exists(CONFIG_FILE):
+            with open(CONFIG_FILE, 'w') as f: json.dump(DEFAULT_CONFIG, f)
+        print(f"✅ التطبيق يعمل الآن على http://127.0.0.1:{PORT}")
+        socketserver.TCPServer.allow_reuse_address = True
+        with socketserver.TCPServer(("", PORT), Handler) as httpd: httpd.serve_forever()
+    ```
+--
+    ```bash
+    cd ~/database_osint && pkill -9 -f "python app.py" 2>/dev/null; rm -f config.json; cat > login.html << 'EOF'
+    <!DOCTYPE html>
+    <html lang="ar" dir="rtl">
+    <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Login</title>
+    <style>body { background: #0a0e14; color: #e6e6e6; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; } .box { background: #111820; padding: 30px; border-radius: 12px; border: 1px solid #2a3a4d; text-align: center; width: 80%; max-width: 300px; } h2 { color: #4dd0e1; margin-bottom: 20px; } input { width: 100%; padding: 12px; margin-bottom: 15px; background: #0a0e14; border: 1px solid #2a3a4d; color: white; border-radius: 6px; box-sizing: border-box; } button { width: 100%; padding: 12px; background: #0d6e4f; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; }</style></head>
+    <body><div class="box"><h2>🔒 database osint</h2><form method="POST" action="/login"><input type="password" name="password" placeholder="كلمة السر" required autocomplete="new-password"><button type="submit">دخول</button></form></div></body></html>
+    EOF
+
+    cat > app.py << 'EOF'
+    import os, json, http.server, socketserver, urllib.parse, subprocess, re, threading, time, socket
+
+    PORT = 9090
+    ADMIN_PASS = "123456"
+    DIR = os.path.dirname(os.path.abspath(__file__))
+    DATA_FILE = os.path.join(DIR, "data.json")
+    CONFIG_FILE = os.path.join(DIR, "config.json")
+    tunnel_url = None
+    tunnel_process = None
+    DEFAULT_CONFIG = {"guest_pass": "0000", "guest_can_edit": False, "guest_can_see_secrets": False, "shield_enabled": True}
+
+    def load_config():
+        if os.path.exists(CONFIG_FILE):
+            try:
+                with open(CONFIG_FILE, 'r') as f: return json.load(f)
+            except: pass
+        return DEFAULT_CONFIG.copy()
+
+    def read_tunnel(process):
+        global tunnel_url
+        for line in iter(process.stdout.readline, ''):
+            match = re.search(r'https://[a-zA-Z0-9-]+\.trycloudflare\.com', line)
+            if match: tunnel_url = match.group(0)
+
+    class Handler(http.server.SimpleHTTPRequestHandler):
+        def get_role(self):
+            cookie = self.headers.get('Cookie', '')
+            if 'role=admin' in cookie: return 'admin'
+            if 'role=guest' in cookie: return 'guest'
+            return None
+
+        def do_GET(self):
+            role = self.get_role()
+            print(f"GET {self.path} | Role: {role}", flush=True)
+            if self.path == '/' or self.path.startswith('/index.html'):
+                if not role:
+                    self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+                    with open(os.path.join(DIR, 'login.html'), 'rb') as f: self.wfile.write(f.read()); return
+                self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+                with open(os.path.join(DIR, 'index.html'), 'rb') as f: self.wfile.write(f.read())
+            elif self.path.startswith('/check_auth'):
+                self.send_response(200); self.send_header('Content-type', 'application/json'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+                self.wfile.write(json.dumps({'admin': role == 'admin', 'config': load_config()}).encode())
+            elif self.path.startswith('/data'):
+                self.send_response(200); self.send_header('Content-type', 'application/json'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+                if os.path.exists(DATA_FILE):
+                    with open(DATA_FILE, 'rb') as f: self.wfile.write(f.read())
+                else: self.wfile.write(b'{"entities":[],"relations":[]}')
+            elif self.path == '/cytoscape.min.js':
+                with open(os.path.join(DIR, 'cytoscape.min.js'), 'rb') as f: 
+                    self.send_response(200); self.send_header('Content-type', 'application/javascript'); self.end_headers(); self.wfile.write(f.read())
+            elif self.path.startswith('/tunnel_status'):
+                self.send_response(200); self.send_header('Content-type', 'application/json'); self.end_headers(); self.wfile.write(json.dumps({'url': tunnel_url}).encode())
+            elif self.path.startswith('/logout'):
+                self.send_response(302); self.send_header('Set-Cookie', 'role=; Path=/; Max-Age=0'); self.send_header('Location', '/'); self.end_headers()
+            else: self.send_error(404)
+
+        def do_POST(self):
+            global tunnel_process, tunnel_url
+            print(f"POST {self.path}", flush=True)
+            if self.path == '/login':
+                l = int(self.headers.get('Content-Length', 0)); post = self.rfile.read(l).decode()
+                pw = urllib.parse.parse_qs(post).get('password', [''])[0]
+                print(f"LOGIN ATTEMPT: {pw}", flush=True)
+                if pw == ADMIN_PASS:
+                    print("-> ADMIN LOGGED IN", flush=True)
+                    self.send_response(302); self.send_header('Set-Cookie', 'role=admin; Path=/; Max-Age=86400'); self.send_header('Location', '/'); self.end_headers()
+                elif pw == load_config()['guest_pass']:
+                    print("-> GUEST LOGGED IN", flush=True)
+                    self.send_response(302); self.send_header('Set-Cookie', 'role=guest; Path=/; Max-Age=86400'); self.send_header('Location', '/'); self.end_headers()
+                else:
+                    print("-> INVALID PASSWORD", flush=True)
+                    self.send_response(302); self.send_header('Location', '/'); self.end_headers()
+            elif self.path == '/save':
+                l = int(self.headers.get('Content-Length', 0)); body = self.rfile.read(l)
+                with open(DATA_FILE, 'wb') as f: f.write(body)
+                self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+            elif self.path == '/config':
+                l = int(self.headers.get('Content-Length', 0)); body = self.rfile.read(l)
+                with open(CONFIG_FILE, 'w') as f: f.write(body.decode())
+                self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+            elif self.path == '/start_tunnel':
+                if tunnel_process is None or tunnel_process.poll() is not None:
+                    tunnel_url = None
+                    tunnel_process = subprocess.Popen(['cloudflared', 'tunnel', '--url', f'http://localhost:{PORT}'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+                    threading.Thread(target=read_tunnel, args=(tunnel_process,), daemon=True).start()
+                self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+            elif self.path == '/stop_tunnel':
+                if tunnel_process: tunnel_process.terminate(); tunnel_process = None; tunnel_url = None
+                self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+            else: self.send_error(404)
+
+        def log_message(self, format, *args): pass
+
+    if __name__ == '__main__':
+        if not os.path.exists(CONFIG_FILE):
+            with open(CONFIG_FILE, 'w') as f: json.dump(DEFAULT_CONFIG, f)
+        print(f"✅ التطبيق يعمل الآن على http://127.0.0.1:{PORT}")
+        socketserver.TCPServer.allow_reuse_address = True
+        with socketserver.TCPServer(("", PORT), Handler) as httpd: httpd.serve_forever()
+    EOF
+--
+```bash
+cd ~/database_osint && pkill -9 -f "python app.py" 2>/dev/null; rm -f config.json; cat > login.html << 'EOF'
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Login</title>
+<style>body { background: #0a0e14; color: #e6e6e6; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; } .box { background: #111820; padding: 30px; border-radius: 12px; border: 1px solid #2a3a4d; text-align: center; width: 80%; max-width: 300px; } h2 { color: #4dd0e1; margin-bottom: 20px; } input { width: 100%; padding: 12px; margin-bottom: 15px; background: #0a0e14; border: 1px solid #2a3a4d; color: white; border-radius: 6px; box-sizing: border-box; } button { width: 100%; padding: 12px; background: #0d6e4f; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; }</style></head>
+<body><div class="box"><h2>🔒 database osint</h2><form method="POST" action="/login"><input type="password" name="password" placeholder="كلمة السر" required autocomplete="new-password"><button type="submit">دخول</button></form></div></body></html>
+EOF
+
+cat > app.py << 'EOF'
+import os, json, http.server, socketserver, urllib.parse, subprocess, re, threading, time, socket
+
+PORT = 9090
+ADMIN_PASS = "123456"
+DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE = os.path.join(DIR, "data.json")
+CONFIG_FILE = os.path.join(DIR, "config.json")
+tunnel_url = None
+tunnel_process = None
+DEFAULT_CONFIG = {"guest_pass": "0000", "guest_can_edit": False, "guest_can_see_secrets": False, "shield_enabled": True}
+
+def load_config():
+    if os.path.exists(CONFIG_FILE):
+        try:
+            with open(CONFIG_FILE, 'r') as f: return json.load(f)
+        except: pass
+    return DEFAULT_CONFIG.copy()
+
+def read_tunnel(process):
+    global tunnel_url
+    for line in iter(process.stdout.readline, ''):
+        match = re.search(r'https://[a-zA-Z0-9-]+\.trycloudflare\.com', line)
+        if match: tunnel_url = match.group(0)
+
+class Handler(http.server.SimpleHTTPRequestHandler):
+    def get_role(self):
+        cookie = self.headers.get('Cookie', '')
+        if 'role=admin' in cookie: return 'admin'
+        if 'role=guest' in cookie: return 'guest'
+        return None
+
+    def do_GET(self):
+        role = self.get_role()
+        print(f"GET {self.path} | Role: {role}", flush=True)
+        if self.path == '/' or self.path.startswith('/index.html'):
+            if not role:
+                self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+                with open(os.path.join(DIR, 'login.html'), 'rb') as f: self.wfile.write(f.read()); return
+            self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            with open(os.path.join(DIR, 'index.html'), 'rb') as f: self.wfile.write(f.read())
+        elif self.path.startswith('/check_auth'):
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            self.wfile.write(json.dumps({'admin': role == 'admin', 'config': load_config()}).encode())
+        elif self.path.startswith('/data'):
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            if os.path.exists(DATA_FILE):
+                with open(DATA_FILE, 'rb') as f: self.wfile.write(f.read())
+            else: self.wfile.write(b'{"entities":[],"relations":[]}')
+        elif self.path == '/cytoscape.min.js':
+            with open(os.path.join(DIR, 'cytoscape.min.js'), 'rb') as f: 
+                self.send_response(200); self.send_header('Content-type', 'application/javascript'); self.end_headers(); self.wfile.write(f.read())
+        elif self.path.startswith('/tunnel_status'):
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.end_headers(); self.wfile.write(json.dumps({'url': tunnel_url}).encode())
+        elif self.path.startswith('/logout'):
+            self.send_response(302); self.send_header('Set-Cookie', 'role=; Path=/; Max-Age=0'); self.send_header('Location', '/'); self.end_headers()
+        else: self.send_error(404)
+
+    def do_POST(self):
+        global tunnel_process, tunnel_url
+        print(f"POST {self.path}", flush=True)
+        if self.path == '/login':
+            l = int(self.headers.get('Content-Length', 0)); post = self.rfile.read(l).decode()
+            pw = urllib.parse.parse_qs(post).get('password', [''])[0]
+            print(f"LOGIN ATTEMPT: [{pw}]", flush=True)
+            if pw == ADMIN_PASS:
+                print("-> ADMIN LOGGED IN", flush=True)
+                self.send_response(302); self.send_header('Set-Cookie', 'role=admin; Path=/; Max-Age=86400'); self.send_header('Location', '/'); self.end_headers()
+            elif pw == load_config()['guest_pass']:
+                print("-> GUEST LOGGED IN", flush=True)
+                self.send_response(302); self.send_header('Set-Cookie', 'role=guest; Path=/; Max-Age=86400'); self.send_header('Location', '/'); self.end_headers()
+            else:
+                print("-> INVALID PASSWORD", flush=True)
+                self.send_response(302); self.send_header('Location', '/'); self.end_headers()
+        elif self.path == '/save':
+            l = int(self.headers.get('Content-Length', 0)); body = self.rfile.read(l)
+            with open(DATA_FILE, 'wb') as f: f.write(body)
+            self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+        elif self.path == '/config':
+            l = int(self.headers.get('Content-Length', 0)); body = self.rfile.read(l)
+            with open(CONFIG_FILE, 'w') as f: f.write(body.decode())
+            self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+        elif self.path == '/start_tunnel':
+            if tunnel_process is None or tunnel_process.poll() is not None:
+                tunnel_url = None
+                tunnel_process = subprocess.Popen(['cloudflared', 'tunnel', '--url', f'http://localhost:{PORT}'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+                threading.Thread(target=read_tunnel, args=(tunnel_process,), daemon=True).start()
+            self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+        elif self.path == '/stop_tunnel':
+            if tunnel_process: tunnel_process.terminate(); tunnel_process = None; tunnel_url = None
+            self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+        else: self.send_error(404)
+
+    def log_message(self, format, *args): pass
+
+if __name__ == '__main__':
+    if not os.path.exists(CONFIG_FILE):
+        with open(CONFIG_FILE, 'w') as f: json.dump(DEFAULT_CONFIG, f)
+    print(f"✅ التطبيق يعمل الآن على http://127.0.0.1:{PORT}")
+    socketserver.TCPServer.allow_reuse_address = True
+    with socketserver.TCPServer(("", PORT), Handler) as httpd: httpd.serve_forever()
+EOF
+--
+
+5.  **Let's write the exact commands for the user.**
+    *   `pkill -9 -f "python app.py"`
+    *   `cat > app.py ...`
+    *   `cat > login.html ...`
+    *   `python app.py`
+
+    Let's make sure the server code is clean and handles the JSON POST correctly.
+
+    ```python
+    import os, json, http.server, socketserver, urllib.parse, subprocess, re, threading, time
+
+    PORT = 9090
+    ADMIN_PASS = "123456"
+    DIR = os.path.dirname(os.path.abspath(__file__))
+    DATA_FILE = os.path.join(DIR, "data.json")
+    CONFIG_FILE = os.path.join(DIR, "config.json")
+    tunnel_url = None
+    tunnel_process = None
+    DEFAULT_CONFIG = {"guest_pass": "0000", "guest_can_edit": False, "guest_can_see_secrets": False, "shield_enabled": True}
+
+    def load_config():
+        if os.path.exists(CONFIG_FILE):
+            try:
+                with open(CONFIG_FILE, 'r') as f: return json.load(f)
+            except: pass
+        return DEFAULT_CONFIG.copy()
+
+    def read_tunnel(process):
+        global tunnel_url
+        for line in iter(process.stdout.readline, ''):
+            match = re.search(r'https://[a-zA-Z0-9-]+\.trycloudflare\.com', line)
+            if match: tunnel_url = match.group(0)
+
+    class Handler(http.server.SimpleHTTPRequestHandler):
+        def send_json(self, data, status=200):
+            self.send_response(status)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Cache-Control', 'no-store')
+            self.end_headers()
+            self.wfile.write(json.dumps(data).encode())
+
+        def do_GET(self):
+            if self.path == '/' or self.path.startswith('/index.html'):
+                self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+                with open(os.path.join(DIR, 'index.html'), 'rb') as f: self.wfile.write(f.read())
+            elif self.path == '/login.html':
+                self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+                with open(os.path.join(DIR, 'login.html'), 'rb') as f: self.wfile.write(f.read())
+            elif self.path.startswith('/check_auth'):
+                self.send_json({'config': load_config()}) # Role is handled by frontend localStorage
+            elif self.path.startswith('/data'):
+                self.send_response(200); self.send_header('Content-type', 'application/json'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+                if os.path.exists(DATA_FILE):
+                    with open(DATA_FILE, 'rb') as f: self.wfile.write(f.read())
+                else: self.wfile.write(b'{"entities":[],"relations":[]}')
+            elif self.path == '/cytoscape.min.js':
+                with open(os.path.join(DIR, 'cytoscape.min.js'), 'rb') as f: 
+                    self.send_response(200); self.send_header('Content-type', 'application/javascript'); self.end_headers(); self.wfile.write(f.read())
+            elif self.path.startswith('/tunnel_status'):
+                self.send_json({'url': tunnel_url})
+            else: self.send_error(404)
+
+        def do_POST(self):
+            global tunnel_process, tunnel_url
+            if self.path == '/login':
+                l = int(self.headers.get('Content-Length', 0))
+                try:
+                    data = json.loads(self.rfile.read(l).decode())
+                    pw = data.get('password', '')
+                    print(f"LOGIN ATTEMPT: [{pw}]", flush=True)
+                    if pw == ADMIN_PASS:
+                        self.send_json({'role': 'admin'})
+                    elif pw == load_config()['guest_pass']:
+                        self.send_json({'role': 'guest'})
+                    else:
+                        self.send_json({'error': 'invalid'}, 401)
+                except Exception as e:
+                    self.send_json({'error': str(e)}, 400)
+            elif self.path == '/save':
+                l = int(self.headers.get('Content-Length', 0)); body = self.rfile.read(l)
+                with open(DATA_FILE, 'wb') as f: f.write(body)
+                self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+            elif self.path == '/config':
+                l = int(self.headers.get('Content-Length', 0)); body = self.rfile.read(l)
+                with open(CONFIG_FILE, 'w') as f: f.write(body.decode())
+                self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+            elif self.path == '/start_tunnel':
+                if tunnel_process is None or tunnel_process.poll() is not None:
+                    tunnel_url = None
+                    tunnel_process = subprocess.Popen(['cloudflared', 'tunnel', '--url', f'http://localhost:{PORT}'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+                    threading.Thread(target=read_tunnel, args=(tunnel_process,), daemon=True).start()
+                self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+            elif self.path == '/stop_tunnel':
+                if tunnel_process: tunnel_process.terminate(); tunnel_process = None; tunnel_url = None
+                self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+            else: self.send_error(404)
+
+        def log_message(self, format, *args): pass
+
+    if __name__ == '__main__':
+        if not os.path.exists(CONFIG_FILE):
+            with open(CONFIG_FILE, 'w') as f: json.dump(DEFAULT_CONFIG, f)
+        print(f"✅ التطبيق يعمل الآن على http://127.0.0.1:{PORT}")
+        socketserver.TCPServer.allow_reuse_address = True
+        with socketserver.TCPServer(("", PORT), Handler) as httpd: httpd.serve_forever()
+    ```
+
+    **Login HTML**:
+    ```html
+    <!DOCTYPE html>
+--
+    } catch(err) {
+      alert('حدث خطأ في الاتصال');
+    }
+  });
+</script>
+</body>
+</html>
+EOF
+
+cat > app.py << 'EOF'
+import os, json, http.server, socketserver, urllib.parse, subprocess, re, threading, time
+
+PORT = 9090
+ADMIN_PASS = "123456"
+DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE = os.path.join(DIR, "data.json")
+CONFIG_FILE = os.path.join(DIR, "config.json")
+tunnel_url = None
+tunnel_process = None
+DEFAULT_CONFIG = {"guest_pass": "0000", "guest_can_edit": False, "guest_can_see_secrets": False, "shield_enabled": True}
+
+def load_config():
+    if os.path.exists(CONFIG_FILE):
+        try:
+            with open(CONFIG_FILE, 'r') as f: return json.load(f)
+        except: pass
+    return DEFAULT_CONFIG.copy()
+
+def read_tunnel(process):
+    global tunnel_url
+    for line in iter(process.stdout.readline, ''):
+        match = re.search(r'https://[a-zA-Z0-9-]+\.trycloudflare\.com', line)
+        if match: tunnel_url = match.group(0)
+
+class Handler(http.server.SimpleHTTPRequestHandler):
+    def send_json(self, data, status=200):
+        self.send_response(status)
+        self.send_header('Content-type', 'application/json')
+        self.send_header('Cache-Control', 'no-store')
+        self.end_headers()
+        self.wfile.write(json.dumps(data).encode())
+
+    def do_GET(self):
+        if self.path == '/' or self.path.startswith('/index.html'):
+            self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            with open(os.path.join(DIR, 'index.html'), 'rb') as f: self.wfile.write(f.read())
+        elif self.path == '/login.html':
+            self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            with open(os.path.join(DIR, 'login.html'), 'rb') as f: self.wfile.write(f.read())
+        elif self.path.startswith('/check_auth'):
+            self.send_json({'config': load_config()})
+        elif self.path.startswith('/data'):
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            if os.path.exists(DATA_FILE):
+                with open(DATA_FILE, 'rb') as f: self.wfile.write(f.read())
+            else: self.wfile.write(b'{"entities":[],"relations":[]}')
+        elif self.path == '/cytoscape.min.js':
+            with open(os.path.join(DIR, 'cytoscape.min.js'), 'rb') as f: 
+                self.send_response(200); self.send_header('Content-type', 'application/javascript'); self.end_headers(); self.wfile.write(f.read())
+        elif self.path.startswith('/tunnel_status'):
+            self.send_json({'url': tunnel_url})
+        else: self.send_error(404)
+
+    def do_POST(self):
+        global tunnel_process, tunnel_url
+        if self.path == '/login':
+            l = int(self.headers.get('Content-Length', 0))
+            try:
+                data = json.loads(self.rfile.read(l).decode())
+                pw = data.get('password', '')
+                print(f"LOGIN ATTEMPT: [{pw}]", flush=True)
+                if pw == ADMIN_PASS:
+                    self.send_json({'role': 'admin'})
+                elif pw == load_config()['guest_pass']:
+                    self.send_json({'role': 'guest'})
+                else:
+                    self.send_json({'error': 'invalid'}, 401)
+            except Exception as e:
+                self.send_json({'error': str(e)}, 400)
+        elif self.path == '/save':
+            l = int(self.headers.get('Content-Length', 0)); body = self.rfile.read(l)
+            with open(DATA_FILE, 'wb') as f: f.write(body)
+            self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+        elif self.path == '/config':
+            l = int(self.headers.get('Content-Length', 0)); body = self.rfile.read(l)
+            with open(CONFIG_FILE, 'w') as f: f.write(body.decode())
+            self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+        elif self.path == '/start_tunnel':
+            if tunnel_process is None or tunnel_process.poll() is not None:
+                tunnel_url = None
+                tunnel_process = subprocess.Popen(['cloudflared', 'tunnel', '--url', f'http://localhost:{PORT}'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+                threading.Thread(target=read_tunnel, args=(tunnel_process,), daemon=True).start()
+            self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+        elif self.path == '/stop_tunnel':
+            if tunnel_process: tunnel_process.terminate(); tunnel_process = None; tunnel_url = None
+            self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+        else: self.send_error(404)
+
+    def log_message(self, format, *args): pass
+
+if __name__ == '__main__':
+    if not os.path.exists(CONFIG_FILE):
+        with open(CONFIG_FILE, 'w') as f: json.dump(DEFAULT_CONFIG, f)
+    print(f"✅ التطبيق يعمل الآن على http://127.0.0.1:{PORT}")
+    socketserver.TCPServer.allow_reuse_address = True
+    with socketserver.TCPServer(("", PORT), Handler) as httpd: httpd.serve_forever()
+EOF
+
+python -c "
+import re
+with open('index.html', 'r', encoding='utf-8') as f: html = f.read()
+--
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+**تم اكتشاف الخطأ بدقة، وهو خطأ بسيط جداً في السيرفر.**
+عندما تضغط على زر "خروج"، يرسل المتصفح طلباً للسيرفر بهذا الشكل: `/logout?t=123456` (يضيف الوقت لمنع الكاش). السيرفر يبحث عن `/logout` بالضبط ولا يجد `?t=`، فيعتبره رابطاً غير موجود (404).
+
+**الحل:** سنجعل السيرفر ذكياً ويتجاهل أي إضافات بعد علامة الاستفهام `?`، وسيصلح أيضاً مشكلة الـ 404 التي قد تظهر في أي مكان آخر.
+
+انسخ هذا الأمر بالكامل (سيقوم بتحديث السيرفر فقط، ولن يمس أي بيانات أو تصميم):
+
+```bash
+cd ~/database_osint && cat > app.py << 'EOF'
+import os, json, http.server, socketserver, urllib.parse, subprocess, re, threading, time, socket
+
+PORT = 9090
+ADMIN_PASS = "123456"
+DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE = os.path.join(DIR, "data.json")
+CONFIG_FILE = os.path.join(DIR, "config.json")
+tunnel_url = None
+tunnel_process = None
+DEFAULT_CONFIG = {"guest_pass": "0000", "guest_can_edit": False, "guest_can_see_secrets": False, "shield_enabled": True}
+
+def load_config():
+    if os.path.exists(CONFIG_FILE):
+        try:
+            with open(CONFIG_FILE, 'r') as f: return json.load(f)
+        except: pass
+    return DEFAULT_CONFIG.copy()
+
+def read_tunnel(process):
+    global tunnel_url
+    for line in iter(process.stdout.readline, ''):
+        match = re.search(r'https://[a-zA-Z0-9-]+\.trycloudflare\.com', line)
+        if match: tunnel_url = match.group(0)
+
+class Handler(http.server.SimpleHTTPRequestHandler):
+    def get_role(self):
+        cookie = self.headers.get('Cookie', '')
+        if 'role=admin' in cookie: return 'admin'
+        if 'role=guest' in cookie: return 'guest'
+        return None
+
+    def do_GET(self):
+        role = self.get_role()
+        # هنا الإصلاح: تجاهل أي إضافات مثل ?t=123
+        clean_path = self.path.split('?')[0]
+        
+        print(f"GET {self.path} | Role: {role}", flush=True)
+        
+        if clean_path == '/' or clean_path == '/index.html':
+            if not role:
+                self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+                with open(os.path.join(DIR, 'login.html'), 'rb') as f: self.wfile.write(f.read()); return
+            self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            with open(os.path.join(DIR, 'index.html'), 'rb') as f: self.wfile.write(f.read())
+        elif clean_path == '/check_auth':
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            self.wfile.write(json.dumps({'admin': role == 'admin', 'config': load_config()}).encode())
+        elif clean_path == '/data':
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            if os.path.exists(DATA_FILE):
+                with open(DATA_FILE, 'rb') as f: self.wfile.write(f.read())
+            else: self.wfile.write(b'{"entities":[],"relations":[]}')
+        elif clean_path == '/cytoscape.min.js':
+            with open(os.path.join(DIR, 'cytoscape.min.js'), 'rb') as f: 
+                self.send_response(200); self.send_header('Content-type', 'application/javascript'); self.end_headers(); self.wfile.write(f.read())
+        elif clean_path == '/tunnel_status':
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.end_headers(); self.wfile.write(json.dumps({'url': tunnel_url}).encode())
+        elif clean_path == '/logout':
+            # هنا إصلاح الخروج
+            self.send_response(302)
+            self.send_header('Set-Cookie', 'role=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0')
+            self.send_header('Location', '/')
+            self.end_headers()
+        else: 
+            self.send_error(404)
+
+    def do_POST(self):
+        global tunnel_process, tunnel_url
+        clean_path = self.path.split('?')[0]
+        
+        if clean_path == '/login':
+            l = int(self.headers.get('Content-Length', 0)); post = self.rfile.read(l).decode()
+            pw = urllib.parse.parse_qs(post).get('password', [''])[0]
+            print(f"LOGIN ATTEMPT: [{pw}]", flush=True)
+            if pw == ADMIN_PASS:
+                print("-> ADMIN LOGGED IN", flush=True)
+                self.send_response(302); self.send_header('Set-Cookie', 'role=admin; Path=/; Max-Age=86400'); self.send_header('Location', '/'); self.end_headers()
+            elif pw == load_config()['guest_pass']:
+                print("-> GUEST LOGGED IN", flush=True)
+                self.send_response(302); self.send_header('Set-Cookie', 'role=guest; Path=/; Max-Age=86400'); self.send_header('Location', '/'); self.end_headers()
+            else:
+                print("-> INVALID PASSWORD", flush=True)
+                self.send_response(302); self.send_header('Location', '/'); self.end_headers()
+        elif clean_path == '/save':
+            l = int(self.headers.get('Content-Length', 0)); body = self.rfile.read(l)
+            with open(DATA_FILE, 'wb') as f: f.write(body)
+            self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+        elif clean_path == '/config':
+            l = int(self.headers.get('Content-Length', 0)); body = self.rfile.read(l)
+            with open(CONFIG_FILE, 'w') as f: f.write(body.decode())
+            self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+        elif clean_path == '/start_tunnel':
+            if tunnel_process is None or tunnel_process.poll() is not None:
+                tunnel_url = None
+                tunnel_process = subprocess.Popen(['cloudflared', 'tunnel', '--url', f'http://localhost:{PORT}'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+                threading.Thread(target=read_tunnel, args=(tunnel_process,), daemon=True).start()
+            self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+        elif clean_path == '/stop_tunnel':
+            if tunnel_process: tunnel_process.terminate(); tunnel_process = None; tunnel_url = None
+            self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+        else: self.send_error(404)
+--
+pkg install cloudflared -y
+```
+
+---
+
+**الخطوة 2: تحديث السيرفر لطباعة الأخطاء بدقة**
+انسخ هذا الأمر بالكامل (سيعدل `app.py` ليطبع ما يحدث خلف الكواليس):
+
+```bash
+cd ~/database_osint && cat > app.py << 'EOF'
+import os, json, http.server, socketserver, urllib.parse, subprocess, re, threading, time, socket
+
+PORT = 9090
+ADMIN_PASS = "123456"
+DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE = os.path.join(DIR, "data.json")
+CONFIG_FILE = os.path.join(DIR, "config.json")
+tunnel_url = None
+tunnel_process = None
+DEFAULT_CONFIG = {"guest_pass": "0000", "guest_can_edit": False, "guest_can_see_secrets": False, "shield_enabled": True}
+
+def load_config():
+    if os.path.exists(CONFIG_FILE):
+        try:
+            with open(CONFIG_FILE, 'r') as f: return json.load(f)
+        except: pass
+    return DEFAULT_CONFIG.copy()
+
+def read_tunnel(process):
+    global tunnel_url
+    for line in iter(process.stdout.readline, ''):
+        print(f"[Cloudflare] {line.strip()}", flush=True) # طباعة كل شيء يحدث
+        match = re.search(r'https://[a-zA-Z0-9-]+\.trycloudflare\.com', line)
+        if match: 
+            tunnel_url = match.group(0)
+            print(f"✅ تم توليد الرابط بنجاح: {tunnel_url}", flush=True)
+
+class Handler(http.server.SimpleHTTPRequestHandler):
+    def get_role(self):
+        cookie = self.headers.get('Cookie', '')
+        if 'role=admin' in cookie: return 'admin'
+        if 'role=guest' in cookie: return 'guest'
+        return None
+
+    def do_GET(self):
+        role = self.get_role()
+        clean_path = self.path.split('?')[0]
+        
+        if clean_path == '/' or clean_path == '/index.html':
+            if not role:
+                self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+                with open(os.path.join(DIR, 'login.html'), 'rb') as f: self.wfile.write(f.read()); return
+            self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            with open(os.path.join(DIR, 'index.html'), 'rb') as f: self.wfile.write(f.read())
+        elif clean_path == '/check_auth':
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            self.wfile.write(json.dumps({'admin': role == 'admin', 'config': load_config()}).encode())
+        elif clean_path == '/data':
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            if os.path.exists(DATA_FILE):
+                with open(DATA_FILE, 'rb') as f: self.wfile.write(f.read())
+            else: self.wfile.write(b'{"entities":[],"relations":[]}')
+        elif clean_path == '/cytoscape.min.js':
+            with open(os.path.join(DIR, 'cytoscape.min.js'), 'rb') as f: 
+                self.send_response(200); self.send_header('Content-type', 'application/javascript'); self.end_headers(); self.wfile.write(f.read())
+        elif clean_path == '/tunnel_status':
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.end_headers(); self.wfile.write(json.dumps({'url': tunnel_url}).encode())
+        elif clean_path == '/logout':
+            self.send_response(302)
+            self.send_header('Set-Cookie', 'role=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0')
+            self.send_header('Location', '/')
+            self.end_headers()
+        else: 
+            self.send_error(404)
+
+    def do_POST(self):
+        global tunnel_process, tunnel_url
+        clean_path = self.path.split('?')[0]
+        
+        if clean_path == '/login':
+            l = int(self.headers.get('Content-Length', 0)); post = self.rfile.read(l).decode()
+            pw = urllib.parse.parse_qs(post).get('password', [''])[0]
+            if pw == ADMIN_PASS:
+                self.send_response(302); self.send_header('Set-Cookie', 'role=admin; Path=/; Max-Age=86400'); self.send_header('Location', '/'); self.end_headers()
+            elif pw == load_config()['guest_pass']:
+                self.send_response(302); self.send_header('Set-Cookie', 'role=guest; Path=/; Max-Age=86400'); self.send_header('Location', '/'); self.end_headers()
+            else:
+                self.send_response(302); self.send_header('Location', '/'); self.end_headers()
+        elif clean_path == '/save':
+            l = int(self.headers.get('Content-Length', 0)); body = self.rfile.read(l)
+            with open(DATA_FILE, 'wb') as f: f.write(body)
+            self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+        elif clean_path == '/config':
+            l = int(self.headers.get('Content-Length', 0)); body = self.rfile.read(l)
+            with open(CONFIG_FILE, 'w') as f: f.write(body.decode())
+            self.send_response(200); self.end_headers(); self.wfile.write(b'OK')
+        elif clean_path == '/start_tunnel':
+            if tunnel_process is None or tunnel_process.poll() is not None:
+                tunnel_url = None
+                try:
+                    # تشغيل cloudflared وطباعة كل مخرجاته
+                    tunnel_process = subprocess.Popen(
+                        ['cloudflared', 'tunnel', '--url', f'http://localhost:{PORT}'], 
+                        stdout=subprocess.PIPE, 
+                        stderr=subprocess.STDOUT, 
+                        text=True, 
+                        bufsize=1
+                    )
+                    threading.Thread(target=read_tunnel, args=(tunnel_process,), daemon=True).start()
+                except Exception as e:
+                    print(f"❌ خطأ في تشغيل cloudflared: {e}", flush=True)
+--
+echo "✅ تم تحديث صفحة الدخول."
+```
+
+---
+
+### الخطوة 2: تحديث السيرفر (`app.py`)
+انسخ هذا الأمر (سيضيف نظام الحسابات، والتسجيل، وقائمة المستخدمين للمالك):
+
+```bash
+cd ~/database_osint && cat > app.py << 'EOF'
+import os, json, http.server, socketserver, urllib.parse, subprocess, re, threading, time, hashlib
+
+PORT = 9090
+ADMIN_PASS = "123456"
+DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE = os.path.join(DIR, "data.json")
+CONFIG_FILE = os.path.join(DIR, "config.json")
+USERS_FILE = os.path.join(DIR, "users.json")
+
+tunnel_url = None
+tunnel_process = None
+
+DEFAULT_CONFIG = {"guest_pass": "0000", "guest_can_edit": False, "guest_can_see_secrets": False, "shield_enabled": True, "allow_registration": True}
+
+def load_config():
+    if os.path.exists(CONFIG_FILE):
+        try:
+            with open(CONFIG_FILE, 'r') as f: return json.load(f)
+        except: pass
+    return DEFAULT_CONFIG.copy()
+
+def load_users():
+    if os.path.exists(USERS_FILE):
+        try:
+            with open(USERS_FILE, 'r') as f: return json.load(f)
+        except: pass
+    return {}
+
+def save_users(users):
+    with open(USERS_FILE, 'w') as f: json.dump(users, f)
+
+def hash_pw(pw):
+    return hashlib.sha256(pw.encode()).hexdigest()
+
+def read_tunnel(process):
+    global tunnel_url
+    for line in iter(process.stdout.readline, ''):
+        match = re.search(r'https://[a-zA-Z0-9-]+\.trycloudflare\.com', line)
+        if match: tunnel_url = match.group(0)
+
+class Handler(http.server.SimpleHTTPRequestHandler):
+    def get_role(self):
+        cookie = self.headers.get('Cookie', '')
+        if 'role=admin' in cookie: return 'admin', 'admin'
+        match = re.search(r'role=user; username=([^;]+)', cookie)
+        if match: return 'guest', match.group(1)
+        return None, None
+
+    def do_GET(self):
+        role, username = self.get_role()
+        clean_path = self.path.split('?')[0]
+        
+        if clean_path == '/' or clean_path == '/index.html':
+            if not role:
+                self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+                with open(os.path.join(DIR, 'login.html'), 'rb') as f: self.wfile.write(f.read()); return
+            self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            with open(os.path.join(DIR, 'index.html'), 'rb') as f: self.wfile.write(f.read())
+        elif clean_path == '/check_auth':
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            self.wfile.write(json.dumps({'admin': role == 'admin', 'config': load_config()}).encode())
+        elif clean_path == '/data':
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            if os.path.exists(DATA_FILE):
+                with open(DATA_FILE, 'rb') as f: self.wfile.write(f.read())
+            else: self.wfile.write(b'{"entities":[],"relations":[]}')
+        elif clean_path == '/cytoscape.min.js':
+            with open(os.path.join(DIR, 'cytoscape.min.js'), 'rb') as f: 
+                self.send_response(200); self.send_header('Content-type', 'application/javascript'); self.end_headers(); self.wfile.write(f.read())
+        elif clean_path == '/tunnel_status':
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.end_headers(); self.wfile.write(json.dumps({'url': tunnel_url}).encode())
+        elif clean_path == '/admin/users':
+            if role != 'admin': self.send_error(403); return
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.end_headers()
+            self.wfile.write(json.dumps(list(load_users().keys())).encode())
+        elif clean_path == '/logout':
+            self.send_response(302); self.send_header('Set-Cookie', 'role=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0'); self.send_header('Location', '/'); self.end_headers()
+        else: 
+            self.send_error(404)
+
+    def do_POST(self):
+        global tunnel_process, tunnel_url
+        clean_path = self.path.split('?')[0]
+        
+        if clean_path == '/login':
+            l = int(self.headers.get('Content-Length', 0)); post = self.rfile.read(l).decode()
+            params = urllib.parse.parse_qs(post)
+            un = params.get('username', [''])[0]
+            pw = params.get('password', [''])[0]
+            
+            if un == 'admin' and pw == ADMIN_PASS:
+                self.send_response(302); self.send_header('Set-Cookie', 'role=admin; Path=/; Max-Age=86400'); self.send_header('Location', '/'); self.end_headers()
+            else:
+                users = load_users()
+                if un in users and users[un] == hash_pw(pw):
+                    self.send_response(302); self.send_header('Set-Cookie', f'role=user; username={un}; Path=/; Max-Age=86400'); self.send_header('Location', '/'); self.end_headers()
+                else:
+                    self.send_response(302); self.send_header('Location', '/?msg=' + urllib.parse.quote('خطأ في اسم المستخدم أو كلمة السر')); self.end_headers()
+
+        elif clean_path == '/register':
+            l = int(self.headers.get('Content-Length', 0)); post = self.rfile.read(l).decode()
+--
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+فهمت المشكلة. السبب في أن الحساب الجديد لا يدخل هو أن ملف `users.json` (ملف المستخدمين) قد لا يتم إنشاؤه بشكل صحيح أو أن كلمة السر لا تُحفظ. 
+
+سأعطيك أمراً واحداً يقوم بتحديث السيرفر (ليطبع في Termux كل ما يحدث بالضبط عند محاولة الدخول والتسجيل)، وسأزيل كلمة `(للمالك admin)` من صفحة الدخول. **لن ألمس ملف الواجهة (`index.html`) ولن يتغير أي تصميم.**
+
+انسخ هذا الأمر بالكامل والصقه في Termux:
+
+```bash
+cd ~/database_osint && cat > app.py << 'EOF'
+import os, json, http.server, socketserver, urllib.parse, subprocess, re, threading, time, hashlib
+
+PORT = 9090
+ADMIN_PASS = "123456"
+DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE = os.path.join(DIR, "data.json")
+CONFIG_FILE = os.path.join(DIR, "config.json")
+USERS_FILE = os.path.join(DIR, "users.json")
+
+tunnel_url = None
+tunnel_process = None
+
+DEFAULT_CONFIG = {"guest_pass": "0000", "guest_can_edit": False, "guest_can_see_secrets": False, "shield_enabled": True, "allow_registration": True}
+
+def load_config():
+    if os.path.exists(CONFIG_FILE):
+        try:
+            with open(CONFIG_FILE, 'r') as f: return json.load(f)
+        except: pass
+    return DEFAULT_CONFIG.copy()
+
+def load_users():
+    if not os.path.exists(USERS_FILE):
+        with open(USERS_FILE, 'w') as f: json.dump({}, f)
+        return {}
+    try:
+        with open(USERS_FILE, 'r') as f: return json.load(f)
+    except: return {}
+
+def save_users(users):
+    with open(USERS_FILE, 'w') as f: json.dump(users, f)
+
+def hash_pw(pw):
+    return hashlib.sha256(pw.encode()).hexdigest()
+
+def read_tunnel(process):
+    global tunnel_url
+    for line in iter(process.stdout.readline, ''):
+        match = re.search(r'https://[a-zA-Z0-9-]+\.trycloudflare\.com', line)
+        if match: tunnel_url = match.group(0)
+
+class Handler(http.server.SimpleHTTPRequestHandler):
+    def get_role(self):
+        cookie = self.headers.get('Cookie', '')
+        if 'role=admin' in cookie: return 'admin'
+        if 'role=user' in cookie: return 'guest'
+        return None
+
+    def do_GET(self):
+        role = self.get_role()
+        clean_path = self.path.split('?')[0]
+        
+        if clean_path == '/' or clean_path == '/index.html':
+            if not role:
+                self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+                with open(os.path.join(DIR, 'login.html'), 'rb') as f: self.wfile.write(f.read()); return
+            self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            with open(os.path.join(DIR, 'index.html'), 'rb') as f: self.wfile.write(f.read())
+        elif clean_path == '/check_auth':
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            self.wfile.write(json.dumps({'admin': role == 'admin', 'config': load_config()}).encode())
+        elif clean_path == '/data':
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            if os.path.exists(DATA_FILE):
+                with open(DATA_FILE, 'rb') as f: self.wfile.write(f.read())
+            else: self.wfile.write(b'{"entities":[],"relations":[]}')
+        elif clean_path == '/cytoscape.min.js':
+            with open(os.path.join(DIR, 'cytoscape.min.js'), 'rb') as f: 
+                self.send_response(200); self.send_header('Content-type', 'application/javascript'); self.end_headers(); self.wfile.write(f.read())
+        elif clean_path == '/tunnel_status':
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.end_headers(); self.wfile.write(json.dumps({'url': tunnel_url}).encode())
+        elif clean_path == '/admin/users':
+            if role != 'admin': self.send_error(403); return
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.end_headers()
+            self.wfile.write(json.dumps(list(load_users().keys())).encode())
+        elif clean_path == '/logout':
+            self.send_response(302); self.send_header('Set-Cookie', 'role=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0'); self.send_header('Location', '/'); self.end_headers()
+        else: 
+            self.send_error(404)
+
+    def do_POST(self):
+        global tunnel_process, tunnel_url
+        clean_path = self.path.split('?')[0]
+        
+        if clean_path == '/login':
+            l = int(self.headers.get('Content-Length', 0)); post = self.rfile.read(l).decode()
+            params = urllib.parse.parse_qs(post)
+            un = params.get('username', [''])[0]
+            pw = params.get('password', [''])[0]
+            
+            print(f"🔐 محاولة دخول: المستخدم [{un}] | كلمة السر [{pw}]", flush=True)
+            
+            if un == 'admin' and pw == ADMIN_PASS:
+                print("✅ تم الدخول كمالك (Admin)", flush=True)
+                self.send_response(302); self.send_header('Set-Cookie', 'role=admin; Path=/; Max-Age=86400'); self.send_header('Location', '/'); self.end_headers()
+            else:
+                users = load_users()
+                if un in users and users[un] == hash_pw(pw):
+                    print(f"✅ تم الدخول كمستخدم مسجل ({un})", flush=True)
+                    self.send_response(302); self.send_header('Set-Cookie', f'role=user; username={un}; Path=/; Max-Age=86400'); self.send_header('Location', '/'); self.end_headers()
+                else:
+--
+المشكلة في توليد الرابط تحدث لسببين:
+1. أداة `cloudflared` غير مثبتة على هاتفك.
+2. شبكة الـ 4G الخاصة بك تحظر بعض الاتصالات التي تقوم بها الأداة.
+
+**الحل النهائي (بدون تعقيد):** سأعطيك أمراً واحداً يقوم بتحديث السيرفر ليطبع أي خطأ يحدث خلف الكواليس في شاشة Termux. **وسأضيف له أداة بديلة (SSH Tunnel)** تعمل تلقائياً إذا فشلت `cloudflared`. أداة SSH مدمجة في Termux ولا تحتاج تثبيت أي شيء.
+
+انسخ هذا الأمر بالكامل (سيعدل `app.py` فقط):
+
+```bash
+cd ~/database_osint && cat > app.py << 'EOF'
+import os, json, http.server, socketserver, urllib.parse, subprocess, re, threading, time, hashlib, shutil
+
+PORT = 9090
+ADMIN_PASS = "123456"
+DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE = os.path.join(DIR, "data.json")
+CONFIG_FILE = os.path.join(DIR, "config.json")
+USERS_FILE = os.path.join(DIR, "users.json")
+
+tunnel_url = None
+tunnel_process = None
+
+DEFAULT_CONFIG = {"guest_pass": "0000", "guest_can_edit": False, "guest_can_see_secrets": False, "shield_enabled": True, "allow_registration": True}
+
+def load_config():
+    if os.path.exists(CONFIG_FILE):
+        try:
+            with open(CONFIG_FILE, 'r') as f: return json.load(f)
+        except: pass
+    return DEFAULT_CONFIG.copy()
+
+def load_users():
+    if not os.path.exists(USERS_FILE):
+        with open(USERS_FILE, 'w') as f: json.dump({}, f)
+        return {}
+    try:
+        with open(USERS_FILE, 'r') as f: return json.load(f)
+    except: return {}
+
+def save_users(users):
+    with open(USERS_FILE, 'w') as f: json.dump(users, f)
+
+def hash_pw(pw):
+    return hashlib.sha256(pw.encode()).hexdigest()
+
+def read_tunnel(process):
+    global tunnel_url
+    for line in iter(process.stdout.readline, ''):
+        print(f"[Tunnel] {line.strip()}", flush=True)
+        # البحث عن رابط cloudflared
+        match = re.search(r'https://[a-zA-Z0-9-]+\.trycloudflare\.com', line)
+        # البحث عن رابط SSH (localhost.run)
+        if not match:
+            match = re.search(r'https://[a-zA-Z0-9-]+\.lhr\.life', line)
+        
+        if match: 
+            tunnel_url = match.group(0)
+            print(f"✅ تم توليد الرابط بنجاح: {tunnel_url}", flush=True)
+
+class Handler(http.server.SimpleHTTPRequestHandler):
+    def get_role(self):
+        cookie = self.headers.get('Cookie', '')
+        if 'role=admin' in cookie: return 'admin'
+        if 'role=user' in cookie: return 'guest'
+        return None
+
+    def do_GET(self):
+        role = self.get_role()
+        clean_path = self.path.split('?')[0]
+        
+        if clean_path == '/' or clean_path == '/index.html':
+            if not role:
+                self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+                with open(os.path.join(DIR, 'login.html'), 'rb') as f: self.wfile.write(f.read()); return
+            self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            with open(os.path.join(DIR, 'index.html'), 'rb') as f: self.wfile.write(f.read())
+        elif clean_path == '/check_auth':
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            self.wfile.write(json.dumps({'admin': role == 'admin', 'config': load_config()}).encode())
+        elif clean_path == '/data':
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            if os.path.exists(DATA_FILE):
+                with open(DATA_FILE, 'rb') as f: self.wfile.write(f.read())
+            else: self.wfile.write(b'{"entities":[],"relations":[]}')
+        elif clean_path == '/cytoscape.min.js':
+            with open(os.path.join(DIR, 'cytoscape.min.js'), 'rb') as f: 
+                self.send_response(200); self.send_header('Content-type', 'application/javascript'); self.end_headers(); self.wfile.write(f.read())
+        elif clean_path == '/tunnel_status':
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.end_headers(); self.wfile.write(json.dumps({'url': tunnel_url}).encode())
+        elif clean_path == '/admin/users':
+            if role != 'admin': self.send_error(403); return
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.end_headers()
+            self.wfile.write(json.dumps(list(load_users().keys())).encode())
+        elif clean_path == '/logout':
+            self.send_response(302); self.send_header('Set-Cookie', 'role=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0'); self.send_header('Location', '/'); self.end_headers()
+        else: 
+            self.send_error(404)
+
+    def do_POST(self):
+        global tunnel_process, tunnel_url
+        clean_path = self.path.split('?')[0]
+        
+        if clean_path == '/login':
+            l = int(self.headers.get('Content-Length', 0)); post = self.rfile.read(l).decode()
+            params = urllib.parse.parse_qs(post)
+            un = params.get('username', [''])[0]
+            pw = params.get('password', [''])[0]
+            
+            if un == 'admin' and pw == ADMIN_PASS:
+                self.send_response(302); self.send_header('Set-Cookie', 'role=admin; Path=/; Max-Age=86400'); self.send_header('Location', '/'); self.end_headers()
+            else:
+--
+### الخطوة 2: تحديث السيرفر ليقوم بذلك تلقائياً
+
+سأعدل `app.py` ليفعل شيئين:
+1. يحاول تشغيل `cloudflared` (إذا كان مثبتاً).
+2. إذا فشل، ينتقل تلقائياً إلى `localhost.run` عبر SSH، ويقرأ الرابط مهما كانت صيغته (`lhr.life` أو `localhost.run`).
+
+انسخ هذا الأمر بالكامل (سيستبدل `app.py` فقط، **ولن يمس بياناتك أو تصميمك**):
+
+```bash
+cd ~/database_osint && cat > app.py << 'EOF'
+import os, json, http.server, socketserver, urllib.parse, subprocess, re, threading, time, hashlib, shutil
+
+PORT = 9090
+ADMIN_PASS = "123456"
+DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE = os.path.join(DIR, "data.json")
+CONFIG_FILE = os.path.join(DIR, "config.json")
+USERS_FILE = os.path.join(DIR, "users.json")
+
+tunnel_url = None
+tunnel_process = None
+
+DEFAULT_CONFIG = {"guest_pass": "0000", "guest_can_edit": False, "guest_can_see_secrets": False, "shield_enabled": True, "allow_registration": True}
+
+def load_config():
+    if os.path.exists(CONFIG_FILE):
+        try:
+            with open(CONFIG_FILE, 'r') as f: return json.load(f)
+        except: pass
+    return DEFAULT_CONFIG.copy()
+
+def load_users():
+    if not os.path.exists(USERS_FILE):
+        with open(USERS_FILE, 'w') as f: json.dump({}, f)
+        return {}
+    try:
+        with open(USERS_FILE, 'r') as f: return json.load(f)
+    except: return {}
+
+def save_users(users):
+    with open(USERS_FILE, 'w') as f: json.dump(users, f)
+
+def hash_pw(pw):
+    return hashlib.sha256(pw.encode()).hexdigest()
+
+def read_tunnel(process):
+    global tunnel_url
+    for line in iter(process.stdout.readline, ''):
+        print(f"[Tunnel] {line.strip()}", flush=True)
+        # البحث عن أي رابط ينتهي بـ lhr.life أو localhost.run أو trycloudflare
+        match = re.search(r'https://[a-zA-Z0-9-]+(?:\.lhr\.life|\.localhost\.run|\.trycloudflare\.com)', line)
+        if match:
+            tunnel_url = match.group(0)
+            print(f"✅ تم توليد الرابط: {tunnel_url}", flush=True)
+
+class Handler(http.server.SimpleHTTPRequestHandler):
+    def get_role(self):
+        cookie = self.headers.get('Cookie', '')
+        if 'role=admin' in cookie: return 'admin'
+        if 'role=user' in cookie: return 'guest'
+        return None
+
+    def do_GET(self):
+        role = self.get_role()
+        clean_path = self.path.split('?')[0]
+        
+        if clean_path == '/' or clean_path == '/index.html':
+            if not role:
+                self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+                with open(os.path.join(DIR, 'login.html'), 'rb') as f: self.wfile.write(f.read()); return
+            self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            with open(os.path.join(DIR, 'index.html'), 'rb') as f: self.wfile.write(f.read())
+        elif clean_path == '/check_auth':
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            self.wfile.write(json.dumps({'admin': role == 'admin', 'config': load_config()}).encode())
+        elif clean_path == '/data':
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            if os.path.exists(DATA_FILE):
+                with open(DATA_FILE, 'rb') as f: self.wfile.write(f.read())
+            else: self.wfile.write(b'{"entities":[],"relations":[]}')
+        elif clean_path == '/cytoscape.min.js':
+            with open(os.path.join(DIR, 'cytoscape.min.js'), 'rb') as f: 
+                self.send_response(200); self.send_header('Content-type', 'application/javascript'); self.end_headers(); self.wfile.write(f.read())
+        elif clean_path == '/tunnel_status':
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.end_headers(); self.wfile.write(json.dumps({'url': tunnel_url}).encode())
+        elif clean_path == '/admin/users':
+            if role != 'admin': self.send_error(403); return
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.end_headers()
+            self.wfile.write(json.dumps(list(load_users().keys())).encode())
+        elif clean_path == '/logout':
+            self.send_response(302); self.send_header('Set-Cookie', 'role=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0'); self.send_header('Location', '/'); self.end_headers()
+        else: 
+            self.send_error(404)
+
+    def do_POST(self):
+        global tunnel_process, tunnel_url
+        clean_path = self.path.split('?')[0]
+        
+        if clean_path == '/login':
+            l = int(self.headers.get('Content-Length', 0)); post = self.rfile.read(l).decode()
+            params = urllib.parse.parse_qs(post)
+            un = params.get('username', [''])[0]
+            pw = params.get('password', [''])[0]
+            
+            if un == 'admin' and pw == ADMIN_PASS:
+                self.send_response(302); self.send_header('Set-Cookie', 'role=admin; Path=/; Max-Age=86400'); self.send_header('Location', '/'); self.end_headers()
+            else:
+                users = load_users()
+                if un in users and users[un] == hash_pw(pw):
+                    self.send_response(302); self.send_header('Set-Cookie', f'role=user; username={un}; Path=/; Max-Age=86400'); self.send_header('Location', '/'); self.end_headers()
+                else:
+--
+
+**لماذا فشل زر التوليد في التطبيق سابقاً؟**
+لأن السيرفر كان يبحث عن الرابط في "المخرجات القياسية" فقط، بينما أداة Cloudflare في بعض إصدارات أندرويد تطبع الرابط في "مخرجات الأخطاء" (Stderr). 
+
+الآن سأعدل السيرفر ليقوم بكل ما فعلته يدوياً بضغطة زر واحدة.
+
+انسخ هذا الأمر بالكامل (سيقوم بتحديث `app.py` ليعمل بذكاء ويقرأ الرابط أينما ظهر):
+
+```bash
+cd ~/database_osint && cat > app.py << 'EOF'
+import os, json, http.server, socketserver, urllib.parse, subprocess, re, threading, time, hashlib, shutil
+
+PORT = 9090
+ADMIN_PASS = "123456"
+DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE = os.path.join(DIR, "data.json")
+CONFIG_FILE = os.path.join(DIR, "config.json")
+USERS_FILE = os.path.join(DIR, "users.json")
+
+tunnel_url = None
+tunnel_process = None
+
+DEFAULT_CONFIG = {"guest_pass": "0000", "guest_can_edit": False, "guest_can_see_secrets": False, "shield_enabled": True, "allow_registration": True}
+
+def load_config():
+    if os.path.exists(CONFIG_FILE):
+        try:
+            with open(CONFIG_FILE, 'r') as f: return json.load(f)
+        except: pass
+    return DEFAULT_CONFIG.copy()
+
+def load_users():
+    if not os.path.exists(USERS_FILE):
+        with open(USERS_FILE, 'w') as f: json.dump({}, f)
+        return {}
+    try:
+        with open(USERS_FILE, 'r') as f: return json.load(f)
+    except: return {}
+
+def save_users(users):
+    with open(USERS_FILE, 'w') as f: json.dump(users, f)
+
+def hash_pw(pw):
+    return hashlib.sha256(pw.encode()).hexdigest()
+
+def read_tunnel(process):
+    global tunnel_url
+    for line in iter(process.stdout.readline, ''):
+        # طباعة كل شيء يخرج من الأداة لنرى ما يحدث
+        print(f"[Tunnel] {line.strip()}", flush=True)
+        
+        # البحث عن رابط trycloudflare
+        match = re.search(r'https://[a-zA-Z0-9-]+\.trycloudflare\.com', line)
+        if match:
+            tunnel_url = match.group(0)
+            print(f"✅ تم توليد الرابط بنجاح: {tunnel_url}", flush=True)
+
+class Handler(http.server.SimpleHTTPRequestHandler):
+    def get_role(self):
+        cookie = self.headers.get('Cookie', '')
+        if 'role=admin' in cookie: return 'admin'
+        if 'role=user' in cookie: return 'guest'
+        return None
+
+    def do_GET(self):
+        role = self.get_role()
+        clean_path = self.path.split('?')[0]
+        
+        if clean_path == '/' or clean_path == '/index.html':
+            if not role:
+                self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+                with open(os.path.join(DIR, 'login.html'), 'rb') as f: self.wfile.write(f.read()); return
+            self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            with open(os.path.join(DIR, 'index.html'), 'rb') as f: self.wfile.write(f.read())
+        elif clean_path == '/check_auth':
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            self.wfile.write(json.dumps({'admin': role == 'admin', 'config': load_config()}).encode())
+        elif clean_path == '/data':
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            if os.path.exists(DATA_FILE):
+                with open(DATA_FILE, 'rb') as f: self.wfile.write(f.read())
+            else: self.wfile.write(b'{"entities":[],"relations":[]}')
+        elif clean_path == '/cytoscape.min.js':
+            with open(os.path.join(DIR, 'cytoscape.min.js'), 'rb') as f: 
+                self.send_response(200); self.send_header('Content-type', 'application/javascript'); self.end_headers(); self.wfile.write(f.read())
+        elif clean_path == '/tunnel_status':
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.end_headers(); self.wfile.write(json.dumps({'url': tunnel_url}).encode())
+        elif clean_path == '/admin/users':
+            if role != 'admin': self.send_error(403); return
+            self.send_response(200); self.send_header('Content-type', 'application/json'); self.end_headers()
+            self.wfile.write(json.dumps(list(load_users().keys())).encode())
+        elif clean_path == '/logout':
+            self.send_response(302); self.send_header('Set-Cookie', 'role=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0'); self.send_header('Location', '/'); self.end_headers()
+        else: 
+            self.send_error(404)
+
+    def do_POST(self):
+        global tunnel_process, tunnel_url
+        clean_path = self.path.split('?')[0]
+        
+        if clean_path == '/login':
+            l = int(self.headers.get('Content-Length', 0)); post = self.rfile.read(l).decode()
+            params = urllib.parse.parse_qs(post)
+            un = params.get('username', [''])[0]
+            pw = params.get('password', [''])[0]
+            
+            if un == 'admin' and pw == ADMIN_PASS:
+                self.send_response(302); self.send_header('Set-Cookie', 'role=admin; Path=/; Max-Age=86400'); self.send_header('Location', '/'); self.end_headers()
+            else:
+                users = load_users()
+                if un in users and users[un] == hash_pw(pw):
+--
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+أعتذر بشدة، لقد اكتشفت السبب الحقيقي وراء فشل الزر بينما ينجح الأمر اليدوي. 
+أداة `cloudflared` تتصرف بذكاء: عندما يتم تشغيلها من داخل سكريبت بايثون (بدون شاشة طرفية TTY)، فإنها **تخفي الرابط** لكي لا يزدحم السجل. لهذا لم يقرأه السيرفر.
+
+**الحل النهائي (خدعة الطرفية):** سأجبر بايثون على تشغيل `cloudflared` وكأنه داخل شاشة Termux حقيقية، حتى يُظهر الرابط، وسأزيد وقت الانتظار في المتصفح إلى 60 ثانية لضمان النجاح.
+
+انسخ هذا الأمر بالكامل (سيقوم بتحديث `app.py` و `index.html` معاً):
+
+```bash
+cd ~/database_osint && cat > app.py << 'EOF'
+import os, json, http.server, socketserver, urllib.parse, subprocess, re, threading, time, hashlib, shutil, pty
+
+PORT = 9090
+ADMIN_PASS = "123456"
+DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE = os.path.join(DIR, "data.json")
+CONFIG_FILE = os.path.join(DIR, "config.json")
+USERS_FILE = os.path.join(DIR, "users.json")
+
+tunnel_url = None
+tunnel_process = None
+
+DEFAULT_CONFIG = {"guest_pass": "0000", "guest_can_edit": False, "guest_can_see_secrets": False, "shield_enabled": True, "allow_registration": True}
+
+def load_config():
+    if os.path.exists(CONFIG_FILE):
+        try:
+            with open(CONFIG_FILE, 'r') as f: return json.load(f)
+        except: pass
+    return DEFAULT_CONFIG.copy()
+
+def load_users():
+    if not os.path.exists(USERS_FILE):
+        with open(USERS_FILE, 'w') as f: json.dump({}, f)
+        return {}
+    try:
+        with open(USERS_FILE, 'r') as f: return json.load(f)
+    except: return {}
+
+def save_users(users):
+    with open(USERS_FILE, 'w') as f: json.dump(users, f)
+
+def hash_pw(pw):
+    return hashlib.sha256(pw.encode()).hexdigest()
+
+def read_tunnel(process):
+    global tunnel_url
+    for line in iter(process.stdout.readline, ''):
+        print(f"[Tunnel] {line.strip()}", flush=True)
+        match = re.search(r'https://[a-zA-Z0-9-]+\.trycloudflare\.com', line)
+        if match:
+            tunnel_url = match.group(0)
+            print(f"✅ تم توليد الرابط: {tunnel_url}", flush=True)
+
+class Handler(http.server.SimpleHTTPRequestHandler):
+    def get_role(self):
+        cookie = self.headers.get('Cookie', '')
+        if 'role=admin' in cookie: return 'admin'
+        if 'role=user' in cookie: return 'guest'
+        return None
+
+    def do_GET(self):
+        role = self.get_role()
+        clean_path = self.path.split('?')[0]
+        
+        if clean_path == '/' or clean_path == '/index.html':
+            if not role:
+                self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); s

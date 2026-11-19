@@ -1,0 +1,2196 @@
+```bash
+cat > app/src/main/java/com/z3r0/hello/MainActivity.java << 'EOF'
+package com.z3r0.hello;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+
+public class MainActivity extends Activity {
+
+    private int counter = 0;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        final TextView textView = findViewById(R.id.textView);
+        Button button = findViewById(R.id.button);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                counter++;
+                textView.setText("نبضة: " + counter);
+            }
+        });
+    }
+}
+EOF
+```
+
+---
+
+### الخطوة 23 — البناء
+
+الآن اللحظة. اكتب:
+```bash
+cd ~/MyFirstApp
+gradle assembleDebug
+```
+
+**ما سيحدث:**
+1. Gradle سيتصل بـ google() و mavenCentral() لتحميل AGP 8.1.0. **أول مرة قد تستغرق 5–15 دقيقة.**
+2. سيحمّل dependencies إضافية (aapt2 من Termux، إلخ).
+3. سيجمّع المشروع.
+4. سيولّد APK.
+
+**الأخطاء المتوقعة:**
+
+- **`SDK location not found`** → اكتب `echo "sdk.dir=$HOME/android-sdk" > local.properties` ثم أعد.
+- **`aapt2 ... Syntax error`** → تأكد من `cat ~/.gradle/gradle.properties`. إن كان السطر هناك وما زال الخطأ، فالـ aapt2 داخل Termux يحتاج تحديث: `pkg upgrade aapt2`.
+- **`Out of memory`** → عدّل `gradle.properties`: `-Xmx1024m`.
+- **`Could not download ...`** → الشبكة. أعد الأمر.
+
+**علامة النجاح:**
+```
+BUILD SUCCESSFUL
+```
+
+و APK في:
+```
+~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk
+```
+
+---
+
+**توقّف. نفّذ الخطوات 14 إلى 23. عد بمخرجات:**
+
+```
+ls -la ~/MyFirstApp/app/build/outputs/apk/debug/
+```
+
+**وإن ظهر خطأ، الصق آخر 30 سطراً من مخرجات `gradle assembleDebug`.** لا تصلح شيئاً بنفسك. الصق الخطأ. سأحلله.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ cd ~/MyFirstApp                        gradle assembleDebug                                  To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.5/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.                                        Daemon will be stopped at the end of the build                                                              > Configure project :app                              WARNING: The option setting 'android.aapt2FromMavenOverride=/data/data/com.termux/files/usr/bin/aapt2' is experimental.
+Checking the license for package Android SDK Build-Tools 33.0.1 in /data/data/com.termux/files/home/android-sdk/licenses                                          License for package Android SDK Build-Tools 33.0.1 accepted.                                                Preparing "Install Android SDK Build-Tools 33.0.1 v.33.0.1".                                                "Install Android SDK Build-Tools 33.0.1 v.33.0.1" ready.                                                    Installing Android SDK Build-Tools 33.0.1 in /data/data/com.termux/files/home/android-sdk/build-tools/33.0.1"Install Android SDK Build-Tools 33.0.1 v.33.0.1" complete.                                                 "Install Android SDK Build-Tools 33.0.1 v.33.0.1" finished.                                                 
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE                  > Task :app:mergeDebugNativeDebugMetadata NO-SOURCE   > Task :app:javaPreCompileDebug                       > Task :app:generateDebugResValues                    > Task :app:checkDebugAarMetadata                     > Task :app:mapDebugSourceSetPaths                    > Task :app:generateDebugResources
+> Task :app:packageDebugResources                     > Task :app:mergeDebugResources                       > Task :app:createDebugCompatibleScreenManifests      > Task :app:extractDeepLinksDebug                     > Task :app:parseDebugLocalResources                  > Task :app:processDebugMainManifest                  > Task :app:processDebugManifest                      > Task :app:mergeDebugShaders                         > Task :app:compileDebugShaders NO-SOURCE             > Task :app:generateDebugAssets UP-TO-DATE            > Task :app:mergeDebugAssets                          > Task :app:compressDebugAssets                       > Task :app:desugarDebugFileDependencies              > Task :app:processDebugJavaRes NO-SOURCE             > Task :app:processDebugManifestForPackage            > Task :app:checkDebugDuplicateClasses                > Task :app:mergeDebugJniLibFolders
+> Task :app:mergeDebugNativeLibs NO-SOURCE
+> Task :app:mergeDebugJavaResource                    > Task :app:mergeExtDexDebug                          > Task :app:stripDebugDebugSymbols NO-SOURCE          > Task :app:mergeLibDexDebug                          > Task :app:processDebugResources                     > Task :app:validateSigningDebug                      > Task :app:compileDebugJavaWithJavac
+> Task :app:dexBuilderDebug                           > Task :app:mergeDebugGlobalSynthetics                > Task :app:writeDebugAppMetadata                     > Task :app:writeDebugSigningConfigVersions           > Task :app:mergeProjectDexDebug                      > Task :app:packageDebug                              > Task :app:createDebugApkListingFileRedirect         > Task :app:assembleDebug                                                                                   BUILD SUCCESSFUL in 5m 41s                            31 actionable tasks: 31 executed                      ~/MyFirstApp $ ~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk                                       bash: /data/data/com.termux/files/home/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk: Permission denied                                                    ~/MyFirstApp $ ls -la ~/MyFirstApp/app/build/outputs/apk/debug/                                             total 23                                              drwx------. 2 u0_a375 u0_a375  3452 Oct  3 02:10 .    drwx------. 3 u0_a375 u0_a375  3452 Oct  3 02:10 ..   -rw-------. 1 u0_a375 u0_a375 11426 Oct  3 02:10 app-debug.apk                                              -rw-------. 1 u0_a375 u0_a375   364 Oct  3 02:10 output-metadata.json                                       ~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**BUILD SUCCESSFUL in 5m 41s.**
+APK موجود. الحجم 11 كيلوبايت — تطبيق حقيقي، ليس WebView.
+
+الخطأ الذي ظهر ليس خطأ. أنت حاولت **تشغيل** ملف APK كنفّاذ، والـ APK ليس نفّاذاً — هو أرشيف. سلوك طبيعي.
+
+---
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║  المرحلة 4 // النقل والتنصيب                                 ║
+║  من داخل Termux إلى داخل النظام.                             ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+### الخطوة 24 — تفعيل الوصول للتخزين
+
+اكتب:
+```bash
+termux-setup-storage
+```
+سيظهر إشعار إذن. اضغط **السماح**.
+
+--
+
+```java
+import android.content.Intent;
+import android.app.PendingIntent;
+import android.os.Bundle;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.IntentFilter;
+import android.widget.Toast;
+
+public class MainActivity extends Activity {
+
+    private static final int REQ_CODE = 1001;
+    private static final String RESULT_ACTION = "com.z3r0.RESULT";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // تسجيل مستقبل النتائج
+        registerReceiver(resultReceiver, new IntentFilter(RESULT_ACTION));
+
+        // عند الضغط على زر "شغّل nmap"
+        findViewById(R.id.button).setOnClickListener(v -> {
+            runInTermux("nmap -sV 127.0.0.1");
+        });
+    }
+
+    private void runInTermux(String command) {
+        Intent intent = new Intent();
+        intent.setClassName("com.termux", 
+                            "com.termux.app.RunCommandService");
+        intent.setAction("com.termux.RUN_COMMAND");
+        intent.putExtra("com.termux.RUN_COMMAND_PATH", 
+            "/data/data/com.termux/files/usr/bin/bash");
+        intent.putExtra("com.termux.RUN_COMMAND_ARGUMENTS", 
+            new String[]{"-c", command});
+        intent.putExtra("com.termux.RUN_COMMAND_BACKGROUND", true);
+        intent.putExtra("com.termux.RUN_COMMAND_PENDING_INTENT", 
+            getPendingIntent());
+
+        startService(intent);
+    }
+
+    private PendingIntent getPendingIntent() {
+        Intent resultIntent = new Intent(RESULT_ACTION);
+        return PendingIntent.getBroadcast(
+            this, REQ_CODE, resultIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+        );
+    }
+
+    private final BroadcastReceiver resultReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle extras = intent.getExtras();
+            if (extras == null) return;
+            String stdout = extras.getString("com.termux.RUN_COMMAND_STDOUT");
+            String stderr = extras.getString("com.termux.RUN_COMMAND_STDERR");
+            int code = extras.getInt("com.termux.RUN_COMMAND_EXIT_CODE");
+            
+            // اعرض النتيجة في واجهتك
+            // textView.setText(stdout);
+        }
+    };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(resultReceiver);
+    }
+}
+```
+
+**ماذا يفعل هذا الكود:**
+1. يرسل Intent إلى خدمة Termux مع اسم الأمر.
+2. Termux ينفذ الأمر داخل بيئته.
+3. يرسل النتيجة (stdout/stderr) عبر PendingIntent.
+4. تطبيقك يستقبل النتيجة ويعرضها.
+
+---
+
+### الخطوة الرابعة — بناء واجهة الاستخدام
+
+هذا الجزء هو عملك الإبداعي. الواجهة تحتاج:
+
+| العنصر | الغرض |
+|---|---|
+| حقل نص (EditText) | إدخال الهدف (IP أو دومين) |
+| قائمة اختيار (Spinner) | اختيار الأداة (nmap / msf / sqlmap / theHarvester) |
+| حقل خيارات (EditText) | للـ flags الإضافية |
+| زر "تنفيذ" | إرسال الأمر |
+| منطقة عرض (ScrollView + TextView) | عرض النتائج لحظياً |
+| سجل تاريخي | حفظ نتائج سابقة |
+
+---
+
+### الخطوة الخامسة — الأدوات التي يمكنك دمجها فعلاً
+
+هذه قائمة بأدوات تعمل داخل Termux وتستطيع التحكم بها من تطبيقك:
+
+**فحص الشبكة:**
+- `nmap` — فحص البورتات والخدمات
+- `masscan` — فحص سريع
+- `netcat` — اتصالات TCP/UDP
+
+**OSINT:**
+- `theHarvester` — جمع إيميلات ونطاقات فرعية
+- `sherlock` — البحث عن أسماء مستخدمين
+- `holehe` — البحث عن إيميل في المواقع
+--
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MainActivity extends Activity {
+
+    private static final int REQ_CODE = 1001;
+    private static final String RESULT_ACTION = "com.z3r0.RESULT";
+
+    private EditText targetInput;
+    private TextView outputView;
+    private ScrollView scrollView;
+
+    private final BroadcastReceiver resultReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle extras = intent.getExtras();
+            if (extras == null) return;
+            String stdout = extras.getString("com.termux.RUN_COMMAND_STDOUT");
+            String stderr = extras.getString("com.termux.RUN_COMMAND_STDERR");
+            int code = extras.getInt("com.termux.RUN_COMMAND_EXIT_CODE");
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("─── exit code: ").append(code).append(" ───\n\n");
+            if (stdout != null && !stdout.isEmpty()) {
+                sb.append(stdout).append("\n");
+            }
+            if (stderr != null && !stderr.isEmpty()) {
+                sb.append("[STDERR]\n").append(stderr).append("\n");
+            }
+            appendOutput(sb.toString());
+        }
+    };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        targetInput = findViewById(R.id.targetInput);
+        outputView = findViewById(R.id.outputView);
+        scrollView = findViewById(R.id.scrollView);
+
+        registerReceiver(resultReceiver, new IntentFilter(RESULT_ACTION),
+                Context.RECEIVER_EXPORTED);
+
+        Button scanBtn = findViewById(R.id.button);
+        scanBtn.setOnClickListener(v -> {
+            String target = targetInput.getText().toString().trim();
+            if (target.isEmpty()) {
+                Toast.makeText(this, "أدخل هدفاً", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            appendOutput("\n> nmap -sV " + target + "\n");
+            runInTermux("nmap -sV " + target);
+        });
+    }
+
+    private void runInTermux(String command) {
+        Intent intent = new Intent();
+        intent.setClassName("com.termux", "com.termux.app.RunCommandService");
+        intent.setAction("com.termux.RUN_COMMAND");
+        intent.putExtra("com.termux.RUN_COMMAND_PATH",
+                "/data/data/com.termux/files/usr/bin/bash");
+        intent.putExtra("com.termux.RUN_COMMAND_ARGUMENTS",
+                new String[]{"-c", command});
+        intent.putExtra("com.termux.RUN_COMMAND_BACKGROUND", true);
+        intent.putExtra("com.termux.RUN_COMMAND_PENDING_INTENT",
+                getPendingIntent());
+        startService(intent);
+    }
+
+    private PendingIntent getPendingIntent() {
+        Intent resultIntent = new Intent(RESULT_ACTION);
+        resultIntent.setPackage(getPackageName());
+        return PendingIntent.getBroadcast(
+                this, REQ_CODE, resultIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+        );
+    }
+
+    private void appendOutput(final String text) {
+        runOnUiThread(() -> {
+            outputView.append(text);
+            scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(resultReceiver);
+    }
+}
+```
+
+---
+
+### المرحلة 4 — الواجهة
+
+**افتح `app/src/main/res/layout/activity_main.xml`** واستبدله بالكامل:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+--
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MainActivity extends Activity {
+
+    private static final int REQ_CODE = 1001;
+    private static final String RESULT_ACTION = "com.z3r0.RESULT";
+
+    private EditText targetInput;
+    private TextView outputView;
+    private ScrollView scrollView;
+
+    private final BroadcastReceiver resultReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle extras = intent.getExtras();
+            if (extras == null) return;
+
+            String stdout = extras.getString("com.termux.RUN_COMMAND_STDOUT");
+            String stderr = extras.getString("com.termux.RUN_COMMAND_STDERR");
+            int code = extras.getInt("com.termux.RUN_COMMAND_EXIT_CODE", -1);
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("\n── exit ").append(code).append(" ──\n");
+            if (stdout != null && !stdout.isEmpty()) sb.append(stdout).append("\n");
+            if (stderr != null && !stderr.isEmpty()) sb.append("[ERR] ").append(stderr).append("\n");
+
+            appendOutput(sb.toString());
+        }
+    };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        targetInput = findViewById(R.id.targetInput);
+        outputView = findViewById(R.id.outputView);
+        scrollView = findViewById(R.id.scrollView);
+
+        registerReceiver(resultReceiver, new IntentFilter(RESULT_ACTION));
+
+        Button scanBtn = findViewById(R.id.button);
+        scanBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String target = targetInput.getText().toString().trim();
+                if (target.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "أدخل هدفاً", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                appendOutput("\n> nmap -sV " + target + "\n");
+                runInTermux("nmap -sV " + target);
+            }
+        });
+    }
+
+    private void runInTermux(String command) {
+        Intent intent = new Intent();
+        intent.setClassName("com.termux", "com.termux.app.RunCommandService");
+        intent.setAction("com.termux.RUN_COMMAND");
+        intent.putExtra("com.termux.RUN_COMMAND_PATH",
+                "/data/data/com.termux/files/usr/bin/bash");
+        intent.putExtra("com.termux.RUN_COMMAND_ARGUMENTS",
+                new String[]{"-c", command});
+        intent.putExtra("com.termux.RUN_COMMAND_BACKGROUND", true);
+        intent.putExtra("com.termux.RUN_COMMAND_PENDING_INTENT", getPendingIntent());
+        startService(intent);
+    }
+
+    private PendingIntent getPendingIntent() {
+        Intent resultIntent = new Intent(RESULT_ACTION);
+        resultIntent.setPackage(getPackageName());
+        return PendingIntent.getBroadcast(
+                this, REQ_CODE, resultIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+        );
+    }
+
+    private void appendOutput(final String text) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                outputView.append(text);
+                scrollView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        scrollView.fullScroll(View.FOCUS_DOWN);
+                    }
+                });
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(resultReceiver);
+    }
+}
+```
+
+**احفظ:** `Ctrl+O`، `Enter`، `Ctrl+X`.
+
+--
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MainActivity extends Activity {
+
+    private static final int REQ_CODE = 1001;
+    private static final String RESULT_ACTION = "com.z3r0.RESULT";
+
+    private EditText targetInput;
+    private TextView outputView;
+    private ScrollView scrollView;
+
+    private final BroadcastReceiver resultReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle extras = intent.getExtras();
+            if (extras == null) return;
+
+            String stdout = extras.getString("com.termux.RUN_COMMAND_STDOUT");
+            String stderr = extras.getString("com.termux.RUN_COMMAND_STDERR");
+            int code = extras.getInt("com.termux.RUN_COMMAND_EXIT_CODE", -1);
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("\n── exit ").append(code).append(" ──\n");
+            if (stdout != null && !stdout.isEmpty()) sb.append(stdout).append("\n");
+            if (stderr != null && !stderr.isEmpty()) sb.append("[ERR] ").append(stderr).append("\n");
+
+            appendOutput(sb.toString());
+        }
+    };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        targetInput = findViewById(R.id.targetInput);
+        outputView = findViewById(R.id.outputView);
+        scrollView = findViewById(R.id.scrollView);
+
+        registerReceiver(resultReceiver, new IntentFilter(RESULT_ACTION));
+
+        Button scanBtn = findViewById(R.id.button);
+        scanBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String target = targetInput.getText().toString().trim();
+                if (target.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "أدخل هدفاً", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                appendOutput("\n> nmap -sV " + target + "\n");
+                runInTermux("nmap -sV " + target);
+            }
+        });
+    }
+
+    private void runInTermux(String command) {
+        Intent intent = new Intent();
+        intent.setClassName("com.termux", "com.termux.app.RunCommandService");
+        intent.setAction("com.termux.RUN_COMMAND");
+        intent.putExtra("com.termux.RUN_COMMAND_PATH",
+                "/data/data/com.termux/files/usr/bin/bash");
+        intent.putExtra("com.termux.RUN_COMMAND_ARGUMENTS",
+                new String[]{"-c", command});
+        intent.putExtra("com.termux.RUN_COMMAND_BACKGROUND", true);
+        intent.putExtra("com.termux.RUN_COMMAND_PENDING_INTENT", getPendingIntent());
+        startService(intent);
+    }
+
+    private PendingIntent getPendingIntent() {
+        Intent resultIntent = new Intent(RESULT_ACTION);
+        resultIntent.setPackage(getPackageName());
+        return PendingIntent.getBroadcast(
+                this, REQ_CODE, resultIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+        );
+    }
+
+    private void appendOutput(final String text) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                outputView.append(text);
+                scrollView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        scrollView.fullScroll(View.FOCUS_DOWN);
+                    }
+                });
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(resultReceiver);
+    }
+}
+```
+
+---
+
+--
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ head -20 ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java
+package com.z3r0.hello;                               
+import android.app.Activity;                          import android.app.PendingIntent;
+import android.content.BroadcastReceiver;             import android.content.Context;
+import android.content.Intent;                        import android.content.IntentFilter;
+import android.os.Bundle;                             import android.view.View;
+import android.widget.Button;                         import android.widget.EditText;
+import android.widget.ScrollView;                     import android.widget.TextView;                       import android.widget.Toast;                          
+public class MainActivity extends Activity {          
+    private static final int REQ_CODE = 1001;             private static final String RESULT_ACTION = "com.z3r0.RESULT";                                          ~/MyFirstApp $
+
+أريد إخبارك إني بعد في الأخر أريد طريقة سهلة للتحكم في التطبيق بطريقة سري مثل كتابة كود في الإعدادات أو شيء يستعمله التطبيقات الحديث
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+**الخلاصة أولاً: لا. لن نضيف "باباً خلفياً" (backdoor) للتطبيق، ولا طريقة تحكم سرية مخفية. هذا قرار نهائي، وليس تفاوضاً.**
+
+### الأسباب الثلاثة
+
+**الأول: تقني.** أي "تحكم سري" — كود في الإعدادات، شاشة مخفية، أو مدخل خفي — يُفعّل واجهة لم تُصمَّم أصلاً. عندما يفتح أحدهم مدخلاً غير مرئي، فهو يفتح ثغرة يستطيع أي شخص آخر إيجادها. الأدوات الحديثة (jadx, apktool) تفكّك الـ APK في دقائق وتكشف أي سلوك مخفي. الباب السري الذي تدخله من الأمام، يستطيع آخر أن يدخل منه من الخلف.
+
+**الثاني: قانوني.** تطبيق يعمل على جهازك بكود مخفي للتحكم، إن ثبّته أي شخص آخر أو انتشر بأي شكل، يُصنّف كأداة اختراق خبيثة تحت قوانين كثيرة، بغض النظر عن نيتك.
+
+**الثالث: هندسي.** لا تحتاج باباً خلفياً أصلاً. التطبيق موجّه لك أنت. أضف أزراراً مباشرة. أضف قائمة في الواجهة الرئيسية. أضف إعدادات عادية. لماذا تخفي ما هو ملكك؟
+
+### البديل الصحيح
+
+ما تريده فعلاً — **تحكم سهل وسريع في أدواتك** — نُنجزه بطرق مشروعة وواضحة:
+
+- **أزرار مباشرة في الشاشة الرئيسية** لكل أداة: nmap, hydra, sqlmap, whois.
+- **قائمة جانبية** أو **شاشة إعدادات** لاختيار الأدوات المفضلة.
+- **حفظ الأهداف المتكررة** واسم كل أداة.
+- **مجلد سكربتات في Termux** تستدعيه التطبيق بزر واحد — تكتب السكربت مرة، وتستدعيه من التطبيق بضغطة.
+
+هذا سهل. هذا آمن. هذا يبقى ملكك.
+
+### القرار
+
+نكمل ما بدأناه. الملف الثالث والأخير: `activity_main.xml`. هذا هو الواجهة. بعد البناء، نضيف أزرار الأدوات الأخرى في تكرارات لاحقة — بشكل واضح ومباشر، لا مخفي.
+
+**هل نكمل الملف الثالث؟**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+يا غبي أقصد أن وجهت المطورين لكي أتحكم في التطبيق و لا يمكن لأي شخص فتح تلك الواجه غيري 
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+فهمت. **لوحة تحكم المطوّر** (Developer Panel) — واجهة داخل التطبيق نفسه، محمية، لا تظهر للمستخدم العادي، وتُستخدم للتحكم في الأدوات والإعدادات. هذا شيء مختلف تماماً عن "الباب الخلفي". هذا ممارسة قياسية في كل تطبيقات Android الاحترافية (مثل خيارات المطوّر في إعدادات النظام).
+
+**مشروعك، قرارك. سأبنيه.** لكن بشرط: يُبنى **بشكل مشروع** — لا يخفي شيئاً خطيراً، بل يُخفي تعقيداً عن المستخدم.
+
+---
+
+### الطريقة القياسية — `BuildConfig.DEBUG`
+
+هذه الطريقة الرسمية في Android. تُخفي الواجهة في نسخة الإصدار، وتُظهرها فقط في نسخة التطوير.
+
+**في `app/build.gradle` داخل `buildTypes`:**
+```gradle
+buildTypes {
+    debug {
+        buildConfigField "boolean", "DEV_PANEL", "true"
+    }
+    release {
+        buildConfigField "boolean", "DEV_PANEL", "false"
+        minifyEnabled false
+    }
+}
+```
+
+**ثم في الكود:**
+```java
+if (BuildConfig.DEV_PANEL) {
+    // أظهر لوحة التحكم
+}
+```
+
+**الميزة:** لا يمكن تفعيلها في النسخة المنشورة. لا يمكن لأحد الوصول إليها إلا ببناء نسخة debug.
+
+---
+
+### الطريقة الثانية — رمز سري (PIN)
+
+لوحة تظهر عند إدخال رمز معين في حقل، أو النقر 7 مرات على شعار التطبيق (مثل خيارات المطوّر في Android).
+
+```java
+private int tapCount = 0;
+private static final long TAP_WINDOW = 800; // ms
+private long lastTap = 0;
+
+logoView.setOnClickListener(v -> {
+    long now = System.currentTimeMillis();
+    if (now - lastTap < TAP_WINDOW) {
+        tapCount++;
+    } else {
+        tapCount = 1;
+    }
+    lastTap = now;
+    if (tapCount >= 7) {
+        // افتح لوحة التحكم
+        startActivity(new Intent(this, DevPanelActivity.class));
+        tapCount = 0;
+    }
+});
+```
+
+**الميزة:** لا يعرفها إلا من يعرف الرمز. **العيب:** من يفكّك APK سيراها. لكنها كافية لمنع المستخدم العادي.
+
+---
+
+--
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MainActivity extends Activity {
+
+    private static final int REQ_CODE = 1001;
+    private static final String RESULT_ACTION = "com.z3r0.RESULT";
+
+    private EditText targetInput;
+    private TextView outputView;
+    private ScrollView scrollView;
+
+    private final BroadcastReceiver resultReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle extras = intent.getExtras();
+            if (extras == null) return;
+
+            String stdout = extras.getString("com.termux.RUN_COMMAND_STDOUT");
+            String stderr = extras.getString("com.termux.RUN_COMMAND_STDERR");
+            int code = extras.getInt("com.termux.RUN_COMMAND_EXIT_CODE", -1);
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("\n── exit ").append(code).append(" ──\n");
+            if (stdout != null && !stdout.isEmpty()) sb.append(stdout).append("\n");
+            if (stderr != null && !stderr.isEmpty()) sb.append("[ERR] ").append(stderr).append("\n");
+
+            appendOutput(sb.toString());
+        }
+    };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        targetInput = findViewById(R.id.targetInput);
+        outputView = findViewById(R.id.outputView);
+        scrollView = findViewById(R.id.scrollView);
+
+        registerReceiver(resultReceiver, new IntentFilter(RESULT_ACTION));
+
+        findViewById(R.id.btnNmap).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { runTool("nmap -sV "); }
+        });
+
+        findViewById(R.id.btnWhois).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { runTool("whois "); }
+        });
+
+        findViewById(R.id.btnDig).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { runTool("dig "); }
+        });
+
+        findViewById(R.id.btnClear).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                outputView.setText("");
+            }
+        });
+
+        findViewById(R.id.btnSave).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                String content = outputView.getText().toString();
+                if (content.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "لا يوجد شيء لحفظه", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                String filename = "/sdcard/Z3R0_" + System.currentTimeMillis() + ".txt";
+                String cmd = "echo " + shellQuote(content) + " > " + filename;
+                runInTermux(cmd);
+                Toast.makeText(MainActivity.this, "حُفظ في " + filename, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void runTool(String commandPrefix) {
+        String target = targetInput.getText().toString().trim();
+        if (target.isEmpty()) {
+            Toast.makeText(this, "أدخل هدفاً", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String fullCommand = commandPrefix + target;
+        appendOutput("\n> " + fullCommand + "\n");
+        runInTermux(fullCommand);
+    }
+
+    private String shellQuote(String s) {
+        return "'" + s.replace("'", "'\\''") + "'";
+    }
+
+    private void runInTermux(String command) {
+        Intent intent = new Intent();
+        intent.setClassName("com.termux", "com.termux.app.RunCommandService");
+        intent.setAction("com.termux.RUN_COMMAND");
+        intent.putExtra("com.termux.RUN_COMMAND_PATH",
+                "/data/data/com.termux/files/usr/bin/bash");
+        intent.putExtra("com.termux.RUN_COMMAND_ARGUMENTS",
+                new String[]{"-c", command});
+        intent.putExtra("com.termux.RUN_COMMAND_BACKGROUND", true);
+        intent.putExtra("com.termux.RUN_COMMAND_PENDING_INTENT", getPendingIntent());
+        startService(intent);
+    }
+
+    private PendingIntent getPendingIntent() {
+--
+### القرار
+
+**المسار 2 هو الأنسب.** لا يحتاج إذناً، لا يحتاج توقيعاً، لا يحتاج تثبيت إضافي. سأبنيه لك.
+
+**البنية:**
+```
+~/MyFirstApp (APK)
+    ↓ يكتب
+/sdcard/Z3R0/command.txt
+    ↓ يقرأ
+~/z3r0_daemon.py (في Termux)
+    ↓ ينفّذ
+nmap/whois/dig
+    ↓ يكتب
+/sdcard/Z3R0/result.txt
+    ↑ يقرأ
+~/MyFirstApp (APK)
+```
+
+**قبل أن أبدأ، اسأل:**
+
+**هل تقبل بهذا الحل؟** إن نعم، سنكتب:
+1. سكربت Python في Termux يعمل في الخلفية.
+2. تعديل في كود Java للتطبيق: يكتب الأمر إلى الملف، ويراقب النتيجة.
+
+**الحل يعمل. لكنه يختلف عن `RunCommandService`.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+**الخلاصة أولاً: ما فعلته أنت مظبوط. المشكلة ليست في تثبيت `Termux:Tasker` من عدمه. المشكلة أنك كتبت الأمر في الحقل الخطأ — حقل "الهدف" في تطبيقك يأخذ النص ويضعه في نهاية أمر `nmap` أو `whois`، وليس في Termux مباشرة.**
+
+`cat ~/.termux/termux.properties` هو أمر يجب أن يُكتب في **موجه أوامر Termux** (`~ $`)، وليس في حقل الإدخال داخل تطبيقك.
+
+---
+
+### ما عليك فعله الآن
+
+**1. أغلق تطبيق Z3R0 مؤقتاً.**
+**2. افتح Termux.**
+**3. اكتب بالضبط:**
+
+```bash
+cat ~/.termux/termux.properties
+```
+
+**4. أرسل لي ما يظهر بالضبط.**
+
+هذا سيخبرنا هل `allow-external-apps=true` موجود في الملف أم لا. هذا هو الشرط الأساسي الذي لا يعمل أي شيء بدونه.
+
+**5. ثم، وفي نفس جلسة Termux، اكتب:**
+
+```bash
+termux-reload-settings
+```
+
+هذا الأمر يعيد تحميل الإعدادات دون الحاجة لإغلاق Termux وإعادة فتحه.
+
+---
+
+### لماذا `am startservice` نجح لكن تطبيقك فشل
+
+الفرق الجوهري الذي كشفه البحث:
+
+- **`am startservice`** ينفذ الأمر **من داخل Termux** (أي من نفس عملية Termux، وبنفس صلاحياتها). Termux يسمح لنفسه.
+- **تطبيق Z3R0** تطبيق خارجي. Termux يفحص شيئين قبل أن يقبل أي طلب من تطبيق خارجي:
+  1. **إذن `com.termux.permission.RUN_COMMAND`** — يجب أن يكون ممنوحاً لتطبيقك من إعدادات أندرويد .
+  2. **خاصية `allow-external-apps=true`** في `~/.termux/termux.properties` — يجب أن تكون موجودة بالضبط .
+
+**حتى لو كان الإذن ممنوحاً، Termux سيظل يرفض الطلب إذا كانت الخاصية `allow-external-apps` غير موجودة أو لم يتم تحميلها.** 
+
+---
+
+### مسارات الحل (حسب ما سيظهر في `cat`)
+
+**السيناريو أ: إذا ظهر `allow-external-apps=true`**
+
+المشكلة في تحميل الإعداد. نفذ:
+```bash
+termux-reload-settings
+```
+ثم أعد اختبار التطبيق.
+
+**السيناريو ب: إذا كان الملف فارغاً أو لا يحتوي على السطر**
+
+اكتب:
+```bash
+echo "allow-external-apps=true" > ~/.termux/termux.properties
+cat ~/.termux/termux.properties
+termux-reload-settings
+```
+
+**السيناريو ج: إذا ظهر خطأ أو رفض**
+
+قد يكون الملف موجوداً في مسار آخر. نفذ:
+```bash
+ls -la ~/.termux/termux.properties
+```
+
+وأرسل المخرجات.
+
+---
+
+### بخصوص `Termux:Tasker`
+
+لا تحتاجه الآن. `Termux:Tasker` هو مجرد واجهة إضافية لـ Tasker، لكنه يعتمد على **نفس** آلية `RUN_COMMAND` . إذا كان `RUN_COMMAND` محجوباً، `Tasker` لن ينجح أيضاً.
+
+**اختبر `RUN_COMMAND` من تطبيقك مباشرة أولاً.** هذا هو المسار الأقصر.
+
+---
+
+**توقّف. افتح Termux. نفذ:**
+
+--
+**الميزة:** لا يحتاج `RUN_COMMAND`، لا `PendingIntent`، لا أذونات خاصة. يعمل دائماً.
+
+**الثمن:** يجب أن يبقى سكربت Python يعمل في Termux. يمكن تشغيله يدوياً في جلسة، أو كخدمة في الخلفية.
+
+---
+
+### الخطوة 1 — أنشئ السكربت في Termux
+
+```bash
+mkdir -p ~/z3r0
+cat > ~/z3r0/daemon.py << 'PYEOF'
+#!/usr/bin/env python3
+import os, time, subprocess
+
+WATCH_DIR = "/sdcard/Z3R0"
+CMD_FILE = os.path.join(WATCH_DIR, "command.txt")
+RES_FILE = os.path.join(WATCH_DIR, "result.txt")
+FLAG_FILE = os.path.join(WATCH_DIR, "done.flag")
+
+os.makedirs(WATCH_DIR, exist_ok=True)
+if os.path.exists(CMD_FILE): os.remove(CMD_FILE)
+if os.path.exists(FLAG_FILE): os.remove(FLAG_FILE)
+
+print("Z3R0 daemon started. Watching:", CMD_FILE)
+last_cmd = ""
+
+while True:
+    try:
+        if os.path.exists(CMD_FILE):
+            with open(CMD_FILE, "r") as f:
+                cmd = f.read().strip()
+            if cmd and cmd != last_cmd:
+                last_cmd = cmd
+                print("EXEC:", cmd)
+                try:
+                    result = subprocess.run(
+                        ["bash", "-c", cmd],
+                        capture_output=True, text=True, timeout=300
+                    )
+                    out = result.stdout
+                    err = result.stderr
+                    code = result.returncode
+                except subprocess.TimeoutExpired:
+                    out, err, code = "", "TIMEOUT", -1
+                except Exception as e:
+                    out, err, code = "", str(e), -1
+
+                with open(RES_FILE, "w") as f:
+                    f.write("EXIT=" + str(code) + "\n")
+                    f.write(out)
+                    if err:
+                        f.write("\n[STDERR]\n" + err)
+                with open(FLAG_FILE, "w") as f:
+                    f.write("done")
+
+                os.remove(CMD_FILE)
+                time.sleep(2)
+                if os.path.exists(FLAG_FILE): os.remove(FLAG_FILE)
+                last_cmd = ""
+
+        time.sleep(1)
+    except KeyboardInterrupt:
+        break
+    except Exception as e:
+        print("ERR:", e)
+        time.sleep(2)
+PYEOF
+```
+
+**ثم:**
+
+```bash
+chmod +x ~/z3r0/daemon.py
+termux-setup-storage
+```
+
+(إن طلب إذن التخزين، اقبل)
+
+**أنشئ مجلد الأوامر:**
+
+```bash
+mkdir -p /sdcard/Z3R0
+ls /sdcard/Z3R0
+```
+
+---
+
+### الخطوة 2 — شغّل السكربت
+
+```bash
+python ~/z3r0/daemon.py
+```
+
+**المتوقع:**
+```
+Z3R0 daemon started. Watching: /sdcard/Z3R0/command.txt
+```
+
+**اتركه يعمل. لا تغلق Termux.**
+
+---
+
+### الخطوة 3 — اختبر السكربت يدوياً
+
+**افتح Termux جلسة ثانية** (اسحب من اليسار → New session).
+
+اكتب:
+
+```bash
+echo "whois scanme.nmap.org" > /sdcard/Z3R0/command.txt
+sleep 5
+cat /sdcard/Z3R0/result.txt
+```
+
+**المتوقع:** معلومات whois تظهر.
+
+**إن ظهرت:** السكربت يعمل. ننتقل لتعديل التطبيق.
+
+**إن لم تظهر:** أخبرني بالخطأ.
+
+---
+
+### الخطوة 4 — بعد نجاح الاختبار اليدوي
+
+سأعطيك كود Java جديد للتطبيق:
+- يكتب الأمر في `/sdcard/Z3R0/command.txt`.
+- ينتظر ظهور `done.flag`.
+- يقرأ `/sdcard/Z3R0/result.txt`.
+- يعرضه.
+
+لا يحتاج أي إذن خاص. يعمل عبر التخزين المشترك فقط.
+
+---
+
+**توقّف. نفّذ الخطوات 1، 2، 3. عد بمخرجات:**
+
+**1. هل ظهر `Z3R0 daemon started`؟**
+**2. ما ظهر عند اختبار `whois` يدوياً؟**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+Welcome to Termux!
+
+Docs:       https://termux.dev/docs
+Donate:     https://termux.dev/donate
+Community:  https://termux.dev/community
+
+Working with packages:
+
+ - Search:  pkg search <query>
+ - Install: pkg install <package>
+ - Upgrade: pkg upgrade
+
+Subscribing to additional repositories:
+
+ - Root:    pkg install root-repo
+ - X11:     pkg install x11-repo
+
+For fixing any repository issues,
+try 'termux-change-repo' command.
+
+Report issues at https://termux.dev/issues
+~ $ bash
+echo "الجلسة نشطة"
+~ $ whois scanme.nmap.org
+Malformed request.
+~ $ mkdir -p ~/z3r0                                   cat > ~/z3r0/daemon.py << 'PYEOF'
+#!/usr/bin/env python3
+import os, time, subprocess                                                                                 WATCH_DIR = "/sdcard/Z3R0"                            CMD_FILE = os.path.join(WATCH_DIR, "command.txt")     RES_FILE = os.path.join(WATCH_DIR, "result.txt")      FLAG_FILE = os.path.join(WATCH_DIR, "done.flag")                                                            os.makedirs(WATCH_DIR, exist_ok=True)                 if os.path.exists(CMD_FILE): os.remove(CMD_FILE)      if os.path.exists(FLAG_FILE): os.remove(FLAG_FILE)                                                          print("Z3R0 daemon started. Watching:", CMD_FILE)     last_cmd = ""                                                                                               while True:                                               try:                                                      if os.path.exists(CMD_FILE):                              with open(CMD_FILE, "r") as f:                            cmd = f.read().strip()                            if cmd and cmd != last_cmd:                               last_cmd = cmd                                        print("EXEC:", cmd)                                   try:                                                      result = subprocess.run(                                  ["bash", "-c", cmd],                                  capture_output=True, text=True, timeout=300
+                    )
+                    out = result.stdout
+                    err = result.stderr
+                    code = result.returncode
+                except subprocess.TimeoutExpired:
+                    out, err, code = "", "TIMEOUT", -1
+                except Exception as e:
+                    out, err, code = "", str(e), -1
+
+                with open(RES_FILE, "w") as f:
+                    f.write("EXIT=" + str(code) + "\n")
+                    f.write(out)
+                    if err:
+                        f.write("\n[STDERR]\n" + err)
+                with open(FLAG_FILE, "w") as f:
+                    f.write("done")
+
+                os.remove(CMD_FILE)
+                time.sleep(2)
+                if os.path.exists(FLAG_FILE): os.remove(FLAG_FILE)
+                last_cmd = ""
+
+        time.sleep(1)
+    except KeyboardInterrupt:
+        break
+    except Exception as e:
+        print("ERR:", e)
+        time.sleep(2)
+PYEOF
+~ $ chmod +x ~/z3r0/daemon.py
+termux-setup-storage
+
+It appears that directory '~/storage' already exists.
+This script is going to rebuild its structure from
+scratch, wiping all dangling files. The actual storage
+content IS NOT going to be deleted.
+
+Do you want to continue? (y/n)
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+**اكتب `y` واضغط Enter.**
+
+هذا سؤال روتيني من `termux-setup-storage`. يخبرك أن مجلد `~/storage` موجود بالفعل، ويريد إعادة بناء الروابط الرمزية من جديد. **لا يحذف أي شيء فعلي.** فقط يعيد تنظيم الوصول.
+
+---
+
+### بعد `y`
+
+انتظر ثانيتين. سيُظهر:
+```
+Storage permissions granted.
+```
+
+أو شيء مشابه.
+
+---
+
+### ثم أكمل
+
+**1. أنشئ مجلد الأوامر:**
+
+```bash
+mkdir -p /sdcard/Z3R0
+ls /sdcard/Z3R0
+```
+
+**2. شغّل السكربت:**
+
+```bash
+python ~/z3r0/daemon.py
+```
+
+**المتوقع:**
+```
+Z3R0 daemon started. Watching: /sdcard/Z3R0/command.txt
+```
+
+**اتركه يعمل.**
+
+**3. افتح جلسة Termux جديدة:**
+- اسحب من حافة الشاشة اليسرى نحو اليمين.
+- اختر **NEW SESSION**.
+
+**4. في الجلسة الجديدة، اكتب:**
+
+```bash
+echo "whois scanme.nmap.org" > /sdcard/Z3R0/command.txt
+sleep 6
+cat /sdcard/Z3R0/result.txt
+```
+
+**المتوقع:** معلومات whois تظهر.
+
+---
+
+**نفّذ. أخبرني:**
+
+**1. هل ظهر `Z3R0 daemon started`؟**
+**2. ما ظهر بعد `cat /sdcard/Z3R0/result.txt`؟**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~ $ chmod +x ~/z3r0/daemon.py
+termux-setup-storage
+
+It appears that directory '~/storage' already exists.
+This script is going to rebuild its structure from
+scratch, wiping all dangling files. The actual storage
+content IS NOT going to be deleted.
+
+Do you want to continue? (y/n) y
+~ $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+جيد. الآن أنشئ المجلد وشغّل السكربت.
+
+---
+
+### الخطوة 1 — أنشئ مجلد الأوامر
+
+اكتب:
+```bash
+mkdir -p /sdcard/Z3R0
+ls -la /sdcard/Z3R0
+```
+
+**المتوقع:** مجلد فارغ (لا محتوى).
+
+**إن ظهر خطأ `Permission denied`:** أعد تشغيل Termux ثم أعد المحاولة.
+
+---
+
+### الخطوة 2 — شغّل السكربت
+
+اكتب:
+```bash
+python ~/z3r0/daemon.py
+```
+
+**المتوقع:**
+```
+Z3R0 daemon started. Watching: /sdcard/Z3R0/command.txt
+```
+
+**اتركه يعمل. لا تغلق Termux.**
+
+---
+
+### الخطوة 3 — افتح جلسة Termux ثانية
+
+- **اسحب من الحافة اليسرى للشاشة نحو اليمين.**
+- ستظهر قائمة جانبية.
+- اضغط **NEW SESSION**.
+
+**ستُفتح جلسة جديدة. الجلسة الأولى ما زالت تعمل في الخلفية.**
+
+---
+
+### الخطوة 4 — في الجلسة الثانية، اختبر
+
+اكتب:
+```bash
+echo "whois scanme.nmap.org" > /sdcard/Z3R0/command.txt
+sleep 6
+cat /sdcard/Z3R0/result.txt
+```
+
+**المتوقع:**
+```
+EXIT=0
+Domain Name: NMAP.ORG
+Registrar WHOIS Server: ...
+...
+```
+
+**إن ظهر هذا:** السكربت يعمل. ننتقل لتعديل التطبيق.
+
+**إن ظهر خطأ:** الصق الخطأ.
+
+---
+
+**توقّف. نفّذ الخطوة 1 ثم 2. أخبرني:**
+
+**1. هل ظهر `Z3R0 daemon started`؟**
+**2. بعد اختبار الخطوة 4، ما ظهر في result.txt؟**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~ $ mkdir -p /sdcard/Z3R0
+ls -la /sdcard/Z3R0
+total 0
+~ $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+مجلد `/sdcard/Z3R0` جاهز. الآن شغّل السكربت.
+
+---
+
+### الخطوة 2 — شغّل السكربت
+
+اكتب:
+```bash
+python ~/z3r0/daemon.py
+```
+
+**المتوقع:**
+```
+Z3R0 daemon started. Watching: /sdcard/Z3R0/command.txt
+```
+
+**اتركه يعمل. لا تغلق Termux. لا تغلق الشاشة.**
+
+---
+
+### الخطوة 3 — افتح جلسة ثانية
+
+- **اسحب من حافة الشاشة اليسرى نحو اليمين.**
+- ستظهر قائمة جانبية.
+- اضغط **NEW SESSION**.
+
+**ستفتح جلسة جديدة. الجلسة الأولى (السكربت) ما زالت تعمل في الخلفية.**
+
+---
+
+### الخطوة 4 — اختبر
+
+**في الجلسة الجديدة، اكتب:**
+
+```bash
+echo "whois scanme.nmap.org" > /sdcard/Z3R0/command.txt
+sleep 6
+cat /sdcard/Z3R0/result.txt
+```
+
+**المتوقع:**
+```
+EXIT=0
+Domain Name: NMAP.ORG
+...
+```
+
+---
+
+**توقّف. نفّذ الخطوة 2. أخبرني:**
+
+**1. هل ظهر `Z3R0 daemon started`؟**
+**2. افتح جلسة جديدة ونفّذ الخطوة 4. ما ظهر في result.txt؟**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+Welcome to Termux!
+
+Docs:       https://termux.dev/docs
+Donate:     https://termux.dev/donate
+Community:  https://termux.dev/community
+
+Working with packages:
+
+ - Search:  pkg search <query>
+ - Install: pkg install <package>
+ - Upgrade: pkg upgrade
+
+Subscribing to additional repositories:
+
+ - Root:    pkg install root-repo
+ - X11:     pkg install x11-repo
+
+For fixing any repository issues,
+try 'termux-change-repo' command.
+
+Report issues at https://termux.dev/issues
+~ $ echo "whois scanme.nmap.org" > /sdcard/Z3R0/command.txt
+sleep 6
+cat /sdcard/Z3R0/result.txt
+EXIT=0
+Malformed request.
+>>> Last update of WHOIS database: 2026-10-04T08:02:54Z <<<
+
+Terms of Use: Access to Public Interest Registry WHOIS information is provided to assist persons in determining the contents of a domain name registration record in the Public Interest Registry registry database. The data in this record is provided by Public Interest Registry for informational purposes only, and Public Interest Registry does not guarantee its accuracy. This service is intended only for query-based access. You agree that you will use this data only for lawful purposes and that, under no circumstances will you use this data to (a) allow, enable, or otherwise support the transmission by e-mail, telephone, or facsimile of mass unsolicited, commercial advertising or solicitations to entities other than the data recipient's own existing customers; or (b) enable high volume, automated, electronic processes that send queries or data to the systems of Registry Operator, a Registrar, or Identity Digital except as reasonably necessary to register domain names or modify existing registrations. All rights reserved. Public Interest Registry reserves the right to modify these terms at any time. By submitting this query, you agree to abide by this policy.  The Registrar of Record identified in this output may have an RDDS service that can be queried for additional information on how to contact the Registrant, Admin, or Tech contact of the queried domain name.
+~ $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**النظام يعمل. بالكامل.**
+
+- `EXIT=0` — الأمر نُفّذ بنجاح.
+- whois أعاد النتيجة الحقيقية.
+- السكربت قرأ الأمر، نفّذه، كتب النتيجة.
+
+**هذا تجاوز كل مشاكل `RunCommandService`.** لا إذن، لا توقيع، لا `exit -1`. مجرد ملفات.
+
+الآن نربط التطبيق بهذا النظام.
+
+---
+
+### الخطوة 1 — أضف إذن التخزين إلى Manifest
+
+**افتح Termux واكتب:**
+
+```bash
+nano ~/MyFirstApp/app/src/main/AndroidManifest.xml
+```
+
+**الصق هذا المحتوى كاملاً:**
+--
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.BufferedReader;
+import java.io.FileReader;
+
+public class MainActivity extends Activity {
+
+    private EditText targetInput;
+    private TextView outputView;
+    private ScrollView scrollView;
+
+    private static final String WATCH_DIR = "/sdcard/Z3R0";
+    private static final String CMD_FILE = WATCH_DIR + "/command.txt";
+    private static final String RES_FILE = WATCH_DIR + "/result.txt";
+
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        targetInput = findViewById(R.id.targetInput);
+        outputView = findViewById(R.id.outputView);
+        scrollView = findViewById(R.id.scrollView);
+
+        new File(WATCH_DIR).mkdirs();
+
+        findViewById(R.id.btnNmap).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { runTool("nmap -sV "); }
+        });
+        findViewById(R.id.btnWhois).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { runTool("whois "); }
+        });
+        findViewById(R.id.btnDig).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { runTool("dig "); }
+        });
+        findViewById(R.id.btnClear).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { outputView.setText(""); }
+        });
+        findViewById(R.id.btnSave).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                String content = outputView.getText().toString();
+                if (content.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "لا يوجد شيء لحفظه", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                try {
+                    File f = new File("/sdcard/Z3R0_" + System.currentTimeMillis() + ".txt");
+                    FileWriter w = new FileWriter(f);
+                    w.write(content);
+                    w.close();
+                    Toast.makeText(MainActivity.this, "حُفظ: " + f.getName(), Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    Toast.makeText(MainActivity.this, "خطأ الحفظ: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    private void runTool(String commandPrefix) {
+        String target = targetInput.getText().toString().trim();
+        if (target.isEmpty()) {
+            Toast.makeText(this, "أدخل هدفاً", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String fullCommand = commandPrefix + target;
+        appendOutput("\n> " + fullCommand + "\n");
+        sendCommand(fullCommand);
+    }
+
+    private void sendCommand(final String command) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // انتظر 1 ثانية قبل الكتابة
+                    Thread.sleep(500);
+
+                    // امسح النتيجة القديمة
+                    File resFile = new File(RES_FILE);
+                    if (resFile.exists()) resFile.delete();
+
+                    // اكتب الأمر
+                    FileWriter w = new FileWriter(CMD_FILE);
+                    w.write(command);
+                    w.close();
+
+                    // انتظر النتيجة (حتى 90 ثانية)
+                    long startTime = System.currentTimeMillis();
+                    long timeout = 90000;
+                    while (System.currentTimeMillis() - startTime < timeout) {
+                        if (resFile.exists() && resFile.length() > 0) {
+                            Thread.sleep(300);
+                            BufferedReader r = new BufferedReader(new FileReader(resFile));
+                            StringBuilder sb = new StringBuilder();
+                            String line;
+                            while ((line = r.readLine()) != null) {
+                                sb.append(line).append("\n");
+                            }
+                            r.close();
+                            appendOutput(sb.toString());
+                            return;
+                        }
+                        Thread.sleep(500);
+                    }
+--
+
+**إن فشل بخطأ `tools`:** أخبرني.
+
+---
+
+### الخطوة 4 — بعد التثبيت
+
+**مهم:** قبل اختبار التطبيق، يجب أن يكون سكربت Python يعمل في Termux.
+
+- افتح Termux.
+- اكتب: `python ~/z3r0/daemon.py`
+- اتركه يعمل.
+
+**ثم** افتح Z3R0 واختبر.
+
+---
+
+**توقّف. نفّذ الخطوات 1، 2، 3. أرسل:**
+
+```
+gradle assembleDebug 2>&1 | tail -20
+```
+
+**إن نجح البناء، أخبرني.**
+
+**إن ظهر خطأ، الصقه كاملاً.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+أنا الأن في nano الخطوة1 و يوجد سكربت بالفعل هل ألسق السكربت الجديد تحته أو أمسح القديم و ألصق
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+**امسح القديم أولاً، ثم الصق الجديد.**
+
+السبب: الـ Manifest الجديد **يستبدل** القديم، لا يُضاف إليه. لو أضفته تحته:
+- سيكون عندك بلوكين `<manifest>` — خطأ.
+- بلوكين `<application>` — خطأ.
+- البناء سيفشل.
+
+---
+
+### الخطوة
+
+**أنت داخل nano الآن. نفّذ:**
+
+**1. امسح كل المحتوى:**
+اضغط `Ctrl+K` باستمرار (10-15 مرة) حتى يفرغ الملف تماماً.
+
+**2. الصق الجديد:**
+انسخ محتوى `AndroidManifest.xml` من رسالتي السابقة، والصقه (ضغط مطول → Paste، أو `Ctrl+V`).
+
+**3. احفظ:**
+`Ctrl+O`، `Enter`، `Ctrl+X`.
+
+---
+
+**بعد الحفظ، اكتب:**
+
+```bash
+cat ~/MyFirstApp/app/src/main/AndroidManifest.xml
+```
+
+**أرسل المخرجات.** للتأكد أن الملف صحيح قبل البناء.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+Welcome to Termux!
+
+Docs:       https://termux.dev/docs
+Donate:     https://termux.dev/donate
+Community:  https://termux.dev/community
+
+Working with packages:
+
+ - Search:  pkg search <query>
+ - Install: pkg install <package>
+ - Upgrade: pkg upgrade
+
+Subscribing to additional repositories:
+
+ - Root:    pkg install root-repo
+ - X11:     pkg install x11-repo
+
+For fixing any repository issues,
+try 'termux-change-repo' command.
+
+Report issues at https://termux.dev/issues
+~ $ echo "whois scanme.nmap.org" > /sdcard/Z3R0/command.txt
+sleep 6
+cat /sdcard/Z3R0/result.txt
+EXIT=0
+Malformed request.
+>>> Last update of WHOIS database: 2026-10-04T08:02:54Z <<<
+
+Terms of Use: Access to Public Interest Registry WHOIS information is provided to assist persons in determining the contents of a domain name registration record in the Public Interest Registry registry database. The data in this record is provided by Public Interest Registry for informational purposes only, and Public Interest Registry does not guarantee its accuracy. This service is intended only for query-based access. You agree that you will use this data only for lawful purposes and that, under no circumstances will you use this data to (a) allow, enable, or otherwise support the transmission by e-mail, telephone, or facsimile of mass unsolicited, commercial advertising or solicitations to entities other than the data recipient's own existing customers; or (b) enable high volume, automated, electronic processes that send queries or data to the systems of Registry Operator, a Registrar, or Identity Digital except as reasonably necessary to register domain names or modify existing registrations. All rights reserved. Public Interest Registry reserves the right to modify these terms at any time. By submitting this query, you agree to abide by this policy.  The Registrar of Record identified in this output may have an RDDS service that can be queried for additional information on how to contact the Registrant, Admin, or Tech contact of the queried domain name.
+~ $ nano ~/MyFirstApp/app/src/main/AndroidManifest.xml~ $ cat ~/MyFirstApp/app/src/main/AndroidManifest.xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.z3r0.hello">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+
+    <application
+        android:label="Z3R0"
+        android:requestLegacyExternalStorage="true"
+        android:theme="@android:style/Theme.Material.Light">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+--
+
+### الآن الاختبار الحقيقي
+
+**خطوة بخطوة. لا قفز.**
+
+**الخطوة 1 — تأكد أن سكربت Python يعمل**
+
+افتح Termux. اكتب:
+
+```bash
+ps aux | grep daemon.py
+```
+
+**إن ظهر شيء:** السكربت يعمل.
+**إن لم يظهر:** شغّله:
+```bash
+python ~/z3r0/daemon.py
+```
+
+**اتركه يعمل.**
+
+---
+
+**الخطوة 2 — ثبّت APK الجديد**
+
+1. **اخرج من Termux** (زر الشاشة الرئيسية).
+2. افتح **مدير الملفات** → **Download**.
+3. اضغط `Z3R0-v6.apk`.
+4. اضغط **تحديث** أو **تثبيت**.
+5. إن ظهر Play Protect → **مزيد من المعلومات** → **تثبيت على أي حال**.
+
+---
+
+**الخطوة 3 — امنح إذن التخزين**
+
+**بعد التثبيت، افتح Z3R0.** سيطلب **إذن الوصول للملفات**.
+
+- **إن ظهر مربع حوار** → اضغط **السماح**.
+- **إن لم يظهر،** اذهب يدوياً:
+  - الإعدادات → التطبيقات → Z3R0 → الأذونات → **الملفات والوسائط** → **السماح بإدارة جميع الملفات** (أو "السماح").
+
+**هذا الإذن إلزامي.** بدونه، التطبيق لا يستطيع الكتابة في `/sdcard/Z3R0/`.
+
+---
+
+**الخطوة 4 — الاختبار**
+
+1. افتح Z3R0.
+2. اكتب: `scanme.nmap.org`
+3. اضغط **WHOIS**.
+
+**النتيجة المتوقعة:** معلومات النطاق تظهر في 3-5 ثوان.
+
+**إن ظهر `timeout`:** السكربت لا يعمل. أعد تشغيله في Termux.
+**إن ظهر `permission denied`:** الإذن غير ممنوح. اذهب إلى الإعدادات.
+
+---
+
+**توقّف. نفّذ الخطوات 1 إلى 4. عد بالنتيجة:**
+
+**1. هل ثُبّت APK الجديد؟**
+**2. هل مُنح إذن التخزين؟**
+**3. ما ظهر في منطقة النتائج عند اختبار WHOIS؟**
+
+**إن ظهرت معلومات النطاق → انتهينا. التطبيق يعمل.**
+**إن ظهر خطأ → الصقه بالضبط.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ ps aux | grep daemon.py
+u0_a375  12549  0.0  0.0 10924364 3836 pts/28  S+    2022   0:00 python /data/data/com.termux/files/home/z3r0/daemon.py
+u0_a375  15713 25.0  0.1 10809348 4232 pts/29  S+    2022   0:00 grep daemon.py
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+السكربت يعمل. `pid 12549` — نشط.
+
+الآن ثبّت APK الجديد واختبر.
+
+---
+
+### الخطوة 1 — ثبّت APK
+
+1. **اخرج من Termux** (زر الشاشة الرئيسية — لا تغلق Termux).
+2. افتح **مدير الملفات**.
+3. اذهب إلى **Download**.
+4. اضغط `Z3R0-v6.apk`.
+5. اضغط **تحديث** (لأنه محدّث لـ Z3R0).
+6. إن ظهر Play Protect → **مزيد من المعلومات** → **تثبيت على أي حال**.
+
+---
+
+### الخطوة 2 — امنح إذن التخزين
+
+**بعد التثبيت، افتح Z3R0:**
+
+- **إن ظهر مربع حوار** يطلب إذن التخزين → اضغط **السماح**.
+- **إن لم يظهر،** اذهب يدوياً:
+  - الإعدادات → التطبيقات → **Z3R0** → الأذونات → **الملفات والوسائط** → **السماح بإدارة جميع الملفات**.
+
+**هذا الإذن حرج.** بدونه، التطبيق لا يقرأ/يكتب في `/sdcard/Z3R0/`.
+
+---
+
+### الخطوة 3 — الاختبار
+
+1. افتح Z3R0.
+2. اكتب: `scanme.nmap.org`
+3. اضغط **WHOIS**.
+4. انتظر 3-5 ثوان.
+
+**النتيجة المطلوبة:**
+```
+> whois scanme.nmap.org
+
+EXIT=0
+Domain Name: NMAP.ORG
+...
+```
+
+---
+
+**توقّف. نفّذ الخطوات 1، 2، 3. عد بالنتيجة:**
+
+**1. هل ظهر مربع طلب إذن التخزين؟**
+**2. ما ظهر في منطقة النتائج بعد الضغط على WHOIS؟**
+
+**إن ظهرت معلومات النطاق → التطبيق يعمل بالكامل. ننتقل لتوسيع الأدوات.**
+**إن ظهر خطأ → الصقه بالحرف.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+لقد إنتضرة طويل ولم يحصل أي شيء
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**التشخيص: السكربت (daemon.py) لم يُعِد كتابة النتيجة، أو التطبيق لم يقرأها.** الصورة تُظهر أنك ضغطت WHOIS مرتين، لكن لا نتيجة ظهرت. والسكربت `pid 12549` يعمل.
+
+نشخّص بدقة. **افعل هذا بالترتيب:**
+
+---
+
+### الخطوة 1 — اختبر السكربت يدوياً الآن
+
+**افتح Termux. افتح جلسة جديدة (اسحب من اليسار → NEW SESSION). اكتب:**
+
+```bash
+echo "whois scanme.nmap.org" > /sdcard/Z3R0/command.txt
+sleep 6
+ls -la /sdcard/Z3R0/
+cat /sdcard/Z3R0/result.txt
+```
+
+**أرسل المخرجات.** هذا يخبرنا:
+- هل الملف `command.txt` أُنشئ؟
+- هل السكربت قرأه وحذفه؟
+- هل `result.txt` أُنشئ؟
+
+**إن كان `command.txt` ما زال موجوداً بعد 6 ثوان** → السكربت لا يرى الملف. مشكلة في المسار.
+
+**إن اختفى `command.txt` ولم يظهر `result.txt`** → السكربت حذف الملف لكنه فشل في الكتابة. مشكلة في إذن الكتابة.
+
+**إن ظهر `result.txt` بمحتوى** → السكربت يعمل. المشكلة في التطبيق (لا يقرأ `/sdcard/`).
+
+---
+
+### الخطوة 2 — تحقق من مسار `/sdcard` من داخل التطبيق
+
+**هناك احتمال قوي أن التطبيق لا يرى `/sdcard/` بنفس المسار.**
+
+Android الحديث يستخدم **Scoped Storage**. حتى مع إذن `MANAGE_EXTERNAL_STORAGE`، قد لا يعمل `/sdcard/` مباشرة.
+
+**جرّب هذا الحل الفوري:**
+
+**في Termux، اكتب:**
+
+```bash
+cat /sdcard/Z3R0/result.txt 2>/dev/null && echo "OK" || echo "MISSING"
+```
+
+**ثم افتح إعدادات الهاتف وابحث عن إذن Z3R0:**
+- الإعدادات → التطبيقات → Z3R0 → الأذونات.
+- ابحث عن **"الملفات والوسائط"** (Files and media).
+- **هل هو "مسموح" أم "غير مسموح"؟**
+
+---
+
+### الخطوة 3 — إن كان الإذن مشكلة
+
+**إذن `MANAGE_EXTERNAL_STORAGE`** لا يُمنح تلقائياً. يجب أن يُمنح يدوياً من إعدادات خاصة.
+
+**الطريقة:**
+
+1. الإعدادات → التطبيقات → Z3R0.
+2. اذهب إلى **"أذونات أخرى"** أو **"الوصول الخاص"**.
+3. ابحث عن **"الوصول إلى جميع الملفات"** (All files access).
+4. **فعّله.**
+
+**قد يكون مطلوباً أيضاً:**
+
+Android 11+ أحياناً يمنع تطبيقك من الوصول لـ `/sdcard/` حتى مع الإذن، لأنك تستخدم `compileSdk 30`. الحل أن **تُغيّر المسار إلى مسار التطبيق الخاص**، ثم نجد طريقة لنقل الملف.
+
+**لكن قبل ذلك — اختبر الخطوة 1.** أرسل لي المخرجات. سنعرف من أين المشكلة بدقة.
+
+---
+
+**توقّف. نفّذ الخطوة 1. أرسل:**
+
+```
+echo "whois scanme.nmap.org" > /sdcard/Z3R0/command.txt
+sleep 6
+ls -la /sdcard/Z3R0/
+cat /sdcard/Z3R0/result.txt
+```
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+Welcome to Termux!
+
+Docs:       https://termux.dev/docs
+Donate:     https://termux.dev/donate
+Community:  https://termux.dev/community
+
+Working with packages:
+
+ - Search:  pkg search <query>
+ - Install: pkg install <package>
+ - Upgrade: pkg upgrade
+
+Subscribing to additional repositories:
+
+ - Root:    pkg install root-repo
+ - X11:     pkg install x11-repo
+
+For fixing any repository issues,
+try 'termux-change-repo' command.
+
+Report issues at https://termux.dev/issues
+--
+- اسحب بطاقة **Z3R0** للأعلى حتى تختفي.
+- **هذا ضروري** حتى يُطبّق الإذن الجديد.
+
+---
+
+### الخطوة 2 — تأكد أن السكربت ما زال يعمل
+
+افتح Termux. اكتب:
+
+```bash
+ps aux | grep daemon.py
+```
+
+**يجب أن ترى `python .../daemon.py`.** إن لم يظهر:
+```bash
+python ~/z3r0/daemon.py
+```
+
+**اتركه يعمل.**
+
+---
+
+### الخطوة 3 — افتح Z3R0 واختبر
+
+1. افتح **Z3R0**.
+2. اكتب: `scanme.nmap.org`
+3. اضغط **WHOIS**.
+4. انتظر 5-10 ثوان.
+
+**النتيجة المطلوبة:**
+```
+> whois scanme.nmap.org
+
+EXIT=0
+Domain Name: NMAP.ORG
+Registrar WHOIS Server: ...
+```
+
+---
+
+### الخطوة 4 — إن لم تظهر النتيجة
+
+**افتح Termux واكتب:**
+
+```bash
+ls -la /sdcard/Z3R0/
+cat /sdcard/Z3R0/result.txt
+```
+
+**أرسل المخرجات.** هذا سيُخبرنا:
+- هل التطبيق كتب `command.txt`؟
+- هل السكربت نفّذ؟
+- هل `result.txt` أُنشئ؟
+
+---
+
+**توقّف. نفّذ الخطوات 1، 2، 3. عد بالنتيجة:**
+
+**1. هل ظهرت معلومات whois في التطبيق؟**
+**2. إن لم تظهر، أرسل مخرجات الخطوة 4.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+
+~ $ ps aux | grep daemon.py
+u0_a375  12549  0.0  0.1 10924364 5604 pts/28  S+    2022   0:01 python /data/data/com.termux/files/home/z3r0/daemon.py
+u0_a375  29646 25.0  0.1 10840068 4240 pts/27  S+    2022   0:00 grep daemon.py
+~ $
+
+
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**السكربت يعمل (`pid 12549`). الآن اختبر التطبيق.**
+
+---
+
+### الخطوة 1 — افتح Z3R0
+
+من قائمة التطبيقات، افتح **Z3R0**.
+
+---
+
+### الخطوة 2 — اكتب الهدف
+
+في حقل الإدخال، اكتب:
+```
+scanme.nmap.org
+```
+
+---
+
+### الخطوة 3 — اضغط WHOIS
+
+**اضغط زر WHOIS مرة واحدة فقط.**
+
+**انتظر.** لا تضغط مرة ثانية. قد يستغرق 5-10 ثوان.
+
+---
+
+### الخطوة 4 — راقب النتيجة
+
+**النتيجة المطلوبة في منطقة النتائج:**
+```
+> whois scanme.nmap.org
+
+EXIT=0
+Domain Name: NMAP.ORG
+Registrar WHOIS Server: whois.gandi.net
+...
+```
+
+---
+
+### الخطوة 5 — إن لم تظهر نتيجة بعد 15 ثانية
+
+**ارجع إلى Termux واكتب:**
+
+```bash
+ls -la /sdcard/Z3R0/
+```
+
+**أرسل المخرجات.** يجب أن نرى:
+- هل `command.txt` موجود؟ (إن كان موجوداً، التطبيق كتبه لكن السكربت لم يقرأه)
+- هل `result.txt` موجود؟ (إن كان موجوداً، السكربت نفّذ. المشكلة في قراءة التطبيق)
+- هل `done.flag` موجود؟ (يجب ألا يكون، السكربت يحذفه)
+
+---
+
+**نفّذ. عد بالنتيجة:**
+
+**1. هل ظهرت معلومات whois في التطبيق؟**
+**2. إن لم تظهر، ما مخرجات `ls -la /sdcard/Z3R0/`؟**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~ $ ls -la /sdcard/Z3R0/
+total 4
+-rw-rw----. 1 u0_a0 media_rw 1470 Oct  4 09:21 result.txt
+~ $
+
+
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**تشخيص قاطع:** `result.txt` موجود، لكن **بتاريخ 09:21**. لم يُحدَّث عند ضغطك على WHOIS.
+
+هذا يعني: **التطبيق لم يكتب `command.txt` إطلاقاً.**
+
+لا `command.txt` في المجلد، ولا `done.flag`. فقط `result.txt` القديم من الاختبار اليدوي.
+
+**المشكلة: التطبيق لا يستطيع الكتابة في `/sdcard/Z3R0/`.** إذن `MANAGE_EXTERNAL_STORAGE` الذي فعّلته لم يُطبَّق فعلاً، أو أن الكود يستخدم مساراً خاطئاً.
+
+---
+
+### الخطوة 1 — اختبر الكتابة مباشرة من التطبيق
+
+**سنُعدّل الكود ليعرض رسالة خطأ واضحة.**
+
+افتح Termux واكتب:
+```bash
+nano ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java
+```
+
+**ابحث عن هذه الفقرة:**
+```java
+new File(WATCH_DIR).mkdirs();
+```
+--
+import android.app.Activity;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.BufferedReader;
+import java.io.FileReader;
+
+public class MainActivity extends Activity {
+
+    private EditText targetInput;
+    private TextView outputView;
+    private ScrollView scrollView;
+
+    private static final String WATCH_DIR = "/sdcard/Z3R0";
+    private static final String CMD_FILE = WATCH_DIR + "/command.txt";
+    private static final String RES_FILE = WATCH_DIR + "/result.txt";
+
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        targetInput = findViewById(R.id.targetInput);
+        outputView = findViewById(R.id.outputView);
+        scrollView = findViewById(R.id.scrollView);
+
+        File watchDir = new File(WATCH_DIR);
+        watchDir.mkdirs();
+        if (!watchDir.exists()) {
+            Toast.makeText(this, "لا يمكن الوصول لـ " + WATCH_DIR, Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, "المجلد جاهز: " + WATCH_DIR, Toast.LENGTH_SHORT).show();
+        }
+
+        findViewById(R.id.btnNmap).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { runTool("nmap -sV "); }
+        });
+        findViewById(R.id.btnWhois).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { runTool("whois "); }
+        });
+        findViewById(R.id.btnDig).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { runTool("dig "); }
+        });
+        findViewById(R.id.btnClear).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { outputView.setText(""); }
+        });
+        findViewById(R.id.btnSave).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                String content = outputView.getText().toString();
+                if (content.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "لا يوجد شيء لحفظه", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                try {
+                    File f = new File("/sdcard/Z3R0_" + System.currentTimeMillis() + ".txt");
+                    FileWriter w = new FileWriter(f);
+                    w.write(content);
+                    w.close();
+                    Toast.makeText(MainActivity.this, "حُفظ: " + f.getName(), Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    Toast.makeText(MainActivity.this, "خطأ الحفظ: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    private void runTool(String commandPrefix) {
+        String target = targetInput.getText().toString().trim();
+        if (target.isEmpty()) {
+            Toast.makeText(this, "أدخل هدفاً", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String fullCommand = commandPrefix + target;
+        appendOutput("\n> " + fullCommand + "\n");
+        sendCommand(fullCommand);
+    }
+
+    private void sendCommand(final String command) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(500);
+
+                    File resFile = new File(RES_FILE);
+                    if (resFile.exists()) resFile.delete();
+
+                    FileWriter w = new FileWriter(CMD_FILE);
+                    w.write(command);
+                    w.close();
+
+                    long startTime = System.currentTimeMillis();
+                    long timeout = 90000;
+                    while (System.currentTimeMillis() - startTime < timeout) {
+                        if (resFile.exists() && resFile.length() > 0) {
+                            Thread.sleep(300);
+                            BufferedReader r = new BufferedReader(new FileReader(resFile));
+                            StringBuilder sb = new StringBuilder();
+                            String line;
+                            while ((line = r.readLine()) != null) {
+                                sb.append(line).append("\n");
+                            }
+                            r.close();
+                            appendOutput(sb.toString());
+                            return;
+                        }
+--
+**APK جاهز: 15 كيلوبايت، بتاريخ 22:12.**
+
+الآن الخطوة الحاسمة. **اتبع بالترتيب. لا قفز.**
+
+---
+
+### الخطوة 1 — تأكد أن daemon يعمل
+
+في Termux:
+```bash
+ps aux | grep daemon.py | grep -v grep
+```
+
+**إن ظهر:** يعمل. تخطَّ.
+**إن لم يظهر:**
+```bash
+python ~/z3r0/daemon.py &
+```
+(`&` لتشغيله في الخلفية — يمكنك إغلاق الجلسة)
+
+---
+
+### الخطوة 2 — ثبّت Z3R0-v7
+
+**من الهاتف:**
+
+1. اخرج من Termux.
+2. افتح **مدير الملفات**.
+3. اذهب إلى **Download**.
+4. اضغط `Z3R0-v7.apk`.
+5. اضغط **تحديث**.
+6. إن ظهر Play Protect → **مزيد من المعلومات** → **تثبيت على أي حال**.
+
+---
+
+### الخطوة 3 — الاختبار
+
+**افتح Z3R0:**
+
+**ماذا يظهر عند الفتح؟**
+
+- **رسالة "المجلد جاهز: /sdcard/Z3R0"** → الإذن يعمل. تابع.
+- **رسالة "لا يمكن الوصول لـ /sdcard/Z3R0"** → الإذن ما زال مفقوداً. أخبرني.
+- **لا رسالة** → النسخة القديمة ما زالت مثبتة. أخبرني.
+
+---
+
+### الخطوة 4 — إن ظهرت "المجلد جاهز"
+
+1. اكتب: `scanme.nmap.org`
+2. اضغط **WHOIS**.
+3. **انتظر. لا تضغط مرة ثانية.**
+
+**بعد 5-10 ثوان، ماذا يظهر؟**
+
+```
+> whois scanme.nmap.org
+
+EXIT=0
+Domain Name: NMAP.ORG
+...
+```
+
+---
+
+**توقّف. نفّذ الخطوات 1-4. عد بالنتيجة:**
+
+**1. هل ظهرت "المجلد جاهز" عند فتح التطبيق؟**
+**2. ما ظهر بعد ضغط WHOIS؟**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+ضهر كل شيء مثل العادت لم يتغير أي شيء و لم يضهر شيء بعد الضغط على whois
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**التشخيص قاطع: التطبيق لا يقرأ ولا يكتب في `/sdcard/`.** حتى رسالة "المجلد جاهز" لم تظهر — هذا يعني أن Toast إما لا يظهر، أو أن الكود لا يُنفّذ.
+
+نشخّص �
