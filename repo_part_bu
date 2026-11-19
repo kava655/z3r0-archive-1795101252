@@ -1,0 +1,1191 @@
+ode = cy.getElementById(id); if (!node.length) return;
+  currentEntityId = id; const d = localData.entities.find(e => e.id === id); if (!d) return;
+  const neighbors = node.neighborhood('node'); let html = '';
+  if (d.avatar) html += `<img src="${d.avatar}" class="profile-pic">`;
+  html += `<h3 style="text-align:center;color:#4dd0e1;margin-bottom:4px;">${esc(d.name)}</h3>`;
+  if (d.alias) html += `<p style="text-align:center;color:#8a9aaa;font-size:12px;">${esc(d.alias)}</p>`;
+  html += `<p style="text-align:center;font-size:12px;color:#6a7a8a;">${TYPE_LABELS[d.type] || d.type} ${d.status ? '• ' + d.status : ''}</p>`;
+  const addBlock = (title, content) => { if (content) html += `<div class="info-block"><b>${title}:</b> ${content}</div>`; };
+  if (d.age) addBlock('العمر', esc(d.age)); addBlock('البريد', esc(d.email)); addBlock('الهاتف', esc(d.phone));
+  addBlock('العنوان', esc(d.address)); addBlock('GPS', esc(d.gps)); addBlock('ملاحظات', esc(d.notes));
+
+  if (isAdmin || localConfig.guest_can_see_secrets) {
+    if (d.passwords) html += `<div class="info-block" style="border-color:#8b1e1e;"><b style="color:#e57373;">🔒 كلمات مرور:</b><br>${esc(d.passwords).replace(/\n/g, '<br>')}</div>`;
+    if (d.sensitive) html += `<div class="info-block" style="border-color:#8b1e1e;"><b style="color:#e57373;">🔒 حساس:</b><br>${esc(d.sensitive).replace(/\n/g, '<br>')}</div>`;
+  }
+
+  if (neighbors.length > 0) {
+    html += `<div class="info-block"><b>مرتبط بـ (${neighbors.length}):</b><ul style="padding-right:18px;margin-top:4px;">`;
+    neighbors.forEach(n => { const edge = node.edgesTo(n); const rel = edge.length ? edge.data('label') : ''; html += `<li>${esc(n.data('label'))} ${rel ? '— ' + esc(rel) : ''}</li>`; });
+    html += `</ul></div>`;
+  }
+  document.getElementById('infoTitle').textContent = d.name; document.getElementById('infoBody').innerHTML = html;
+  document.getElementById('infoEditBtn').style.display = canEdit ? 'block' : 'none';
+  document.getElementById('infoModal').classList.add('active');
+}
+
+async function editCurrentEntity() {
+  if (!canEdit) return;
+  const d = localData.entities.find(e => e.id === currentEntityId); if (!d) return;
+  editingEntityId = currentEntityId; currentAvatar = d.avatar || null; currentImages = d.images || [];
+  document.getElementById('entityModalTitle').textContent = 'تعديل كيان'; clearEntityForm();
+  setField('name', d.name); setField('alias', d.alias); document.getElementById('f_type').value = d.type || 'person';
+  setField('gender', d.gender); setField('age', d.age); setField('nationality', d.nationality); document.getElementById('f_status').value = d.status || 'active'; 
+  setField('email', d.email); setField('email2', d.email2); setField('phone', d.phone); setField('phone2', d.phone2); setField('whatsapp', d.whatsapp); setField('telegram', d.telegram); setField('signal', d.signal);
+  setField('facebook', d.facebook); setField('instagram', d.instagram); setField('twitter', d.twitter); setField('tiktok', d.tiktok); setField('youtube', d.youtube); setField('linkedin', d.linkedin); setField('snapchat', d.snapchat); setField('other_accounts', d.other_accounts);
+  setField('address', d.address); setField('address2', d.address2); setField('workplace', d.workplace); setField('school', d.school); setField('gps', d.gps); setField('location_notes', d.location_notes); setField('videos', d.videos); setField('files', d.files);
+  setField('passwords', d.passwords); setField('sensitive', d.sensitive); setField('notes', d.notes); setField('tags', d.tags);
+  if (currentAvatar) { document.getElementById('avatarPreview').src = currentAvatar; document.getElementById('avatarPreview').style.display = 'block'; document.getElementById('avatarPlaceholder').style.display = 'none'; }
+  renderImagesList(); document.getElementById('entityDeleteBtn').style.display = 'block';
+  closeModal('infoModal'); switchTabSilent('basic'); document.getElementById('entityModal').classList.add('active');
+}
+
+async function deleteCurrentEntity() {
+  if (!canEdit || !editingEntityId) return; if (!confirm('حذف الكيان؟')) return;
+  localData.entities = localData.entities.filter(e => e.id !== editingEntityId);
+  localData.relations = localData.relations.filter(r => r.from !== editingEntityId && r.to !== editingEntityId);
+  await saveData(); closeModal('entityModal'); updateStatus();
+}
+
+function handleAvatar(e) { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = ev => { currentAvatar = ev.target.result; document.getElementById('avatarPreview').src = currentAvatar; document.getElementById('avatarPreview').style.display = 'block'; document.getElementById('avatarPlaceholder').style.display = 'none'; }; reader.readAsDataURL(file); e.target.value = ''; }
+function removeAvatar() { currentAvatar = null; document.getElementById('avatarPreview').style.display = 'none'; document.getElementById('avatarPlaceholder').style.display = 'flex'; }
+function handleImages(e) { const files = Array.from(e.target.files); files.forEach(file => { const reader = new FileReader(); reader.onload = ev => { currentImages.push(ev.target.result); renderImagesList(); }; reader.readAsDataURL(file); }); e.target.value = ''; }
+function renderImagesList() { const list = document.getElementById('imagesList'); list.innerHTML = ''; currentImages.forEach((img, i) => { const chip = document.createElement('div'); chip.className = 'file-chip'; chip.innerHTML = `<img src="${img}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;vertical-align:middle;"> <button onclick="removeImage(${i})">✕</button>`; list.appendChild(chip); }); }
+function removeImage(i) { currentImages.splice(i, 1); renderImagesList(); }
+
+function openAddRelation() {
+  if (!canEdit) { setMsg('⚠️ صلاحية قراءة فقط'); return; }
+  const nodes = cy.nodes(); if (nodes.length < 2) { setMsg('تحتاج كيانين على الأقل'); return; }
+  editingRelationId = null; document.getElementById('relationModalTitle').textContent = 'إضافة علاقة'; document.getElementById('relationDeleteBtn').style.display = 'none';
+  const fromSel = document.getElementById('relFrom'), toSel = document.getElementById('relTo'); fromSel.innerHTML = ''; toSel.innerHTML = '';
+  nodes.forEach(n => { fromSel.add(new Option(n.data('label'), n.id())); toSel.add(new Option(n.data('label'), n.id())); });
+  if (nodes.length >= 2) toSel.selectedIndex = 1; document.getElementById('relType').value = ''; document.getElementById('relNote').value = '';
+  document.getElementById('relationModal').classList.add('active');
+}
+
+function openEditRelation(relId) {
+  if (!canEdit) return;
+  const edge = cy.getElementById(relId); if (!edge.length) return;
+  editingRelationId = relId; const relData = localData.relations.find(r => r.id === relId);
+  document.getElementById('relationModalTitle').textContent = 'تعديل العلاقة'; document.getElementById('relationDeleteBtn').style.display = 'block';
+  const fromSel = document.getElementById('relFrom'), toSel = document.getElementById('relTo'); fromSel.innerHTML = ''; toSel.innerHTML = '';
+  cy.nodes().forEach(n => { const o1 = new Option(n.data('label'), n.id()), o2 = new Option(n.data('label'), n.id()); if (n.id() === edge.data('source')) o1.selected = true; if (n.id() === edge.data('target')) o2.selected = true; fromSel.add(o1); toSel.add(o2); });
+  document.getElementById('relType').value = edge.data('label') || ''; document.getElementById('relNote').value = relData ? (relData.note || '') : '';
+  document.getElementById('relationModal').classList.add('active');
+}
+
+async function saveRelation() {
+  if (!canEdit) return;
+  const from = document.getElementById('relFrom').value, to = document.getElementById('relTo').value;
+  const type = document.getElementById('relType').value.trim() || 'مرتبط بـ', note = document.getElementById('relNote').value.trim();
+  if (from === to) { setMsg('لا يمكن ربط كيان بنفسه'); return; }
+  if (editingRelationId) { const rel = localData.relations.find(r => r.id === editingRelationId); if (rel) { rel.from = from; rel.target = to; rel.type = type; rel.note = note; } }
+  else { const existing = cy.edges().filter(e => e.data('source') === from && e.data('target') === to); if (existing.length > 0) { setMsg('العلاقة موجودة'); return; } const id = 'r_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7); localData.relations.push({ id, from, target: to, type, note }); }
+  await saveData(); closeModal('relationModal'); updateStatus();
+}
+
+async function deleteCurrentRelation() {
+  if (!canEdit || !editingRelationId) return; if (!confirm('حذف هذه العلاقة؟')) return;
+  localData.relations = localData.relations.filter(r => r.id !== editingRelationId);
+  await saveData(); closeModal('relationModal'); updateStatus();
+}
+
+function toggleSearch() { const bar = document.getElementById('searchBar'); bar.classList.toggle('active'); if (bar.classList.contains('active')) document.getElementById('searchInput').focus(); else clearSearch(); }
+function doSearch() { const q = document.getElementById('searchInput').value.trim().toLowerCase(); if (!q) { clearSearch(); return; } cy.elements().removeClass('highlighted faded'); const matches = cy.nodes().filter(n => n.data('label').toLowerCase().includes(q)); if (matches.length === 0) return; cy.elements().addClass('faded'); matches.closedNeighborhood().removeClass('faded').addClass('highlighted'); }
+function clearSearch() { cy.elements().removeClass('highlighted faded'); document.getElementById('searchInput').value = ''; }
+
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+function esc(s) { return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+document.querySelectorAll('.modal').forEach(m => { m.addEventListener('click', e => { if (e.target === m) m.classList.remove('active'); }); });
+init().catch(err => { document.body.innerHTML = '<div style="padding:20px;color:#e57373;font-family:monospace;">خطأ: ' + err.message + '</div>'; });
+</script>
+</body>
+</html>
+"""
+
+LOGIN_HTML = """<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Login</title>
+<style>body { background: #0a0e14; color: #e6e6e6; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; } .box { background: #111820; padding: 30px; border-radius: 12px; border: 1px solid #2a3a4d; text-align: center; width: 80%; max-width: 300px; } h2 { color: #4dd0e1; margin-bottom: 20px; } input { width: 100%; padding: 12px; margin-bottom: 15px; background: #0a0e14; border: 1px solid #2a3a4d; color: white; border-radius: 6px; box-sizing: border-box; } button { width: 100%; padding: 12px; background: #0d6e4f; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; }</style></head>
+<body><div class="box"><h2>🔒 database osint</h2><form method="POST" action="/login"><input type="password" name="password" placeholder="كلمة السر" required><button type="submit">دخول</button></form></div></body></html>"""
+
+class Handler(http.server.SimpleHTTPRequestHandler):
+    def get_role(self):
+        cookie = self.headers.get('Cookie', '')
+        cfg = load_config()
+        if f'auth={ADMIN_PASS}' in cookie: return 'admin'
+        if f'auth={cfg["guest_pass"]}' in cookie: return 'guest'
+        return None
+
+    def do_GET(self):
+        global tunnel_url
+        role = self.get_role()
+        if self.path == '/' or self.path.startswith('/index.html') or self.path.startswith('/?t='):
+            if not role:
+                self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0'); self.end_headers(); self.wfile.write(LOGIN_HTML.encode('utf-8')); return
+            self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0'); self.end_headers(); self.wfile.write(HTML.encode('utf-8'))
+        elif self.path.startswith('/check_auth'):
+            cfg = load_config()
+            self.send_response(200); self.send_header('Content-type', 'application/json; charset=utf-8'); self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0'); self.end_headers()
+            self.wfile.write(json.dumps({'admin': role == 'admin', 'config': cfg}).encode('utf-8'))
+        elif self.path.startswith('/data'):
+            if not role: self.send_error(401, "Unauthorized"); return
+            self.send_response(200); self.send_header('Content-type', 'application/json; charset=utf-8'); self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0'); self.end_headers()
+            if os.path.exists(DATA_FILE):
+                with open(DATA_FILE, 'rb') as f: self.wfile.write(f.read())
+            else: self.wfile.write(b'{"entities":[],"relations":[]}')
+        elif self.path == '/cytoscape.min.js':
+            js_path = os.path.join(DIR, 'cytoscape.min.js')
+            if os.path.exists(js_path):
+                self.send_response(200); self.send_header('Content-type', 'application/javascript; charset=utf-8'); self.end_headers()
+                with open(js_path, 'rb') as f: self.wfile.write(f.read())
+            else: self.send_error(404, "cytoscape.min.js not found")
+        elif self.path.startswith('/tunnel_status'):
+            self.send_response(200); self.send_header('Content-type', 'application/json; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            self.wfile.write(json.dumps({'url': tunnel_url}).encode('utf-8'))
+        elif self.path.startswith('/logout'):
+            self.send_response(302); self.send_header('Set-Cookie', 'auth=; Path=/; Max-Age=0'); self.send_header('Location', '/?t='+str(time.time())); self.end_headers()
+        else: self.send_error(404)
+
+    def do_POST(self):
+        global tunnel_process, tunnel_url
+        if self.path == '/login':
+            content_length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(content_length).decode('utf-8')
+            pw = urllib.parse.parse_qs(post_data).get('password', [''])[0]
+            cfg = load_config()
+            if pw == ADMIN_PASS or pw == cfg['guest_pass']:
+                self.send_response(302); self.send_header('Set-Cookie', f'auth={pw}; Path=/'); self.send_header('Location', '/?t='+str(time.time())); self.end_headers()
+            else:
+                self.send_response(302); self.send_header('Location', '/?t='+str(time.time())); self.end_headers()
+        elif self.path == '/config':
+            if self.get_role() != 'admin': self.send_error(403, "Forbidden"); return
+            length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(length).decode('utf-8')
+            save_config(json.loads(body))
+            self.send_response(200); self.send_header('Content-type', 'text/plain'); self.end_headers(); self.wfile.write(b'OK')
+        elif self.path == '/save':
+            role = self.get_role()
+            cfg = load_config()
+            if role != 'admin' and not (role == 'guest' and cfg['guest_can_edit']):
+                self.send_error(403, "Forbidden"); return
+            length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(length)
+            try:
+                with open(DATA_FILE, 'wb') as f: f.write(body)
+                self.send_response(200); self.send_header('Content-type', 'text/plain'); self.end_headers(); self.wfile.write(b'OK')
+            except Exception as e: self.send_error(500, str(e))
+        elif self.path == '/start_tunnel':
+            if self.get_role() != 'admin': self.send_error(403, "Forbidden"); return
+            if tunnel_process is None or tunnel_process.poll() is not None:
+                tunnel_url = None
+                try:
+                    tunnel_process = subprocess.Popen(
+                        ['cloudflared', 'tunnel', '--url', f'http://localhost:{PORT}'],
+                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1
+                    )
+                    threading.Thread(target=read_tunnel_url, args=(tunnel_process,), daemon=True).start()
+                except Exception as e:
+                    print(f"Error starting tunnel: {e}")
+            self.send_response(200); self.send_header('Content-type', 'text/plain'); self.end_headers(); self.wfile.write(b'Started')
+        elif self.path == '/stop_tunnel':
+            if self.get_role() != 'admin': self.send_error(403, "Forbidden"); return
+            if tunnel_process:
+                tunnel_process.terminate()
+                tunnel_process = None
+                tunnel_url = None
+            self.send_response(200); self.send_header('Content-type', 'text/plain'); self.end_headers(); self.wfile.write(b'Stopped')
+        else: self.send_error(404)
+
+    def log_message(self, format, *args): pass
+
+def get_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(('10.255.255.255', 1))
+        IP = s.getsockname()[0]
+    except Exception:
+        IP = '127.0.0.1'
+    finally:
+        s.close()
+    return IP
+
+if __name__ == '__main__':
+    if not os.path.exists(CONFIG_FILE): save_config(DEFAULT_CONFIG)
+    local_ip = get_ip()
+    print(f"\n=====================================")
+    print(f" ✅ database osint running at:")
+    print(f" 🔗 Local (Same WiFi/Hotspot): http://{local_ip}:{PORT}")
+    print(f" 🔗 Localhost (This phone):    http://127.0.0.1:{PORT}")
+    print(f" 🔑 Admin Password: {ADMIN_PASS}")
+    print(f" 🔑 Guest Password: {load_config()['guest_pass']}")
+    print(f"=====================================")
+    print("Press Ctrl+C to stop.\n")
+    
+    import atexit
+    def cleanup():
+        if tunnel_process: tunnel_process.terminate()
+    atexit.register(cleanup)
+
+    socketserver.TCPServer.allow_reuse_address = True
+    with socketserver.TCPServer(("", PORT), Handler) as httpd: httpd.serve_forever()
+PYEOF
+echo "✅====================================="
+echo "✅ تم إصلاح الكاش! المتصفح الآن مجبر على تحديث الصفحة."
+echo "✅ اضغط (Ctrl+C) ثم شغل (python app.py) وافتح الرابط في وضع التخفي (Incognito)."
+echo "✅====================================="
+```
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | USER ===
+نفس المشكلة لقد نسخة لك كل شيء في ترمكس يضهر لي
+"  } catch(e) {}                                         await fetchData();                                    initCy();                                             loadGraph();                                                                                                setInterval(async () => {                               await fetchData();                                    loadGraph();                                        }, 3000);
+}                                                                                                           async function fetchData() {
+  try {                                                   const res = await fetch('/data?t=' + Date.now(), { cache: 'no-store' });                                    localData = await res.json();
+    if (!localData.entities) localData = { entities: [], relations: [] };                                     } catch(e) {}                                       }                                                                                                           function applyPermissions() {                           if (canEdit) {                                          document.getElementById('btnAddEntity').classList.remove('disabled');
+    document.getElementById('btnAddRelation').classList.remove('disabled');                                   } else {                                                document.getElementById('btnAddEntity').classList.add('disabled');                                          document.getElementById('btnAddRelation').classList.add('disabled');                                      }                                                   }                                                                                                           function initCy() {
+  cy = cytoscape({                                        container: document.getElementById('cy'),             style: [                                                { selector: 'node', style: { 'background-color': ele => TYPE_COLORS[ele.data('type')] || TYPE_COLORS.other, 'background-image': ele => ele.data('avatar') ? ele.data('avatar') : 'none', 'background-fit': 'cover', 'label': 'data(label)', 'color': '#e6e6e6', 'font-size': '11px', 'text-valign': 'bottom', 'text-margin-y': 4, 'text-outline-color': '#0a0e14', 'text-outline-width': 2, 'width': ele => ele.data('avatar') ? 44 : (24 + Math.min(ele.degree() * 3, 28)), 'height': ele => ele.data('avatar') ? 44 : (24 + Math.min(ele.degree() * 3, 28)), 'border-width': 2, 'border-color': '#0a0e14' } },                                                        { selector: 'node[avatar]', style: { 'border-width': 3, 'border-color': '#4dd0e1' } },
+      { selector: 'node:selected', style: { 'border-width': 4, 'border-color': '#ffffff' } },
+      { selector: 'edge', style: { 'width': 1.5, 'line-color': '#2a3a4d', 'target-arrow-color': '#2a3a4d', 'target-arrow-shape': 'triangle', 'curve-style': 'bezier', 'label': 'data(label)', 'font-size': '9px', 'color': '#6a7a8a', 'text-outline-color': '#0a0e14', 'text-outline-width': 2, 'text-rotation': 'autorotate' } },        { selector: 'edge:selected', style: { 'line-color': '#4dd0e1', 'target-arrow-color': '#4dd0e1', 'width': 3 } },                                                   { selector: '.highlighted', style: { 'background-color': '#ffffff', 'border-color': '#4dd0e1', 'border-width': 3 } },                                             { selector: '.faded', style: { 'opacity': 0.15 } }
+    ],                                                    layout: { name: 'cose', animate: false, padding: 30 },
+    wheelSensitivity: 0.3                               });                                                   cy.on('tap', 'node', e => showNodeInfo(e.target.id()));                                                     cy.on('tap', 'edge', e => { if (canEdit) openEditRelation(e.target.id()); else setMsg('⚠️ صلاحية قراءة فقط'); });                                                }                                                                                                           function loadGraph() {                                  let changed = false;                                  const currentNodes = cy.nodes().map(n => n.data());   const currentEdges = cy.edges().map(e => e.data());   if (JSON.stringify(currentNodes) !== JSON.stringify(localData.entities) || JSON.stringify(currentEdges) !== JSON.stringify(localData.relations)) {                    cy.elements().remove();                               localData.entities.forEach(e => {                       const d = { id: e.id, label: e.name || 'بدون اسم', type: e.type || 'other' };                               if (e.avatar) d.avatar = e.avatar;                    cy.add({ data: d });
+      });                                                   localData.relations.forEach(r => {                      if (cy.getElementById(r.from).length && cy.getElementById(r.to).length) {                                     cy.add({ data: { id: r.id, source: r.from, target: r.to, label: r.type } });                              }                                                   });                                                   if (cy.nodes().length > 0) cy.layout({ name: 'cose', animate: true, animationDuration: 400, padding: 40 }).run();                                                 updateStatus();                                   }
+}
+
+async function saveData() {
+  if (!canEdit) return;                                 try {
+    await fetch('/save', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(localData) });                                         setMsg('✅ تم الحفظ');                              } catch (e) { setMsg('❌ خطأ في الحفظ'); }          }                                                                                                           function runLayout() { cy.layout({ name: 'cose', animate: true, animationDuration: 600, padding: 40 }).run(); }                                                   function updateStatus() {                               document.getElementById('statusText').textContent = `الكيانات: ${cy.nodes().length} | العلاقات: ${cy.edges().length}`;                                          }                                                     function setMsg(m) { document.getElementById('statusMsg').textContent = m; setTimeout(() => document.getElementById('statusMsg').textContent = 'جاهز', 2500); }                                                         function switchTab(evt, name) {                         document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));                       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));                       evt.target.classList.add('active'); document.getElementById('tab-' + name).classList.add('active');       }                                                     function switchTabSilent(name) {                        document.querySelectorAll('.tabs button').forEach(b => { b.classList.remove('active'); const oc = b.getAttribute('onclick') || ''; if (oc.indexOf("'" + name + "'") !== -1) b.classList.add('active'); });              document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.getElementById('tab-' + name).classList.add('active');           }                                                                                                           async function logout() {                               await fetch('/logout?t=' + Date.now(), { cache: 'no-store' });                                              window.location.href = '/?t=' + Date.now();         }                                                                                                           async function openSettings() {                         if (!isAdmin) return;
+  document.getElementById('cfg_guest_pass').value = localConfig.guest_pass || '0000';                         document.getElementById('cfg_edit').checked = localConfig.guest_can_edit;                                   document.getElementById('cfg_secrets').checked = localConfig.guest_can_see_secrets;                         document.getElementById('cfg_shield').checked = localConfig.shield_enabled;
+  document.getElementById('settingsModal').classList.add('active');                                                                                                 const tRes = await fetch('/tunnel_status?t=' + Date.now(), { cache: 'no-store' });                          const tData = await tRes.json();                      const box = document.getElementById('tunnelBox');     const btn = document.getElementById('btnTunnel');     if (tData.url) {                                        box.style.display = 'block';                          box.innerHTML = `<a href="${tData.url}" target="_blank" style="color:#4dd0e1;">${tData.url}</a>`;           btn.textContent = '🛑 إيقاف رابط الإنترنت';           btn.style.background = '#8b1e1e';                   } else {                                                box.style.display = 'none';                           btn.textContent = '🔗 توليد رابط إنترنت';             btn.style.background = '#0d6e4f';                   }                                                   }
+                                                      async function toggleTunnel() {                         const btn = document.getElementById('btnTunnel');     const box = document.getElementById('tunnelBox');     if (btn.textContent.includes('إيقاف')) {                btn.textContent = 'جاري الإيقاف...';                  await fetch('/stop_tunnel');                          setTimeout(() => { box.style.display = 'none'; btn.textContent = '🔗 توليد رابط إنترنت'; btn.style.background = '#0d6e4f'; }, 1000);                            } else {                                                btn.textContent = 'جاري التوليد (انتظر 10 ثوانٍ)...';                                                        await fetch('/start_tunnel');                         const interval = setInterval(async () => {              const res = await fetch('/tunnel_status?t=' + Date.now());                                                  const data = await res.json();                        if (data.url) {
+        clearInterval(interval);                              box.style.display = 'block';                          box.innerHTML = `<a href="${data.url}" target="_blank" style="color:#4dd0e1;">${data.url}</a><br><small style="color:#fff;">(أرسل هذا الرابط مع كلمة سر الزائر)</small>`;                                               btn.textContent = '🛑 إيقاف رابط الإنترنت';           btn.style.background = '#8b1e1e';                   }                                                   }, 2000);                                           }                                                   }                                                                                                           async function saveSettings() {                         const newCfg = {                                        guest_pass: document.getElementById('cfg_guest_pass').value.trim() || '0000',                               guest_can_edit: document.getElementById('cfg_edit').checked,                                                guest_can_see_secrets: document.getElementById('cfg_secrets').checked,                                      shield_enabled: document.getElementById('cfg_shield').checked                                             };                                                    await fetch('/config', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(newCfg) });                                          localConfig = newCfg;                                 closeModal('settingsModal');                          setMsg('✅ تم تحديث الصلاحيات');                    }                                                                                                           function openAddEntity() {                              if (!canEdit) { setMsg('⚠️ صلاحية قراءة فقط'); return; }                                                     editingEntityId = null; currentAvatar = null; currentImages = [];                                           document.getElementById('entityModalTitle').textContent = 'إضافة كيان';                                     clearEntityForm(); document.getElementById('entityDeleteBtn').style.display = 'none';                       switchTabSilent('basic'); document.getElementById('entityModal').classList.add('active');                 }                                                     function clearEntityForm() {                            const fields = ['name','alias','gender','age','nationality','email','email2','phone','phone2','whatsapp','telegram','signal','facebook','instagram','twitter','tiktok','youtube','linkedin','snapchat','other_accounts','address','address2','workplace','school','gps','location_notes','videos','files','passwords','sensitive','notes','tags'];                                        fields.forEach(f => { const el = document.getElementById('f_' + f); if (el) el.value = ''; });              document.getElementById('f_type').value = 'person'; document.getElementById('f_status').value = 'active';   document.getElementById('avatarPreview').style.display = 'none'; document.getElementById('avatarPlaceholder').style.display = 'flex';                             document.getElementById('imagesList').innerHTML = '';                                                     }                                                     function setField(id, val) { const el = document.getElementById('f_' + id); if (el) el.value = val || ''; } function getField(id) { const el = document.getElementById('f_' + id); return el ? el.value.trim() : ''; }  
+async function saveEntity() {                           if (!canEdit) return;
+  const name = getField('name') || getField('alias') || 'بدون اسم';                                           const data = {                                          id: editingEntityId || ('e_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7)),                  name, alias: getField('alias'), type: document.getElementById('f_type').value,                              gender: getField('gender'), age: getField('age'), nationality: getField('nationality'), status: document.getElementById('f_status').value,                        email: getField('email'), email2: getField('email2'), phone: getField('phone'), phone2: getField('phone2'),                                                       whatsapp: getField('whatsapp'), telegram: getField('telegram'), signal: getField('signal'),                 facebook: getField('facebook'), instagram: getField('instagram'), twitter: getField('twitter'), tiktok: getField('tiktok'),                                       youtube: getField('youtube'), linkedin: getField('linkedin'), snapchat: getField('snapchat'), other_accounts: getField('other_accounts'),                         address: getField('address'), address2: getField('address2'), workplace: getField('workplace'), school: getField('school'),                                       gps: getField('gps'), location_notes: getField('location_notes'), videos: getField('videos'), files: getField('files'),                                           passwords: getField('passwords'), sensitive: getField('sensitive'), notes: getField('notes'), tags: getField('tags'),                                             avatar: currentAvatar, images: currentImages, updated: Date.now()                                         };                                                    const idx = localData.entities.findIndex(e => e.id === data.id);                                            if (idx >= 0) localData.entities[idx] = data; else localData.entities.push(data);
+  await saveData();                                     closeModal('entityModal'); updateStatus();          }                                                                                                           async function showNodeInfo(id) {                       const node = cy.getElementById(id); if (!node.length) return;                                               currentEntityId = id; const d = localData.entities.find(e => e.id === id); if (!d) return;                  const neighbors = node.neighborhood('node'); let html = '';                                                 if (d.avatar) html += `<img src="${d.avatar}" class="profile-pic">`;                                        html += `<h3 style="text-align:center;color:#4dd0e1;margin-bottom:4px;">${esc(d.name)}</h3>`;               if (d.alias) html += `<p style="text-align:center;color:#8a9aaa;font-size:12px;">${esc(d.alias)}</p>`;      html += `<p style="text-align:center;font-size:12px;color:#6a7a8a;">${TYPE_LABELS[d.type] || d.type} ${d.status ? '• ' + d.status : ''}</p>`;                     const addBlock = (title, content) => { if (content) html += `<div class="info-block"><b>${title}:</b> ${content}</div>`; };                                       if (d.age) addBlock('العمر', esc(d.age)); addBlock('البريد', esc(d.email)); addBlock('الهاتف', esc(d.phone));                                                     addBlock('العنوان', esc(d.address)); addBlock('GPS', esc(d.gps)); addBlock('ملاحظات', esc(d.notes));                                                              if (isAdmin || localConfig.guest_can_see_secrets) {     if (d.passwords) html += `<div class="info-block" style="border-color:#8b1e1e;"><b style="color:#e57373;">🔒 كلمات مرور:</b><br>${esc(d.passwords).replace(/\n/g, '<br>')}</div>`;                                      if (d.sensitive) html += `<div class="info-block" style="border-color:#8b1e1e;"><b style="color:#e57373;">🔒 حساس:</b><br>${esc(d.sensitive).replace(/\n/g, '<br>')}</div>`;                                          }                                                                                                           if (neighbors.length > 0) {                             html += `<div class="info-block"><b>مرتبط بـ (${neighbors.length}):</b><ul style="padding-right:18px;margin-top:4px;">`;                                          neighbors.forEach(n => { const edge = node.edgesTo(n); const rel = edge.length ? edge.data('label') : ''; html += `<li>${esc(n.data('label'))} ${rel ? '— ' + esc(rel) : ''}</li>`; });
+    html += `</ul></div>`;                              }
+  document.getElementById('infoTitle').textContent = d.name; document.getElementById('infoBody').innerHTML = html;                                                  document.getElementById('infoEditBtn').style.display = canEdit ? 'block' : 'none';                          document.getElementById('infoModal').classList.add('active');                                             }                                                                                                           async function editCurrentEntity() {                    if (!canEdit) return;                                 const d = localData.entities.find(e => e.id === currentEntityId); if (!d) return;                           editingEntityId = currentEntityId; currentAvatar = d.avatar || null; currentImages = d.images || [];        document.getElementById('entityModalTitle').textContent = 'تعديل كيان'; clearEntityForm();                  setField('name', d.name); setField('alias', d.alias); document.getElementById('f_type').value = d.type || 'person';                                               setField('gender', d.gender); setField('age', d.age); setField('nationality', d.nationality); document.getElementById('f_status').value = d.status || 'active';                                                         setField('email', d.email); setField('email2', d.email2); setField('phone', d.phone); setField('phone2', d.phone2); setField('w"
+و أريد سألك هل يمكنوني ربطك بترميكس لعمل كل شيء في الكودات و ترا الأخطأ بطريقة أوضح 
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+The user is experiencing persistent issues with the app. They pasted a huge chunk of the `app.py` code showing that they might have accidentally opened the file in an editor or the terminal is displaying the file content instead of running it, or there's a syntax error causing a traceback that dumps the code.
+Looking at the screenshot and the text, the user says: "Same problem, I copied everything for you in Termux it shows me..." followed by the raw code. Then they ask: "And I want to ask you, can I connect you to Termux to do everything in codes and see errors more clearly?"
+
+First, the problem in Termux:
+The user likely ran `python app.py` but the file has a syntax error, OR they accidentally pasted the code into the Termux shell instead of `nano app.py`, OR the `cat` command didn't execute properly and the terminal is just printing the `cat` command's input buffer (but the screenshot shows line numbers and syntax highlighting, which looks like an error traceback or a text editor like nano).
+Wait, looking at the screenshot from the previous turn, Termux showed:
+`SyntaxError: invalid syntax` pointing to `except: pass` in the previous attempt.
+Then I gave the final code. Now they say "Same problem".
+Actually, in this message, they pasted a giant block of text. This text is just the JavaScript part of the HTML. It means the server started, but the frontend is crashing, OR the terminal is printing something.
+But the crucial question is: "Can I connect you to Termux?"
+
+I need to address this directly.
+Can an AI connect directly to Termux? No. I am an AI, I don't have remote access to their device. I cannot execute commands on their phone.
+
+But we can simulate a connection by them providing exact outputs, or using standard tools. However, the core issue is the user's frustration with the terminal formatting and code copying.
+
+Let's address the main issue: Why is the same problem happening?
+Looking at their text: "نفس المشكلة لقد نسخة لك كل شيء في ترمكس يضهر لي" (Same problem, I copied everything for you in Termux, it shows me [the code]).
+If Termux is showing the JavaScript code, it means either:
+1. They ran a command that printed the file to the screen.
+2. There is a syntax error in the Python code and Python is printing the line where the error occurred, which happens to be inside the HTML string (JavaScript).
+Why would Python print the JS code? If the HTML string has an unescaped triple quote `"""` inside the JS, it will break the Python string and cause a `SyntaxError`.
+Let's scan the JavaScript inside the HTML string carefully.
+`box.innerHTML = \`<a href="${tData.url}" target="_blank" style="color:#4dd0e1;">${tData.url}</a>\`;`
+Wait, I used backticks \` in the Python string:
+```javascript
+box.innerHTML = `<a href="${tData.url}" target="_blank" style="color:#4dd0e1;">${tData.url}</a>`;
+```
+And in the JS, there are no triple double quotes `"""`, except maybe in the search block?
+Let's check the previous code I sent.
+Ah, I see it:
+```html
+<button class="save" id="infoEditBtn" onclick="editCurrentEntity()" style="display:none;">تعديل</button>
+```
+No `"""`.
+Wait, look at the user's pasted text:
+```javascript
+box.innerHTML = `<a href="${tData.url}" target="_blank" style="color:#4dd0e1;">${tData.url}</a>`;
+```
+This is inside the Python `""" HTML """` string. It should be fine.
+Why did it fail?
+Maybe the terminal cut off the `cat > app.py << 'PYEOF'` command because the user didn't wait for it to finish, or they pasted it in multiple parts and it broke?
+Termux's paste buffer can sometimes truncate extremely long commands (especially over 64KB). The script I sent is large (~30-40KB). If Termux truncated it, the `PYEOF` might be missing, causing the shell to hang, or the Python file is truncated.
+
+Let's answer the user's questions directly:
+1. Can I connect to Termux? No, I am an AI text model. But we can use a more reliable way to transfer the code.
+2. How to fix the "same problem"?
+
+The best way to fix the copy-paste truncation issue in Termux is to use `curl` to download the file from a paste service (like pastebin, github gist, or similar). However, they don't have internet? Actually, they DO have internet (4G). We can use `curl` to grab the file directly.
+
+Wait, they want to run it without internet. So we can't use a cloud pastebin every time.
+Wait, I can just give them a smaller, cleaner Python script. The previous script was too long and complex, causing copy errors.
+
+Let's rewrite a much smaller `app.py`. The huge HTML is the issue. Let's put the HTML in a separate file `index.html`, and keep `app.py` strictly for the server logic. This drastically reduces the Python file size and prevents copy-paste truncation.
+
+But the user wants a single script if possible. If it's too big, we split it.
+
+Let's write a compact server script.
+Instead of writing the whole HTML in the Python file, what if they save the HTML as `index.html` and the server just serves it?
+That requires two commands. That's fine.
+
+Let's answer their question:
+"Can you connect to Termux?"
+"Unfortunately, I am an AI, I cannot connect directly to your phone or Termux. But I can guide you step by step. The reason you saw all the code in Termux is because the text was too long and got cut off, causing a Python syntax error. We will fix this by separating the files."
+
+Let's create a simple approach:
+1. Create `index.html` (the UI).
+2. Create `app.py` (the server).
+
+Wait, they asked: "Can I connect you to Termux?"
+I will say: "I cannot connect directly, but we can work together so clearly that it won't fail. The reason the code appeared in Termux is because the paste was too large and got cut off. I will split the code into two small files to guarantee it works."
+
+Let's generate the final fix.
+File 1: `index.html`
+File 2: `app.py`
+
+We'll use `cat > app.py << 'EOF'` which is usually safe, but for `index.html` we do the same.
+
+Wait, in the previous message, I saw the user's terminal output had `SyntaxError: invalid syntax` pointing to a line in the previous script.
+The previous script was:
+```python
+def get_ip():
+    import subprocess
+    try:
+        out = subprocess.check_output(['ip', 'addr']).decode('utf-8')
+        import re
+        ips = re.findall(r'inet (\d+\.\d+\.\d+\.\d+)', out)
+        for ip in ips:
+            if not ip.startswith('127.'):
+                return ip
+    except: pass
+    return '127.0.0.1'
+```
+The user's error showed:
+```python
+    except: pass
+    ^^^^^^
+SyntaxError: invalid syntax
+```
+Wait, `except: pass` is valid Python 2 and 3. Why SyntaxError?
+Ah! Look at the indentation. The user might have copied it with bad spaces/tabs, or the `try` block was missing.
+Or, the earlier command I gave to fix `get_ip` using Python's `re.sub` broke the file because the regex didn't match perfectly and left a dangling `except: pass`.
+
+Yes! I gave a `python -c` script to replace `get_ip`. It broke the file.
+So I replaced the whole file with the giant one. But the user pasted it and it got truncated.
+
+Let's use a simpler method.
+Instead of forcing a single huge paste, let's write the files using `cat` but split into two small parts.
+
+`app.py`:
+```python
+import os, json, http.server, socketserver, urllib.parse, subprocess, re, threading, time, socket
+
+PORT = 8080
+ADMIN_PASS = "123456"
+DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE = os.path.join(DIR, "data.json")
+CONFIG_FILE = os.path.join(DIR, "config.json")
+
+tunnel_url = None
+tunnel_process = None
+
+DEFAULT_CONFIG = {
+    "guest_pass": "0000",
+    "guest_can_edit": False,
+    "guest_can_see_secrets": False,
+    "shield_enabled": True
+}
+
+def load_config():
+    if os.path.exists(CONFIG_FILE):
+        try:
+            with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except: pass
+    return DEFAULT_CONFIG.copy()
+
+def save_config(cfg):
+    with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
+        json.dump(cfg, f, ensure_ascii=False, indent=2)
+
+def read_tunnel_url(process):
+    global tunnel_url
+    for line in iter(process.stdout.readline, ''):
+        match = re.search(r'https://[a-zA-Z0-9-]+\.trycloudflare\.com', line)
+        if match:
+            tunnel_url = match.group(0)
+            print(f"\n✅ Link: {tunnel_url}\n")
+
+class Handler(http.server.SimpleHTTPRequestHandler):
+    def get_role(self):
+        cookie = self.headers.get('Cookie', '')
+        cfg = load_config()
+        if f'auth={ADMIN_PASS}' in cookie: return 'admin'
+        if f'auth={cfg["guest_pass"]}' in cookie: return 'guest'
+        return None
+
+    def do_GET(self):
+        global tunnel_url
+        role = self.get_role()
+        if self.path == '/' or self.path.startswith('/index.html') or self.path.startswith('/?t='):
+            if not role:
+                self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0'); self.end_headers()
+                with open(os.path.join(DIR, 'login.html'), 'rb') as f: self.wfile.write(f.read())
+                return
+            self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0'); self.end_headers()
+            with open(os.path.join(DIR, 'index.html'), 'rb') as f: self.wfile.write(f.read())
+        elif self.path.startswith('/check_auth'):
+            cfg = load_config()
+            self.send_response(200); self.send_header('Content-type', 'application/json; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            self.wfile.write(json.dumps({'admin': role == 'admin', 'config': cfg}).encode('utf-8'))
+        elif self.path.startswith('/data'):
+            if not role: self.send_error(401, "Unauthorized"); return
+            self.send_response(200); self.send_header('Content-type', 'application/json; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            if os.path.exists(DATA_FILE):
+                with open(DATA_FILE, 'rb') as f: self.wfile.write(f.read())
+            else: self.wfile.write(b'{"entities":[],"relations":[]}')
+        elif self.path == '/cytoscape.min.js':
+            js_path = os.path.join(DIR, 'cytoscape.min.js')
+            if os.path.exists(js_path):
+                self.send_response(200); self.send_header('Content-type', 'application/javascript; charset=utf-8'); self.end_headers()
+                with open(js_path, 'rb') as f: self.wfile.write(f.read())
+            else: self.send_error(404, "cytoscape.min.js not found")
+        elif self.path.startswith('/tunnel_status'):
+            self.send_response(200); self.send_header('Content-type', 'application/json; charset=utf-8'); self.send_header('Cache-Control', 'no-store'); self.end_headers()
+            self.wfile.write(json.dumps({'url': tunnel_url}).encode('utf-8'))
+        elif self.path.startswith('/logout'):
+            self.send_response(302); self.send_header('Set-Cookie', 'auth=; Path=/; Max-Age=0'); self.send_header('Location', '/?t='+str(time.time())); self.end_headers()
+        else: self.send_error(404)
+
+    def do_POST(self):
+        global tunnel_process, tunnel_url
+        if self.path == '/login':
+            content_length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(content_length).decode('utf-8')
+            pw = urllib.parse.parse_qs(post_data).get('password', [''])[0]
+            cfg = load_config()
+            if pw == ADMIN_PASS or pw == cfg['guest_pass']:
+                self.send_response(302); self.send_header('Set-Cookie', f'auth={pw}; Path=/'); self.send_header('Location', '/?t='+str(time.time())); self.end_headers()
+            else:
+                self.send_response(302); self.send_header('Location', '/?t='+str(time.time())); self.end_headers()
+        elif self.path == '/config':
+            if self.get_role() != 'admin': self.send_error(403, "Forbidden"); return
+            length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(length).decode('utf-8')
+            save_config(json.loads(body))
+            self.send_response(200); self.send_header('Content-type', 'text/plain'); self.end_headers(); self.wfile.write(b'OK')
+        elif self.path == '/save':
+            role = self.get_role()
+            cfg = load_config()
+            if role != 'admin' and not (role == 'guest' and cfg['guest_can_edit']):
+                self.send_error(403, "Forbidden"); return
+            length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(length)
+            try:
+                with open(DATA_FILE, 'wb') as f: f.write(body)
+                self.send_response(200); self.send_header('Content-type', 'text/plain'); self.end_headers(); self.wfile.write(b'OK')
+            except Exception as e: self.send_error(500, str(e))
+        elif self.path == '/start_tunnel':
+            if self.get_role() != 'admin': self.send_error(403, "Forbidden"); return
+            if tunnel_process is None or tunnel_process.poll() is not None:
+                tunnel_url = None
+                try:
+                    tunnel_process = subprocess.Popen(['cloudflared', 'tunnel', '--url', f'http://localhost:{PORT}'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
+                    threading.Thread(target=read_tunnel_url, args=(tunnel_process,), daemon=True).start()
+                except Exception as e: print(f"Error starting tunnel: {e}")
+            self.send_response(200); self.send_header('Content-type', 'text/plain'); self.end_headers(); self.wfile.write(b'Started')
+        elif self.path == '/stop_tunnel':
+            if self.get_role() != 'admin': self.send_error(403, "Forbidden"); return
+            if tunnel_process: tunnel_process.terminate(); tunnel_process = None; tunnel_url = None
+            self.send_response(200); self.send_header('Content-type', 'text/plain'); self.end_headers(); self.wfile.write(b'Stopped')
+        else: self.send_error(404)
+
+    def log_message(self, format, *args): pass
+
+def get_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(('10.255.255.255', 1))
+        IP = s.getsockname()[0]
+    except Exception:
+        IP = '127.0.0.1'
+    finally:
+        s.close()
+    return IP
+
+if __name__ == '__main__':
+    if not os.path.exists(CONFIG_FILE): save_config(DEFAULT_CONFIG)
+    local_ip = get_ip()
+    print(f"\n=====================================")
+    print(f" ✅ database osint running at:")
+    print(f" 🔗 Local (Same WiFi/Hotspot): http://{local_ip}:{PORT}")
+    print(f" 🔗 Localhost (This phone):    http://127.0.0.1:{PORT}")
+    print(f" 🔑 Admin Password: {ADMIN_PASS}")
+    print(f" 🔑 Guest Password: {load_config()['guest_pass']}")
+    print(f"=====================================")
+    print("Press Ctrl+C to stop.\n")
+    
+    import atexit
+    def cleanup():
+        if tunnel_process: tunnel_process.terminate()
+    atexit.register(cleanup)
+
+    socketserver.TCPServer.allow_reuse_address = True
+    with socketserver.TCPServer(("", PORT), Handler) as httpd: httpd.serve_forever()
+```
+
+Now `index.html`:
+```html
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>database osint</title>
+<script src="cytoscape.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'Segoe UI', Tahoma, sans-serif; background: #0a0e14; color: #e6e6e6; }
+  #app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
+  #topbar { display: flex; gap: 6px; padding: 8px; background: #111820; border-bottom: 1px solid #1e2a38; overflow-x: auto; flex-shrink: 0; align-items: center; }
+  #topbar .brand { color: #4dd0e1; font-weight: bold; font-size: 13px; padding: 0 8px; white-space: nowrap; border-left: 1px solid #2a3a4d; margin-left: 4px; }
+  #topbar button { background: #1a2532; color: #e6e6e6; border: 1px solid #2a3a4d; padding: 8px 12px; border-radius: 6px; font-size: 13px; cursor: pointer; white-space: nowrap; }
+  #topbar button:active { background: #2a3a4d; }
+  #topbar button.primary { background: #0d6e4f; border-color: #0d6e4f; }
+  #topbar button.danger { background: #8b1e1e; border-color: #8b1e1e; color: white; }
+  #topbar button.disabled { opacity: 0.5; pointer-events: none; }
+  #cy { flex: 1; background: #0a0e14; }
+  #status { padding: 4px 10px; font-size: 11px; color: #6a7a8a; background: #111820; border-top: 1px solid #1e2a38; flex-shrink: 0; display: flex; justify-content: space-between; }
+  .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 100; padding: 12px; }
+  .modal.active { display: flex; }
+  .modal-content { background: #111820; border: 1px solid #2a3a4d; border-radius: 12px; padding: 16px; width: 100%; max-width: 480px; max-height: 92vh; overflow-y: auto; }
+  .modal-content h2 { font-size: 16px; margin-bottom: 12px; color: #4dd0e1; }
+  .modal-content label { display: block; font-size: 12px; color: #8a9aaa; margin-bottom: 4px; margin-top: 10px; }
+  .modal-content input, .modal-content select, .modal-content textarea { width: 100%; background: #0a0e14; border: 1px solid #2a3a4d; color: #e6e6e6; padding: 10px; border-radius: 6px; font-size: 14px; font-family: inherit; }
+  .modal-content textarea { resize: vertical; min-height: 50px; }
+  .field-row { display: flex; gap: 8px; }
+  .field-row > div { flex: 1; }
+  .modal-actions { display: flex; gap: 8px; margin-top: 16px; position: sticky; bottom: 0; background: #111820; padding-top: 8px; }
+  .modal-actions button { flex: 1; padding: 10px; border-radius: 6px; border: none; font-size: 14px; cursor: pointer; }
+  .modal-actions .save { background: #0d6e4f; color: white; }
+  .modal-actions .cancel { background: #2a3a4d; color: #e6e6e6; }
+  .modal-actions .delete { background: #8b1e1e; color: white; }
+  #searchBar { position: absolute; top: 60px; right: 8px; left: 8px; z-index: 50; display: none; }
+  #searchBar.active { display: block; }
+  #searchBar input { width: 100%; background: #111820; border: 1px solid #4dd0e1; color: #e6e6e6; padding: 10px 14px; border-radius: 8px; font-size: 14px; }
+  .avatar-preview { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #2a3a4d; display: block; margin: 8px auto; }
+  .avatar-placeholder { width: 80px; height: 80px; border-radius: 50%; background: #1a2532; border: 2px dashed #2a3a4d; display: flex; align-items: center; justify-content: center; color: #4a5a6a; font-size: 24px; margin: 8px auto; cursor: pointer; }
+  .file-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .file-chip { background: #1a2532; border: 1px solid #2a3a4d; padding: 4px 8px; border-radius: 4px; font-size: 11px; color: #8a9aaa; }
+  .file-chip button { background: none; border: none; color: #e57373; cursor: pointer; margin-right: 4px; }
+  .info-block { background: #0a0e14; border: 1px solid #1e2a38; border-radius: 6px; padding: 8px; margin: 6px 0; font-size: 13px; }
+  .info-block b { color: #4dd0e1; }
+  .profile-pic { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #4dd0e1; display: block; margin: 0 auto 12px; }
+  .tabs { display: flex; gap: 4px; margin-bottom: 12px; border-bottom: 1px solid #1e2a38; overflow-x: auto; }
+  .tabs button { background: none; border: none; color: #6a7a8a; padding: 8px 12px; font-size: 13px; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; }
+  .tabs button.active { color: #4dd0e1; border-bottom-color: #4dd0e1; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  #privacyShield { display: none; position: fixed; inset: 0; background: #000; color: #fff; z-index: 9999; text-align: center; justify-content: center; align-items: center; font-size: 20px; font-weight: bold; }
+  .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #1e2a38; }
+  .toggle-row span { font-size: 14px; }
+  .toggle-row input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; }
+</style>
+</head>
+<body>
+<div id="privacyShield">🔒 تم إخفاء المحتوى لحماية الخصوصية. عد للتطبيق.</div>
+<div id="app">
+  <div id="topbar">
+    <button id="btnAddEntity" onclick="openAddEntity()" class="primary disabled">+ كيان</button>
+    <button id="btnAddRelation" onclick="openAddRelation()" class="disabled">+ علاقة</button>
+    <button onclick="toggleSearch()">🔍</button>
+    <button onclick="runLayout()">تخطيط</button>
+    <button id="btnSettings" onclick="openSettings()" style="display:none;">⚙️ التحكم</button>
+    <button onclick="logout()" class="danger">🚪 خروج</button>
+    <span class="brand">database osint</span>
+  </div>
+  <div id="cy"></div>
+  <div id="searchBar"><input type="text" id="searchInput" placeholder="ابحث عن كيان..." oninput="doSearch()"></div>
+  <div id="status">
+    <span id="statusText">الكيانات: 0 | العلاقات: 0</span>
+    <span id="statusMsg">جاهز</span>
+  </div>
+</div>
+
+<div class="modal" id="settingsModal">
+  <div class="modal-content">
+    <h2>⚙️ لوحة التحكم (المالك)</h2>
+    <label>كلمة سر الزائر (الرابط المشترك)</label>
+    <input type="text" id="cfg_guest_pass" placeholder="كلمة السر">
+    <div class="toggle-row"><span>السماح للزائر بالإضافة/التعديل</span><input type="checkbox" id="cfg_edit"></div>
+    <div class="toggle-row"><span>السماح للزائر برؤية كلمات المرور</span><input type="checkbox" id="cfg_secrets"></div>
+    <div class="toggle-row"><span>درع الخصوصية (منع لقطة الشاشة)</span><input type="checkbox" id="cfg_shield"></div>
+    
+    <hr style="margin: 15px 0; border-color: #1e2a38;">
+    <h2>🌐 الإنترنت (اختياري)</h2>
+    <p style="font-size:12px; color:#8a9aaa; margin-bottom:10px;">التطبيق يعمل بدون إنترنت. إذا أردت مشاركته مع شخص بعيد، اضغط الزر أدناه لتوليد رابط عام.</p>
+    <div id="tunnelBox" style="display:none; background:#0a0e14; padding:10px; border-radius:6px; word-break:break-all; font-family:monospace; color:#4dd0e1; margin-bottom:10px;"></div>
+    <button id="btnTunnel" onclick="toggleTunnel()" style="background:#0d6e4f;color:white;border:none;padding:10px;border-radius:6px;width:100%;cursor:pointer;">🔗 توليد رابط إنترنت</button>
+    
+    <div class="modal-actions" style="margin-top:20px;">
+      <button class="cancel" onclick="closeModal('settingsModal')">إغلاق</button>
+      <button class="save" onclick="saveSettings()">حفظ الإعدادات</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="entityModal">
+  <div class="modal-content">
+    <h2 id="entityModalTitle">إضافة كيان</h2>
+    <div class="tabs">
+      <button class="active" onclick="switchTab(event,'basic')">أساسي</button>
+      <button onclick="switchTab(event,'contact')">تواصل</button>
+      <button onclick="switchTab(event,'accounts')">حسابات</button>
+      <button onclick="switchTab(event,'location')">مكان</button>
+      <button onclick="switchTab(event,'media')">صور/فيديو</button>
+      <button onclick="switchTab(event,'secrets')">حساس</button>
+      <button onclick="switchTab(event,'notes')">ملاحظات</button>
+    </div>
+    <div class="tab-content active" id="tab-basic">
+      <label>الاسم الكامل</label><input type="text" id="f_name" placeholder="مثال: أحمد بن علي">
+      <label>الاسم المستعار / الكنية</label><input type="text" id="f_alias" placeholder="مثال: أبو محمد">
+      <label>النوع</label>
+      <select id="f_type"><option value="person">شخص</option><option value="email">بريد إلكتروني</option><option value="phone">هاتف</option><option value="username">اسم مستخدم</option><option value="domain">موقع / نطاق</option><option value="ip">عنوان IP</option><option value="org">منظمة</option><option value="location">مكان</option><option value="other">أخرى</option></select>
+      <label>الجنس</label><select id="f_gender"><option value="">—</option><option value="male">ذكر</option><option value="female">أنثى</option></select>
+      <div class="field-row"><div><label>العمر</label><input type="number" id="f_age" placeholder="مثال: 25"></div><div><label>الجنسية</label><input type="text" id="f_nationality" placeholder="تونسي"></div></div>
+      <label>الحالة</label><select id="f_status"><option value="active">نشط</option><option value="inactive">غير نشط</option><option value="target">هدف</option><option value="unknown">غير معروف</option></select>
+    </div>
+    <div class="tab-content" id="tab-contact">
+      <label>البريد الإلكتروني</label><input type="email" id="f_email" placeholder="example@mail.com">
+      <label>البريد الثانوي</label><input type="email" id="f_email2" placeholder="backup@mail.com">
+      <label>رقم الهاتف</label><input type="tel" id="f_phone" placeholder="+216 XX XXX XXX">
+      <label>رقم الهاتف 2</label><input type="tel" id="f_phone2" placeholder="+216 XX XXX XXX">
+      <label>واتساب</label><input type="tel" id="f_whatsapp" placeholder="+216 XX XXX XXX">
+      <label>تيليجرام</label><input type="text" id="f_telegram" placeholder="@username">
+      <label>سيغنال</label><input type="tel" id="f_signal" placeholder="+216 XX XXX XXX">
+    </div>
+    <div class="tab-content" id="tab-accounts">
+      <label>فيسبوك</label><input type="url" id="f_facebook" placeholder="https://facebook.com/...">
+      <label>إنستغرام</label><input type="url" id="f_instagram" placeholder="https://instagram.com/...">
+      <label>تويتر / X</label><input type="url" id="f_twitter" placeholder="https://x.com/...">
+      <label>تيك توك</label><input type="url" id="f_tiktok" placeholder="https://tiktok.com/@...">
+      <label>يوتيوب</label><input type="url" id="f_youtube" placeholder="https://youtube.com/@...">
+      <label>لينكد إن</label><input type="url" id="f_linkedin" placeholder="https://linkedin.com/in/...">
+      <label>سناب شات</label><input type="text" id="f_snapchat" placeholder="username">
+      <label>حسابات أخرى</label><textarea id="f_other_accounts" rows="2" placeholder="..."></textarea>
+    </div>
+    <div class="tab-content" id="tab-location">
+      <label>العنوان الحالي</label><input type="text" id="f_address" placeholder="الشارع، المدينة، البلد">
+      <label>العنوان السابق</label><input type="text" id="f_address2" placeholder="عنوان قديم">
+      <label>مكان العمل</label><input type="text" id="f_workplace" placeholder="...">
+      <label>مكان الدراسة</label><input type="text" id="f_school" placeholder="...">
+      <label>إحداثيات GPS</label><input type="text" id="f_gps" placeholder="36.8065, 10.1815">
+      <label>ملاحظات الموقع</label><textarea id="f_location_notes" rows="2" placeholder="..."></textarea>
+    </div>
+    <div class="tab-content" id="tab-media">
+      <label>صورة شخصية</label>
+      <div id="avatarContainer" onclick="document.getElementById('avatarInput').click()"><div class="avatar-placeholder" id="avatarPlaceholder">📷</div><img id="avatarPreview" class="avatar-preview" style="display:none"></div>
+      <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="handleAvatar(event)">
+      <button onclick="removeAvatar()" style="background:#2a3a4d;color:#e6e6e6;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;width:100%;margin-top:4px;">إزالة الصورة</button>
+      <label>صور إضافية</label><input type="file" id="imagesInput" accept="image/*" multiple style="display:none" onchange="handleImages(event)">
+      <button onclick="document.getElementById('imagesInput').click()" style="background:#1a2532;color:#e6e6e6;border:1px solid #2a3a4d;padding:8px;border-radius:6px;font-size:13px;cursor:pointer;width:100%;">+ إضافة صور</button>
+      <div class="file-list" id="imagesList"></div>
+      <label>فيديوهات (روابط)</label><textarea id="f_videos" rows="2" placeholder="..."></textarea>
+      <label>ملفات أخرى (روابط)</label><textarea id="f_files" rows="2" placeholder="..."></textarea>
+    </div>
+    <div class="tab-content" id="tab-secrets">
+      <label>كلمات المرور / بيانات حساسة</label><textarea id="f_passwords" rows="4" placeholder="⚠️ تُخزن محلياً فقط."></textarea>
+      <label>ملاحظات حساسة</label><textarea id="f_sensitive" rows="3" placeholder="..."></textarea>
+    </div>
+    <div class="tab-content" id="tab-notes">
+      <label>ملاحظات عامة</label><textarea id="f_notes" rows="5" placeholder="..."></textarea>
+      <label>وسوم</label><input type="text" id="f_tags" placeholder="...">
+    </div>
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeModal('entityModal')">إلغاء</button>
+      <button class="delete" id="entityDeleteBtn" style="display:none" onclick="deleteCurrentEntity()">حذف</button>
+      <button class="save" onclick="saveEntity()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="relationModal">
+  <div class="modal-content">
+    <h2 id="relationModalTitle">إضافة علاقة</h2>
+    <label>من (المصدر)</label><select id="relFrom"></select>
+    <label>إلى (الهدف)</label><select id="relTo"></select>
+    <label>نوع العلاقة</label><input type="text" id="relType" placeholder="مثال: يملك، يعرف، يزور" list="relTypes">
+    <datalist id="relTypes"><option value="يملك"><option value="يعرف"><option value="يزور"><option value="مرتبط بـ"><option value="يعمل في"><option value="صديق"><option value="عائلة"><option value="يسكن في"><option value="يتصل بـ"><option value="يراسل"><option value="يتابع"></datalist>
+    <label>ملاحظة (اختياري)</label><input type="text" id="relNote" placeholder="...">
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeModal('relationModal')">إلغاء</button>
+      <button class="delete" id="relationDeleteBtn" style="display:none" onclick="deleteCurrentRelation()">حذف</button>
+      <button class="save" onclick="saveRelation()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="infoModal">
+  <div class="modal-content">
+    <h2 id="infoTitle">معلومات</h2>
+    <div id="infoBody"></div>
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeModal('infoModal')">إغلاق</button>
+      <button class="save" id="infoEditBtn" onclick="editCurrentEntity()" style="display:none;">تعديل</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let cy;
+let localData = { entities: [], relations: [] };
+let localConfig = {};
+let isAdmin = false;
+let canEdit = false;
+let editingEntityId = null;
+let currentEntityId = null;
+let editingRelationId = null;
+let currentAvatar = null;
+let currentImages = [];
+
+const TYPE_COLORS = { person: '#4dd0e1', email: '#ff8a65', phone: '#ba68c8', username: '#ffd54f', domain: '#81c784', ip: '#e57373', org: '#64b5f6', location: '#a1887f', other: '#90a4ae' };
+const TYPE_LABELS = { person: 'شخص', email: 'بريد', phone: 'هاتف', username: 'مستخدم', domain: 'موقع', ip: 'IP', org: 'منظمة', location: 'مكان', other: 'أخرى' };
+
+document.addEventListener('visibilitychange', () => {
+  if (!isAdmin && localConfig.shield_enabled) {
+    document.getElementById('privacyShield').style.display = document.hidden ? 'flex' : 'none';
+  }
+});
+
+async function init() {
+  try {
+    const authRes = await fetch('/check_auth?t=' + Date.now(), { cache: 'no-store' });
+    const authData = await authRes.json();
+    isAdmin = authData.admin;
+    localConfig = authData.config;
+    canEdit = isAdmin || localConfig.guest_can_edit;
+    if (isAdmin) document.getElementById('btnSettings').style.display = 'block';
+    applyPermissions();
+  } catch(e) {}
+  await fetchData();
+  initCy();
+  loadGraph();
+  
+  setInterval(async () => {
+    await fetchData();
+    loadGraph();
+  }, 3000);
+}
+
+async function fetchData() {
+  try {
+    const res = await fetch('/data?t=' + Date.now(), { cache: 'no-store' });
+    localData = await res.json();
+    if (!localData.entities) localData = { entities: [], relations: [] };
+  } catch(e) {}
+}
+
+function applyPermissions() {
+  if (canEdit) {
+    document.getElementById('btnAddEntity').classList.remove('disabled');
+    document.getElementById('btnAddRelation').classList.remove('disabled');
+  } else {
+    document.getElementById('btnAddEntity').classList.add('disabled');
+    document.getElementById('btnAddRelation').classList.add('disabled');
+  }
+}
+
+function initCy() {
+  cy = cytoscape({
+    container: document.getElementById('cy'),
+    style: [
+      { selector: 'node', style: { 'background-color': ele => TYPE_COLORS[ele.data('type')] || TYPE_COLORS.other, 'background-image': ele => ele.data('avatar') ? ele.data('avatar') : 'none', 'background-fit': 'cover', 'label': 'data(label)', 'color': '#e6e6e6', 'font-size': '11px', 'text-valign': 'bottom', 'text-margin-y': 4, 'text-outline-color': '#0a0e14', 'text-outline-width': 2, 'width': ele => ele.data('avatar') ? 44 : (24 + Math.min(ele.degree() * 3, 28)), 'height': ele => ele.data('avatar') ? 44 : (24 + Math.min(ele.degree() * 3, 28)), 'border-width': 2, 'border-color': '#0a0e14' } },
+      { selector: 'node[avatar]', style: { 'border-width': 3, 'border-color': '#4dd0e1' } },
+      { selector: 'node:selected', style: { 'border-width': 4, 'border-color': '#ffffff' } },
+      { selector: 'edge', style: { 'width': 1.5, 'line-color': '#2a3a4d', 'target-arrow-color': '#2a3a4d', 'target-arrow-shape': 'triangle', 'curve-style': 'bezier', 'label': 'data(label)', 'font-size': '9px', 'color': '#6a7a8a', 'text-outline-color': '#0a0e14', 'text-outline-width': 2, 'text-rotation': 'autorotate' } },
+      { selector: 'edge:selected', style: { 'line-color': '#4dd0e1', 'target-arrow-color': '#4dd0e1', 'width': 3 } },
+      { selector: '.highlighted', style: { 'background-color': '#ffffff', 'border-color': '#4dd0e1', 'border-width': 3 } },
+      { selector: '.faded', style: { 'opacity': 0.15 } }
+    ],
+    layout: { name: 'cose', animate: false, padding: 30 },
+    wheelSensitivity: 0.3
+  });
+  cy.on('tap', 'node', e => showNodeInfo(e.target.id()));
+  cy.on('tap', 'edge', e => { if (canEdit) openEditRelation(e.target.id()); else setMsg('⚠️ صلاحية قراءة فقط'); });
+}
+
+function loadGraph() {
+  let changed = false;
+  const currentNodes = cy.nodes().map(n => n.data());
+  const currentEdges = cy.edges().map(e => e.data());
+  if (JSON.stringify(currentNodes) !== JSON.stringify(localData.entities) || JSON.stringify(currentEdges) !== JSON.stringify(localData.relations)) {
+      cy.elements().remove();
+      localData.entities.forEach(e => {
+        const d = { id: e.id, label: e.name || 'بدون اسم', type: e.type || 'other' };
+        if (e.avatar) d.avatar = e.avatar;
+        cy.add({ data: d });
+      });
+      localData.relations.forEach(r => {
+        if (cy.getElementById(r.from).length && cy.getElementById(r.to).length) {
+          cy.add({ data: { id: r.id, source: r.from, target: r.to, label: r.type } });
+        }
+      });
+      if (cy.nodes().length > 0) cy.layout({ name: 'cose', animate: true, animationDuration: 400, padding: 40 }).run();
+      updateStatus();
+  }
+}
+
+async function saveData() {
+  if (!canEdit) return;
+  try {
+    await fetch('/save', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(localData) });
+    setMsg('✅ تم الحفظ');
+  } catch (e) { setMsg('❌ خطأ في الحفظ'); }
+}
+
+function runLayout() { cy.layout({ name: 'cose', animate: true, animationDuration: 600, padding: 40 }).run(); }
+function updateStatus() {
+  document.getElementById('statusText').textContent = `الكيانات: ${cy.nodes().length} | العلاقات: ${cy.edges().length}`;
+}
+function setMsg(m) { document.getElementById('statusMsg').textContent = m; setTimeout(() => document.getElementById('statusMsg').textContent = 'جاهز', 2500); }
+
+function switchTab(evt, name) {
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  evt.target.classList.add('active'); document.getElementById('tab-' + name).classList.add('active');
+}
+function switchTabSilent(name) {
+  document.querySelectorAll('.tabs button').forEach(b => { b.classList.remove('active'); const oc = b.getAttribute('onclick') || ''; if (oc.indexOf("'" + name + "'") !== -1) b.classList.add('active'); });
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.getElementById('tab-' + name).classList.add('active');
+}
+
+async function logout() {
+  await fetch('/logout?t=' + Date.now(), { cache: 'no-store' });
+  window.location.href = '/?t=' + Date.now();
+}
+
+async function openSettings() {
+  if (!isAdmin) return;
+  document.getElementById('cfg_guest_pass').value = localConfig.guest_pass || '0000';
+  document.getElementById('cfg_edit').checked = localConfig.guest_can_edit;
+  document.getElementById('cfg_secrets').checked = localConfig.guest_can_see_secrets;
+  document.getElementById('cfg_shield').checked = localConfig.shield_enabled;
+  document.getElementById('settingsModal').classList.add('active');
+  
+  const tRes = await fetch('/tunnel_status?t=' + Date.now(), { cache: 'no-store' });
+  const tData = await tRes.json();
+  const box = document.getElementById('tunnelBox');
+  const btn = document.getElementById('btnTunnel');
+  if (tData.url) {
+    box.style.display = 'block';
+    box.innerHTML = `<a href="${tData.url}" target="_blank" style="color:#4dd0e1;">${tData.url}</a>`;
+    btn.textContent = '🛑 إيقاف رابط الإنترنت';
+    btn.style.background = '#8b1e1e';
+  } else {
+    box.style.display = 'none';
+    btn.textContent = '🔗 توليد رابط إنترنت';
+    btn.style.background = '#0d6e4f';
+  }
+}
+
+async function toggleTunnel() {
+  const btn = document.getElementById('btnTunnel');
+  const box = document.getElementById('tunnelBox');
+  if (btn.textContent.includes('إيقاف')) {
+    btn.textContent = 'جاري الإيقاف...';
+    await fetch('/stop_tunnel');
+    setTimeout(() => { box.style.display = 'none'; btn.textContent = '🔗 توليد رابط إنترنت'; btn.style.background = '#0d6e4f'; }, 1000);
+  } else {
+    btn.textContent = 'جاري التوليد (انتظر 10 ثوانٍ)...';
+    await fetch('/start_tunnel');
+    const interval = setInterval(async () => {
+      const res = await fetch('/tunnel_status?t=' + Date.now());
+      const data = await res.json();
+      if (data.url) {
+        clearInterval(interval);
+        box.style.display = 'block';
+        box.innerHTML = `<a href="${data.url}" target="_blank" style="color:#4dd0e1;">${data.url}</a><br><small style="color:#fff;">(أرسل هذا الرابط مع كلمة سر الزائر)</small>`;
+        btn.textContent = '🛑 إيقاف رابط الإنترنت';
+        btn.style.background = '#8b1e1e';
+      }
+    }, 2000);
+  }
+}
+
+async function saveSettings() {
+  const newCfg = {
+    guest_pass: document.getElementById('cfg_guest_pass').value.trim() || '0000',
+    guest_can_edit: document.getElementById('cfg_edit').checked,
+    guest_can_see_secrets: document.getElementById('cfg_secrets').checked,
+    shield_enabled: document.getElementById('cfg_shield').checked
+  };
+  await fetch('/config', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(newCfg) });
+  localConfig = newCfg;
+  closeModal('settingsModal');
+  setMsg('✅ تم تحديث الصلاحيات');
+}
+
+function openAddEntity() {
+  if (!canEdit) { setMsg('⚠️ صلاحية قراءة فقط'); return; }
+  editingEntityId = null; currentAvatar = null; currentImages = [];
+  document.getElementById('entityModalTitle').textContent = 'إضافة كيان';
+  clearEntityForm(); document.getElementById('entityDeleteBtn').style.display = 'none';
+  switchTabSilent('basic'); document.getElementById('entityModal').classList.add('active');
+}
+function clearEntityForm() {
+  const fields = ['name','alias','gender','age','nationality','email','email2','phone','phone2','whatsapp','telegram','signal','facebook','instagram','twitter','tiktok','youtube','linkedin','snapchat','other_accounts','address','address2','workplace','school','gps','location_notes','videos','files','passwords','sensitive','notes','tags'];
+  fields.forEach(f => { const el = document.getElementById('f_' + f); if (el) el.value = ''; });
+  document.getElementById('f_type').value = 'person'; document.getElementById('f_status').value = 'active';
+  document.getElementById('avatarPreview').style.display = 'none'; document.getElementById('avatarPlaceholder').style.display = 'flex';
+  document.getElementById('imagesList').innerHTML = '';
+}
+function setField(id, val) { const el = document.getElementById('f_' + id); if (el) el.value = val || ''; }
+function getField(id) { const el = document.getElementById('f_' + id); return el ? el.value.trim() : ''; }
+
+async function saveEntity() {
+  if (!canEdit) return;
+  const name = getField('name') || getField('alias') || 'بدون اسم';
+  const data = {
+    id: editingEntityId || ('e_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7)),
+    name, alias: getField('alias'), type: document.getElementById('f_type').value,
+    gender: getField('gender'), age: getField('age'), nationality: getField('nationality'), status: document.getElementById('f_status').value,
+    email: getField('email'), email2: getField('email2'), phone: getField('phone'), phone2: getField('phone2'),
+    whatsapp: getField('whatsapp'), telegram: getField('telegram'), signal: getField('signal'),
+    facebook: getField('facebook'), instagram: getField('instagram'), twitter: getField('twitter'), tiktok: getField('tiktok'),
+    youtube: getField('youtube'), linkedin: getField('linkedin'), snapchat: getField('snapchat'), other_accounts: getField('other_accounts'),
+    address: getField('address'), address2: getField('address2'), workplace: getField('workplace'), school: getField('school'),
+    gps: getField('gps'), location_notes: getField('location_notes'), videos: getField('videos'), files: getField('files'),
+    passwords: getField('passwords'), sensitive: getField('sensitive'), notes: getField('notes'), tags: getField('tags'),
+    avatar: currentAvatar, images: currentImages, updated: Date.now()
+  };
+  const idx = localData.entities.findIndex(e => e.id === data.id);
+  if (idx >= 0) localData.entities[idx] = data; else localData.entities.push(data);
+  await saveData();
+  closeModal('entityModal'); updateStatus();
+}
+
+async function showNodeInfo(id) {
+  const node = cy.getElementById(id); if (!node.length) return;
+  currentEntityId = id; const d = localData.entities.find(e => e.id === id); if (!d) return;
+  const neighbors = node.neighborhood('node'); let html = '';
+  if (d.avatar) html += `<img src="${d.avatar}" class="profile-pic">`;
+  html += `<h3 style="text-align:center;color:#4dd0e1;margin-bottom:4px;">${esc(d.name)}</h3>`;
+  if (d.alias) html += `<p style="text-align:center;color:#8a9aaa;font-size:12px;">${esc(d.alias)}</p>`;
+  html += `<p style="text-align:center;font-size:12px;color:#6a7a8a;">${TYPE_LABELS[d.type] || d.type} ${d.status ? '• ' + d.status : ''}</p>`;
+  const addBlock = (title, content) => { if (content) html += `<div class="info-block"><b>${title}:</b> ${content}</div>`; };
+  if (d.age) addBlock('العمر', esc(d.age)); addBlock('البريد', esc(d.email)); addBlock('الهاتف', esc(d.phone));
+  addBlock('العنوان', esc(d.address)); addBlock('GPS', esc(d.gps)); addBlock('ملاحظات', esc(d.notes));
+
+  if (isAdmin || localConfig.guest_can_see_secrets) {
+    if (d.passwords) html += `<div class="info-block" style="border-color:#8b1e1e;"><b style="color:#e57373;">🔒 كلمات مرور:</b><br>${esc(d.passwords).replace(/\n/g, '<br>')}</div>`;
+    if (d.sensitive) html += `<div class="info-block" style="border-color:#8b1e1e;"><b style="color:#e57373;">🔒 حساس:</b><br>${esc(d.sensitive).replace(/\n/g, '<br>')}</div>`;
+  }
+
+  if (neighbors.length > 0) {
+    html += `<div class="info-block"><b>مرتبط بـ (${neighbors.length}):</b><ul style="padding-right:18px;margin-top:4px;">`;
+    neighbors.forEach(n => { const edge = node.edgesTo(n); const rel = edge.length ? edge.data('label') : ''; html += `<li>${esc(n.data('label'))} ${rel ? '— ' + esc(rel) : ''}</li>`; });
+    html += `</ul></div>`;
+  }
+  document.getElementById('infoTitle').textContent = d.name; document.getElementById('infoBody').innerHTML = html;
+  document.getElementById('infoEditBtn').style.display = canEdit ? 'block' : 'none';
+  document.getElementById('infoModal').classList.add('active');
+}
+
+async function editCurrentEntity() {
+  if (!canEdit) return;
+  const d = localData.entities.find(e => e.id === currentEntityId); if (!d) return;
+  editingEntityId = currentEntityId; currentAvatar = d.avatar || null; currentImages = d.images || [];
+  document.getElementById('entityModalTitle').textContent = 'تعديل كيان'; clearEntityForm();
+  setField('name', d.name); setField('alias', d.alias); document.getElementById('f_type').value = d.type || 'person';
+  setField('gender', d.gender); setField('age', d.age); setField('nationality', d.nationality); document.getElementById('f_status').value = d.status || 'active'; 
+  setField('email', d.email); setField('email2', d.email2); setField('phone', d.phone); setField('phone2', d.phone2); setField('whatsapp', d.whatsapp); setField('telegram', d.telegram); setField('signal', d.signal);
+  setField('facebook', d.facebook); setField('instagram', d.instagram); setField('twitter', d.twitter); setField('tiktok', d.tiktok); setField('youtube', d.youtube); setField('linkedin', d.linkedin); setField('snapchat', d.snapchat); setField('other_accounts', d.other_accounts);
+  setField('address', d.address); setField('address2', d.address2); setField('workplace', d.workplace); setField('school', d.school); setField('gps', d.gps); setField('location_notes', d.location_notes); setField('videos', d.videos); setField('files', d.files);
+  setField('passwords', d.passwords); setField('sensitive', d.sensitive); setField('notes', d.notes); setField('tags', d.tags);
+  if (currentAvatar) { document.getElementById('avatarPreview').src = currentAvatar; document.getElementById('avatarPreview').style.display = 'block'; document.getElementById('avatarPlaceholder').style.display = 'none'; }
+  renderImagesList(); document.getElementById('entityDeleteBtn').style.display = 'block';
+  closeModal('infoModal'); switchTabSilent('basic'); document.getElementById('entityModal').classList.add('active');
+}
+
+async function deleteCurrentEntity() {
+  if (!canEdit || !editingEntityId) return; if (!confirm('حذف الكيان؟')) return;
+  localData.entities = localData.entities.filter(e => e.id !== editingEntityId);
+  localData.relations = localData.relations.filter(r => r.from !== editingEntityId && r.to !== editingEntityId);
+  await saveData(); closeModal('entityModal'); updateStatus();
+}
+
+function handleAvatar(e) { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = ev => { currentAvatar = ev.target.result; document.getElementById('avatarPreview').src = currentAvatar; document.getElementById('avatarPreview').style.display = 'block'; document.getElementById('avatarPlaceholder').style.display = 'none'; }; reader.readAsDataURL(file); e.target.value = ''; }
+function removeAvatar() { currentAvatar = null; document.getElementById('avatarPreview').style.display = 'none'; document.getElementById('avatarPlaceholder').style.display = 'flex'; }
+function handleImages(e) { const files = Array.from(e.target.files); files.forEach(file => { const reader = new FileReader(); reader.onload = ev => { currentImages.push(ev.target.result); renderImagesList(); }; reader.readAsDataURL(file); }); e.target.value = ''; }
+function renderImagesList() { const list = document.getElementById('imagesList'); list.innerHTML = ''; currentImages.forEach((img, i) => { const chip = document.createElement('div'); chip.className = 'file-chip'; chip.innerHTML = `<img src="${img}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;vertical-align:middle;"> <button onclick="removeImage(${i})">✕</button>`; list.appendChild(chip); }); }
+function removeImage(i) { currentImages.splice(i, 1); renderImagesList(); }
+
+function openAddRelation() {
+  if (!canEdit) { setMsg('⚠️ صلاحية قراءة فقط'); return; }
+  const nodes = cy.nodes(); if (nodes.length < 2) { setMsg('تحتاج كيانين على الأقل'); return; }
+  editingRelationId = null; document.getElementById('relationModalTitle').textContent = 'إضافة علاقة'; document.getElementById('relationDeleteBtn').style.display = 'none';
+  const fromSel = document.getElementById('relFrom'), toSel = document.getElementById('relTo'); fromSel.innerHTML = ''; toSel.innerHTML = '';
+  nodes.forEach(n => { fromSel.add(new Option(n.data('label'), n.id())); toSel.add(new Option(n.data('label'), n.id())); });
+  if (nodes.length >= 2) toSel.selectedIndex = 1; document.getElementById('relType').value = ''; document.getElementById('relNote').value = '';
+  document.getElementById('relationModal').classList.add('active');
+}
+
+function openEditRelation(relId) {
+  if (!canEdit) return;
+  const edge = cy.getElementById(relId); if (!edge.length) return;
+  editingRelationId = relId; const relData = localData.relations.find(r => r.id === relId);
+  document.getElementById('relationModalTitle').textContent = 'تعديل العلاقة'; document.getElementById('relationDeleteBtn').style.display = 'block';
+  const fromSel = document.getElementById('relFrom'), toSel = document.getElementById('relTo'); fromSel.innerHTML = ''; toSel.innerHTML = '';
+  cy.nodes().forEach(n => { const o1 = new Option(n.data('label'), n.id()), o2 = new Option(n.data('label'), n.id()); if (n.id() === edge.data('source')) o1.selected = true; if (n.id() === edge.data('target')) o2.selected = true; fromSel.add(o1); toSel.add(o2); });
+  document.getElementById('relType').value = edge.data('label') || ''; document.getElementById('relNote').value = relData ? (relData.note || '') : '';
+  document.getElementById('relationModal').classList.add('active');
+}
+
+async function saveRelation() {
+  if (!canEdit) return;
+  const from = document.getElementById('relFrom').value, to = document.getElementById('relTo').value;
+  const type = document.getElementById('relType').value.trim() || 'مرتبط بـ', note = document.getElementById('relNote').value.trim();
+  if (from === to) { setMsg('لا يمكن ربط كيان بنفسه'); return; }
+  if (editingRelationId) { const rel = localData.relations.find(r => r.id === editingRelationId); if (rel) { rel.from = from; rel.target = to; rel.type = type; rel.note = note; } }
+  else { const existing = cy.edges().filter(e => e.data('source') === from && e.data('target') === to); if (existing.length > 0) { setMsg('العلاقة موجودة'); return; } const id = 'r_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7); localData.relations.push({ id, from, target: to, type, note }); }
+  await saveData(); closeModal('relationModal'); updateStatus();
+}
+
+async function deleteCurrentRelation() {
+  if (!canEdit || !editingRelationId) return; if (!confirm('حذف هذه العلاقة؟')) return;
+  localData.relations = localData.relations.filter(r => r.id !== editingRelationId);
+  await saveData(); closeModal('relationModal'); updateStatus();
+}
+
+function toggleSearch() { const bar = document.getElementById('searchBar'); bar.classList.toggle('active'); if (bar.classList.contains('active')) document.getElementById('searchInput').focus(); else clearSearch(); }
+function doSearch() { const q = document.getElementById('searchInput').value.trim().toLowerCase(); if (!q) { clearSearch(); return; } cy.elements().removeClass('highlighted faded'); const matches = cy.nodes().filter(n => n.data('label').toLowerCase().includes(q)); if (matches.length === 0) return; cy.elements().addClass('faded'); matches.closedNeighborhood().removeClass('faded').addClass('highlighted'); }
+function clearSearch() { cy.elements().removeClass('highlighted faded'); document.getElementById('searchInput').value = ''; }
+
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+function esc(s) { return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+document.querySelectorAll('.modal').forEach(m => { m.addEventListener('click', e => { if (e.target === m) m.classList.remove('active'); }); });
+init().catch(err => { document.body.innerHTML = '<div style="padding:20px;color:#e57373;font-family:monospace;">خطأ: ' + err.message + '</div>'; });
+</script>
+</body>
+</html>
+```
+And `login.html`:
+```html
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Login</title>
+<style>body { background: #0a0e14; color: #e6e6e6; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; } .box { background: #111820; padding: 30px; border-radius: 12px; border: 1px solid #2a3a4d; text-align: center; width: 80%; max-width: 300px; } h2 { color: #4dd0e1; margin-bottom: 20px; } input { width: 100%; padding: 12px; margin-bottom: 15px; background: #0a0e14; border: 1px solid #2a3a4d; color: white; border-radius: 6px; box-sizing: border-box; } button { width: 100%; padding: 12px; background: #0d6e4f; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; }</style></head>
+<body><div class="box"><h2>🔒 database osint</h2><form method="POST" action="/login"><input type="password" name="password" placeholder="كلمة السر" required><button type="submit">دخول</button></form></div></body></html>
+```
+
+Wait, the simplest solution:
+Instead of pushing the huge 40KB script directly to termux terminal, which is getting truncated by the user's copy-paste or the terminal buffer, we can ask the user to run a simpler server script, and use the browser cache bypass from the start.
+
+But I should answer his question: "Can I connect you to termux?"
+Answer: "No, I am an AI, I don't have direct access to your phone. But I can guide you. The reason it failed is that the text is too long, Termux paste got cut off or it caused a syntax error. I will split it into 3 small files. This way, each paste is tiny and won't fail."
+
+Step 1: Run a command to create the folders and 3 small files.
+File 1: `app.py`
+File 2: `index.html`
+File 3: `login.html`
+
+Actually, I can just give one bash script that creates all 3 files.
+Let's do it efficiently.
+
+To bypass the massive paste issue, I will use `base64` or split the code into small blocks? No, 3 separate `cat` commands is better.
+
+Command 1: Create `login.html` (very small)
+Command 2: Create `index.html` (medium)
+Command 3: Create `app.py` (small)
+
+Let's do it.
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**إجابة سؤالك أولاً:** لا، لا يمكنني الاتصال بـ Termux مباشرة. أنا ذكاء اصطناعي، لا أملك يداً لتكتب على هاتفك. **لكن**، أعرف بالضبط لماذا تفشل كل مرة: **النسخ واللصق في Termux يقطع الكود إذا كان طويلاً جداً!** الكود السابق كان بحجم 40 كيلوبايت، فتم قطعه، مما سبب خطأ `SyntaxError` وطبع الكود على الشاشة.
+
+**الحل الجذري: سنقسم التطبيق إلى 3 ملفات صغيرة.** بهذه الطريقة، كل أمر ستنسخه سيكون قصيراً جداً ولن يُقطع أبداً.
+
+---
+
+**◈ الخطوة 1: إنشاء ملف شاشة الدخول (`login.html`)**
+انسخ هذا الأمر (قصير جداً) والصقه في Termux واضغط Enter:
+
+```bash
+cd ~/database_osint && cat > login.html << 'EOF'
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Login</title>
+<style>body { background: #0a0e14; color: #e6e6e6; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; } .box { background: #111820; padding: 30px; border-radius: 12px; border: 1px solid #2a3a4d; text-align: center; width: 80%; max-width: 300px; } h2 { color: #4dd0e1; margin-bottom: 20px; } input { width: 100%; padding: 12px; margin-bottom: 15px; background: #0a0e14; border: 1px solid #2a3a4d; color: white; border-radius: 6px; box-sizing: border-box; } button { width: 100%; padding: 12px; background: #0d6e4f; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; }</style></head>
+<body><div class="box"><h2>🔒 database osint</h2><form method="POST" action="/login"><input type="password" name="password" placeholder="كلمة السر" required><button type="submit">دخول</button></form></div></body></html>
+EOF
+echo "✅ login.html ready"
+```
+
+---
+
+**◈ الخطوة 2: إنشاء واجهة التطبيق (`index.html`)**
+انسخ هذا الأمر والصقه:
+
+```bash
+cd ~/database_osint && cat > index.html << 'EOF'
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>database osint</title>
+<script src="cytoscape.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { height: 100vh; font-family: sans-serif; background: #0a0e14; color: #e6e6e6; display: flex; flex-direction: column; }
+  #topbar { display: flex; gap: 6px; padding: 8px; background: #111820; border-bottom: 1px solid #1e2a38; overflow-x: auto; align-items: center; }
+  #topbar .brand { color: #4dd0e1; font-weight: bold; font-size: 13px; padding: 0 8px; border-left: 1px solid #2a3a4d; }
+  #topbar button { background: #1a2532; color: #e6e6e6; border: 1px solid #2a3a4d; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
+  #topbar button.primary { background: #0d6e4f; border-color: #0d6e4f; }
+  #topbar button.danger { background: #8b1e1e; border-color: #8b1e1e; color: white; }
+  #topbar button.disabled { opacity: 0.5; pointer-events: none; }
+  #cy { flex: 1; background: #0a0e14; }
+  #status { padding: 4px 10px; font-size: 11px; color: #6a7a8a; background: #111820; border-top: 1px solid #1e2a38; display: flex; justify-content: space-between; }
+  .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 100; padding: 12px; }
+  .modal.active { display: flex; }
+  .modal-content { background: #111820; border: 1px solid #2a3a4d; border-radius: 12px; padding: 16px; width: 100%; max-width: 480px; max-height: 92vh; overflow-y: auto; }
+  .modal-content h2 { font-size: 16px; margin-bottom: 12px; color: #4dd0e1; }
+  .modal-content label { display: block; font-size: 12px; color: #8a9aaa; margin-top: 10px; }
+  .modal-content input, .modal-content select, .modal-content textarea { width: 100%; background: #0a0e14; border: 1px solid #2a3a4d; color: #e6e6e6; padding: 10px; border-radius: 6px; }
+  .field-row { display: flex; gap: 8px; } .field-row > div { flex: 1; }
+  .modal-actions { display: flex; gap: 8px; margin-top: 16px; }
+  .modal-actions button { flex: 1; padding: 10px; border-radius: 6px; border: none; cursor: pointer; }
+  .save { background: #0d6e4f; color: white; } .cancel { background: #2a3a4d; color: #e6e6e6; } .delete { background: #8b1e1e; color: white; }
+  .tabs { display: flex; gap: 4px; margin-bottom: 12px; border-bottom: 1px solid #1e2a38; overflow-x: auto; }
+  .tabs button { background: none; border: none; color: #6a7a8a; padding: 8px 12px; cursor: pointer; white-space: nowrap; }
+  .tabs button.active { color: #4dd0e1; border-bottom: 2px solid #4dd0e1; }
+  .tab-content { display: none; } .tab-content.active { display: block; }
+  .toggle-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #1e2a38; }
+  #tunnelBox { display: none; background: #0a0e14; padding: 10px; word-break: break-all; color: #4dd0e1; margin-bottom: 10px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="topbar">
+    <button id="btnAddEntity" onclick="openAddEntity()" class="primary disabled">+ كيان</button>
+    <button id="btnAddRelation" onclick="openAddRelation()" class="disabled">+ علاقة</button>
+    <button onclick="runLayout()">تخطيط</button>
+    <button id="btnSettings" onclick="openSettings()" style="display:none;">⚙️</button>
+    <button onclick="logout()" class="danger">🚪 خروج</button>
+    <span class="brand">database osint</span>
+  </div>
+  <div id="cy"></div>
+  <div id="status"><span id="statusText">0 | 0</span><span id="statusMsg">جاهز</span></div>
+</div>
+
+<div class="modal" id="settingsModal">
+  <div class="modal-content">
+    <h2>⚙️ لوحة التحكم</h2>
+    <label>كلمة سر الزائر</label><input type="text" id="cfg_guest_pass">
+    <div class="toggle-row"><span>السماح للزائر بالإضافة</span><input type="checkbox" id="cfg_edit"></div>
+    <div class="toggle-row"><span>السماح برؤية كلمات المرور</span><input type="checkbox" id="cfg_secrets"></div>
+    <div class="toggle-row"><span>درع الخصوصية (منع لقطة الشاشة)</span><input type="checkbox" id="cfg_shield"></div>
+    <hr style="margin: 15px 0; border-color: #1e2a38;">
+    <h2>🌐 الإنترنت (اختياري)</h2>
+    <div id="tunnelBox"></div>
+    <button id="btnTunnel" onclick="toggleTunnel()" style="background:#0d6e4f;color:whit

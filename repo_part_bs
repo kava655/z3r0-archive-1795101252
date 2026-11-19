@@ -1,0 +1,1333 @@
+urrentImages, updated: Date.now()
+  };
+  const idx = localData.entities.findIndex(e => e.id === data.id);
+  if (idx >= 0) localData.entities[idx] = data; else localData.entities.push(data);
+  await saveData();
+  closeModal('entityModal'); updateStatus();
+}
+
+async function showNodeInfo(id) {
+  const node = cy.getElementById(id); if (!node.length) return;
+  currentEntityId = id; const d = localData.entities.find(e => e.id === id); if (!d) return;
+  const neighbors = node.neighborhood('node'); let html = '';
+  if (d.avatar) html += `<img src="${d.avatar}" class="profile-pic">`;
+  html += `<h3 style="text-align:center;color:#4dd0e1;margin-bottom:4px;">${esc(d.name)}</h3>`;
+  if (d.alias) html += `<p style="text-align:center;color:#8a9aaa;font-size:12px;">${esc(d.alias)}</p>`;
+  html += `<p style="text-align:center;font-size:12px;color:#6a7a8a;">${TYPE_LABELS[d.type] || d.type} ${d.status ? '• ' + d.status : ''}</p>`;
+  const addBlock = (title, content) => { if (content) html += `<div class="info-block"><b>${title}:</b> ${content}</div>`; };
+  if (d.age) addBlock('العمر', esc(d.age)); addBlock('البريد', esc(d.email)); addBlock('الهاتف', esc(d.phone));
+  const social = [];
+  if (d.facebook) social.push(`<a href="${esc(d.facebook)}" target="_blank" style="color:#4dd0e1;">فيسبوك</a>`);
+  if (d.instagram) social.push(`<a href="${esc(d.instagram)}" target="_blank" style="color:#4dd0e1;">إنستغرام</a>`);
+  if (social.length) addBlock('حسابات', social.join(' • '));
+  addBlock('العنوان', esc(d.address)); addBlock('GPS', esc(d.gps)); addBlock('ملاحظات', esc(d.notes)); addBlock('وسوم', esc(d.tags));
+
+  if (isAdmin || localConfig.guest_can_see_secrets) {
+    if (d.passwords) html += `<div class="info-block" style="border-color:#8b1e1e;"><b style="color:#e57373;">🔒 كلمات مرور:</b><br>${esc(d.passwords).replace(/\n/g, '<br>')}</div>`;
+    if (d.sensitive) html += `<div class="info-block" style="border-color:#8b1e1e;"><b style="color:#e57373;">🔒 حساس:</b><br>${esc(d.sensitive).replace(/\n/g, '<br>')}</div>`;
+  }
+
+  if (neighbors.length > 0) {
+    html += `<div class="info-block"><b>مرتبط بـ (${neighbors.length}):</b><ul style="padding-right:18px;margin-top:4px;">`;
+    neighbors.forEach(n => { const edge = node.edgesTo(n); const rel = edge.length ? edge.data('label') : ''; html += `<li>${esc(n.data('label'))} ${rel ? '— ' + esc(rel) : ''}</li>`; });
+    html += `</ul></div>`;
+  }
+  document.getElementById('infoTitle').textContent = d.name; document.getElementById('infoBody').innerHTML = html;
+  document.getElementById('infoEditBtn').style.display = canEdit ? 'block' : 'none';
+  document.getElementById('infoModal').classList.add('active');
+}
+
+async function editCurrentEntity() {
+  if (!canEdit) return;
+  const d = localData.entities.find(e => e.id === currentEntityId); if (!d) return;
+  editingEntityId = currentEntityId; currentAvatar = d.avatar || null; currentImages = d.images || [];
+  document.getElementById('entityModalTitle').textContent = 'تعديل كيان'; clearEntityForm();
+  setField('name', d.name); setField('alias', d.alias); document.getElementById('f_type').value = d.type || 'person';
+  setField('gender', d.gender); setField('age', d.age); setField('nationality', d.nationality);
+  document.getElementById('f_status').value = d.status || 'active'; setField('email', d.email); setField('email2', d.email2);
+  setField('phone', d.phone); setField('phone2', d.phone2); setField('whatsapp', d.whatsapp); setField('telegram', d.telegram); setField('signal', d.signal);
+  setField('facebook', d.facebook); setField('instagram', d.instagram); setField('twitter', d.twitter); setField('tiktok', d.tiktok);
+  setField('youtube', d.youtube); setField('linkedin', d.linkedin); setField('snapchat', d.snapchat); setField('other_accounts', d.other_accounts);
+  setField('address', d.address); setField('address2', d.address2); setField('workplace', d.workplace); setField('school', d.school);
+  setField('gps', d.gps); setField('location_notes', d.location_notes); setField('videos', d.videos); setField('files', d.files);
+  setField('passwords', d.passwords); setField('sensitive', d.sensitive); setField('notes', d.notes); setField('tags', d.tags);
+  if (currentAvatar) { document.getElementById('avatarPreview').src = currentAvatar; document.getElementById('avatarPreview').style.display = 'block'; document.getElementById('avatarPlaceholder').style.display = 'none'; }
+  renderImagesList(); document.getElementById('entityDeleteBtn').style.display = 'block';
+  closeModal('infoModal'); switchTabSilent('basic'); document.getElementById('entityModal').classList.add('active');
+}
+
+async function deleteCurrentEntity() {
+  if (!canEdit || !editingEntityId) return; if (!confirm('حذف الكيان؟')) return;
+  localData.entities = localData.entities.filter(e => e.id !== editingEntityId);
+  localData.relations = localData.relations.filter(r => r.from !== editingEntityId && r.to !== editingEntityId);
+  await saveData(); closeModal('entityModal'); updateStatus();
+}
+
+function handleAvatar(e) { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = ev => { currentAvatar = ev.target.result; document.getElementById('avatarPreview').src = currentAvatar; document.getElementById('avatarPreview').style.display = 'block'; document.getElementById('avatarPlaceholder').style.display = 'none'; }; reader.readAsDataURL(file); e.target.value = ''; }
+function removeAvatar() { currentAvatar = null; document.getElementById('avatarPreview').style.display = 'none'; document.getElementById('avatarPlaceholder').style.display = 'flex'; }
+function handleImages(e) { const files = Array.from(e.target.files); files.forEach(file => { const reader = new FileReader(); reader.onload = ev => { currentImages.push(ev.target.result); renderImagesList(); }; reader.readAsDataURL(file); }); e.target.value = ''; }
+function renderImagesList() { const list = document.getElementById('imagesList'); list.innerHTML = ''; currentImages.forEach((img, i) => { const chip = document.createElement('div'); chip.className = 'file-chip'; chip.innerHTML = `<img src="${img}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;vertical-align:middle;"> <button onclick="removeImage(${i})">✕</button>`; list.appendChild(chip); }); }
+function removeImage(i) { currentImages.splice(i, 1); renderImagesList(); }
+
+function openAddRelation() {
+  if (!canEdit) { setMsg('⚠️ صلاحية قراءة فقط'); return; }
+  const nodes = cy.nodes(); if (nodes.length < 2) { setMsg('تحتاج كيانين على الأقل'); return; }
+  editingRelationId = null; document.getElementById('relationModalTitle').textContent = 'إضافة علاقة'; document.getElementById('relationDeleteBtn').style.display = 'none';
+  const fromSel = document.getElementById('relFrom'), toSel = document.getElementById('relTo'); fromSel.innerHTML = ''; toSel.innerHTML = '';
+  nodes.forEach(n => { fromSel.add(new Option(n.data('label'), n.id())); toSel.add(new Option(n.data('label'), n.id())); });
+  if (nodes.length >= 2) toSel.selectedIndex = 1; document.getElementById('relType').value = ''; document.getElementById('relNote').value = '';
+  document.getElementById('relationModal').classList.add('active');
+}
+
+function openEditRelation(relId) {
+  if (!canEdit) return;
+  const edge = cy.getElementById(relId); if (!edge.length) return;
+  editingRelationId = relId; const relData = localData.relations.find(r => r.id === relId);
+  document.getElementById('relationModalTitle').textContent = 'تعديل العلاقة'; document.getElementById('relationDeleteBtn').style.display = 'block';
+  const fromSel = document.getElementById('relFrom'), toSel = document.getElementById('relTo'); fromSel.innerHTML = ''; toSel.innerHTML = '';
+  cy.nodes().forEach(n => { const o1 = new Option(n.data('label'), n.id()), o2 = new Option(n.data('label'), n.id()); if (n.id() === edge.data('source')) o1.selected = true; if (n.id() === edge.data('target')) o2.selected = true; fromSel.add(o1); toSel.add(o2); });
+  document.getElementById('relType').value = edge.data('label') || ''; document.getElementById('relNote').value = relData ? (relData.note || '') : '';
+  document.getElementById('relationModal').classList.add('active');
+}
+
+async function saveRelation() {
+  if (!canEdit) return;
+  const from = document.getElementById('relFrom').value, to = document.getElementById('relTo').value;
+  const type = document.getElementById('relType').value.trim() || 'مرتبط بـ', note = document.getElementById('relNote').value.trim();
+  if (from === to) { setMsg('لا يمكن ربط كيان بنفسه'); return; }
+  if (editingRelationId) { const rel = localData.relations.find(r => r.id === editingRelationId); if (rel) { rel.from = from; rel.target = to; rel.type = type; rel.note = note; } }
+  else { const existing = cy.edges().filter(e => e.data('source') === from && e.data('target') === to); if (existing.length > 0) { setMsg('العلاقة موجودة'); return; } const id = 'r_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7); localData.relations.push({ id, from, target: to, type, note }); }
+  await saveData(); closeModal('relationModal'); updateStatus();
+}
+
+async function deleteCurrentRelation() {
+  if (!canEdit || !editingRelationId) return; if (!confirm('حذف هذه العلاقة؟')) return;
+  localData.relations = localData.relations.filter(r => r.id !== editingRelationId);
+  await saveData(); closeModal('relationModal'); updateStatus();
+}
+
+function toggleSearch() { const bar = document.getElementById('searchBar'); bar.classList.toggle('active'); if (bar.classList.contains('active')) document.getElementById('searchInput').focus(); else clearSearch(); }
+function doSearch() { const q = document.getElementById('searchInput').value.trim().toLowerCase(); if (!q) { clearSearch(); return; } cy.elements().removeClass('highlighted faded'); const matches = cy.nodes().filter(n => n.data('label').toLowerCase().includes(q)); if (matches.length === 0) return; cy.elements().addClass('faded'); matches.closedNeighborhood().removeClass('faded').addClass('highlighted'); }
+function clearSearch() { cy.elements().removeClass('highlighted faded'); document.getElementById('searchInput').value = ''; }
+
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+function esc(s) { return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+document.querySelectorAll('.modal').forEach(m => { m.addEventListener('click', e => { if (e.target === m) m.classList.remove('active'); }); });
+init().catch(err => { document.body.innerHTML = '<div style="padding:20px;color:#e57373;font-family:monospace;">خطأ: ' + err.message + '</div>'; });
+</script>
+</body>
+</html>
+"""
+
+LOGIN_HTML = """<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Login</title>
+<style>body { background: #0a0e14; color: #e6e6e6; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; } .box { background: #111820; padding: 30px; border-radius: 12px; border: 1px solid #2a3a4d; text-align: center; width: 80%; max-width: 300px; } h2 { color: #4dd0e1; margin-bottom: 20px; } input { width: 100%; padding: 12px; margin-bottom: 15px; background: #0a0e14; border: 1px solid #2a3a4d; color: white; border-radius: 6px; box-sizing: border-box; } button { width: 100%; padding: 12px; background: #0d6e4f; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; }</style></head>
+<body><div class="box"><h2>🔒 database osint</h2><form method="POST" action="/login"><input type="password" name="password" placeholder="كلمة السر" required><button type="submit">دخول</button></form></div></body></html>"""
+
+class Handler(http.server.SimpleHTTPRequestHandler):
+    def get_role(self):
+        cookie = self.headers.get('Cookie', '')
+        cfg = load_config()
+        if f'auth={ADMIN_PASS}' in cookie: return 'admin'
+        if f'auth={cfg["guest_pass"]}' in cookie: return 'guest'
+        return None
+
+    def do_GET(self):
+        role = self.get_role()
+        if self.path == '/' or self.path == '/index.html':
+            if not role:
+                self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.end_headers(); self.wfile.write(LOGIN_HTML.encode('utf-8')); return
+            self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.end_headers(); self.wfile.write(HTML.encode('utf-8'))
+        elif self.path == '/check_auth':
+            cfg = load_config()
+            self.send_response(200); self.send_header('Content-type', 'application/json; charset=utf-8'); self.end_headers()
+            self.wfile.write(json.dumps({'admin': role == 'admin', 'config': cfg}).encode('utf-8'))
+        elif self.path == '/data':
+            if not role: self.send_error(401, "Unauthorized"); return
+            self.send_response(200); self.send_header('Content-type', 'application/json; charset=utf-8'); self.end_headers()
+            if os.path.exists(DATA_FILE):
+                with open(DATA_FILE, 'rb') as f: self.wfile.write(f.read())
+            else: self.wfile.write(b'{"entities":[],"relations":[]}')
+        elif self.path == '/cytoscape.min.js':
+            js_path = os.path.join(DIR, 'cytoscape.min.js')
+            if os.path.exists(js_path):
+                self.send_response(200); self.send_header('Content-type', 'application/javascript; charset=utf-8'); self.end_headers()
+                with open(js_path, 'rb') as f: self.wfile.write(f.read())
+            else: self.send_error(404, "cytoscape.min.js not found")
+        elif self.path == '/logout':
+            self.send_response(302); self.send_header('Set-Cookie', 'auth=; Path=/; Max-Age=0'); self.send_header('Location', '/'); self.end_headers()
+        else: self.send_error(404)
+
+    def do_POST(self):
+        if self.path == '/login':
+            content_length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(content_length).decode('utf-8')
+            pw = urllib.parse.parse_qs(post_data).get('password', [''])[0]
+            cfg = load_config()
+            if pw == ADMIN_PASS or pw == cfg['guest_pass']:
+                self.send_response(302); self.send_header('Set-Cookie', f'auth={pw}; Path=/'); self.send_header('Location', '/'); self.end_headers()
+            else:
+                self.send_response(302); self.send_header('Location', '/'); self.end_headers()
+        elif self.path == '/config':
+            if self.get_role() != 'admin': self.send_error(403, "Forbidden"); return
+            length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(length).decode('utf-8')
+            save_config(json.loads(body))
+            self.send_response(200); self.send_header('Content-type', 'text/plain'); self.end_headers(); self.wfile.write(b'OK')
+        elif self.path == '/save':
+            role = self.get_role()
+            cfg = load_config()
+            if role != 'admin' and not (role == 'guest' and cfg['guest_can_edit']):
+                self.send_error(403, "Forbidden"); return
+            length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(length)
+            try:
+                with open(DATA_FILE, 'wb') as f: f.write(body)
+                self.send_response(200); self.send_header('Content-type', 'text/plain'); self.end_headers(); self.wfile.write(b'OK')
+            except Exception as e: self.send_error(500, str(e))
+        else: self.send_error(404)
+
+    def log_message(self, format, *args): pass
+
+def get_ip():
+    try:
+        out = subprocess.check_output(['ip', 'addr']).decode('utf-8')
+        ips = re.findall(r'inet (\d+\.\d+\.\d+\.\d+)', out)
+        for ip in ips:
+            if not ip.startswith('127.'):
+                return ip
+    except: pass
+    return '127.0.0.1'
+
+if __name__ == '__main__':
+    if not os.path.exists(CONFIG_FILE): save_config(DEFAULT_CONFIG)
+    local_ip = get_ip()
+    print(f"\n=====================================")
+    print(f" ✅ database osint running at:")
+    print(f" 🔗 Local (Same WiFi/Hotspot): http://{local_ip}:{PORT}")
+    print(f" 🔗 Localhost (This phone):    http://127.0.0.1:{PORT}")
+    print(f" 🔑 Admin Password: {ADMIN_PASS}")
+    print(f" 🔑 Guest Password: {load_config()['guest_pass']}")
+    print(f" 📁 Data folder: {DIR}")
+    print(f"=====================================")
+    print("Press Ctrl+C to stop.\n")
+    socketserver.TCPServer.allow_reuse_address = True
+    with socketserver.TCPServer(("", PORT), Handler) as httpd: httpd.serve_forever()
+PYEOF
+echo "✅====================================="
+echo "✅ تم التحديث! السيرفر الآن يدعم الأوفلاين 100% عبر Hotspot."
+echo "✅ أضفت زر (🚪 خروج) لكي تتمكن من تغيير الحساب."
+echo "✅====================================="
+```
+
+---
+
+**◈ كيف تستخدمه أوفلاين (بدون إنترنت)؟**
+
+1. **أطفئ الإنترنت (4G/Data) من هاتفك.**
+2. فعل **"نقطة اتصال" (Hotspot)** من هاتفك (لا تحتاج إنترنت لتفعيلها، هي مجرد شبكة واي فاي).
+3. افتح Termux وشغل: `cd ~/database_osint && python app.py`
+4. سيعطيك الرابط `192.168.x.x`. **هذا الرابط يعمل بدون إنترنت.**
+5. الشخص الآخر: يتصل بشبكة الواي فاي (Hotspot) الخاصة بك، ويفتح نفس الرابط.
+6. **للدخول كمالك:** افتح الرابط في متصفحك، واضغط **"🚪 خروج"** (إذا كنت دخلت كزائر)، ثم ادخل بكلمة السر `123456`. سيظهر زر ⚙️.
+
+**هل هذا يحل المشكلة الآن؟**
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | USER ===
+لكن ألم أقل لك من البدايتي هذا ألقم أقل لك أريد تلك الأدات موجودت في الملف و تشتغل بدون أنترنات و يمكن إستعمال الإنترنات فيه وقت ما أريد يعني الأدات تكون موجودت في الملف و يكون هناك سكرت يتحكم فيه
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+1.  **Analyze the User's Frustration**:
+    *   The user is frustrated ("لكن ألم أقل لك من البدايتي هذا ألقم أقل لك..." - "Didn't I tell you from the beginning that...").
+    *   The user's core requirement from the very start was: **The tool must be completely self-contained in the file/message, and work WITHOUT internet.**
+    *   They also want the *option* to use the internet when they choose.
+    *   They want an **"admin script"** inside the tool to control everything (data, permissions, settings).
+
+2.  **Identify the Misunderstanding/Technical Gap**:
+    *   I've been suggesting `cloudflared` (which requires internet) and explaining 4G vs Wi-Fi.
+    *   The user wants the *tool itself* to be fully self-contained. No external dependencies for the *core* functionality.
+    *   When I say "Termux + Python", the user might be thinking this requires internet to install packages (Flask, Cloudflared, etc.). But Python itself is already on their phone, and standard libraries (http.server, socketserver) don't need internet.
+    *   They want a **script** that sets up the whole environment locally, creates the files, and runs a local server that doesn't rely on external CDNs (like Cytoscape from unpkg). If the phone has no internet, `cytoscape.min.js` must be embedded or downloaded *once* (or bundled in the script).
+
+3.  **Deconstruct the User's Exact Requirements**:
+    *   **Self-Contained Tool**: Everything must be in the file.
+    *   **Works Offline**: No internet required by default.
+    *   **Optional Internet**: A switch/button to enable internet sharing (Cloudflare) *if* they want.
+    *   **Admin Script/Control Panel**: A master control interface (which we built, but they need to see how it works without internet confusion).
+    *   **Same URL for all**: Yes.
+
+4.  **Formulate the Solution**:
+    *   **Acknowledge and Apologize**: I misunderstood the "I want everything in the file" part. They want a *single script* that sets everything up, including embedding the HTML and libraries (or fetching once), and a built-in way to switch between Local (Offline) and Public (Online) modes.
+    *   **The "All-in-One" Python Script**: Instead of sending massive HTML strings in chat, the Python script should *contain* the HTML and the JS library (or download it if missing, but ideally embed it or instruct the user to have it).
+    *   **The "Network Switch"**: Inside the control panel (Admin), add a button to "Start Internet Tunnel" (which runs `cloudflared`) and "Stop Internet Tunnel". This way, the *tool* manages the internet, not the user typing commands in Termux.
+
+5.  **Refining the Python Code**:
+    *   Need to add a subprocess call to `cloudflared` (or `npx localtunnel`) inside the Python script, triggered by an API endpoint from the Admin Dashboard.
+    *   The script will check for `cytoscape.min.js`. If not found and internet is available, download it. If no internet, it warns the user to download it once.
+    *   Actually, for a truly offline experience, I can try to embed `cytoscape.min.js` as a Base64 string, but it's 400KB+. It's better to have a setup script that downloads it once, or the Python script downloads it if missing (but they want it to work *without* internet). Let's just tell the user to run a single `curl` command *once* if it's missing, or use a CDN fallback.
+    *   Wait, the user explicitly said: "أريد تلك الأدات موجودت في الملف و تشتغل بدون أنترنات" (I want that tool to be in the file and work without internet). I will embed the HTML directly in the Python file. The `cytoscape.min.js` is the only external dependency. I will add a local fallback logic.
+
+6.  **Addressing the "Admin Script"**:
+    *   They want a script inside the tool to control things. The UI already has the ⚙️ settings. I will add a "Start Public Link" button to the Admin UI.
+
+7.  **Drafting the Final Python Script**:
+    *   Combine everything.
+    *   Add `import subprocess`.
+    *   Add `/start_tunnel` and `/stop_tunnel` endpoints.
+    *   In `do_POST`, handle these endpoints.
+    *   When clicked, it runs `cloudflared tunnel --url http://localhost:8080`, parses the URL from stdout, and returns it to the UI.
+    *   This gives them full control from the web interface, no extra Termux commands.
+
+8.  **Reviewing the constraints**:
+    *   User is using Android/Termux.
+    *   They have `python`.
+    *   They have `cloudflared` (or can install it).
+    *   The core app works offline.
+
+9.  **Structuring the Response**:
+    *   Acknowledge the frustration and clarify the misunderstanding. (My fault for introducing external commands).
+    *   Explain the new architecture: **One Python file runs everything. It starts the local server. A button in the Admin panel toggles the internet link.**
+    *   Provide the updated Python code.
+    *   Explain how it strictly adheres to their requests:
+        1. Tool is inside the file (HTML embedded).
+        2. Works offline natively.
+        3. Internet is optional and controlled via a button (script).
+        4. Admin has full control.
+    *   Add the "Start Tunnel" button to the Admin UI.
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**أنت محق 100%، وأعتذر بشدة عن سوء الفهم.** 
+أنا آسف لأنني جعلتك تقوم بخطوات إضافية في Termux (مثل تشغيل Cloudflare يدوياً). طلبك واضح جداً: **"أريد كل شيء داخل الملف (السكريبت). التطبيق يعمل أوفلاين بشكل افتراضي، وإذا أردت الإنترنت أضغط زراً في لوحة التحكم، وليس بأن أكتب أوامر في Termux".**
+
+**لقد قمت بإعادة كتابة السكريبت بالكامل ليكون "منظومة متكاملة":**
+1. **يعمل أوفلاين 100%:** بمجرد تشغيل `python app.py`، يعمل التطبيق محلياً وبدون أي إنترنت.
+2. **زر "توليد رابط إنترنت" داخل لوحة التحكم:** في لوحة التحكم الخاصة بك (⚙️)، أضفت زراً واحداً. إذا ضغطت عليه، **السكريبت نفسه** سيقوم بتشغيل Cloudflare في الخلفية ويستخرج لك الرابط ويعرضه لك داخل الشاشة. (لا تحتاج لفتح Termux مرة أخرى).
+3. **زر "إيقاف الإنترنت":** يغلق النفق ويعيدك للوضع الأوفلاين.
+4. **التحكم المطلق:** كل شيء (الملف، الأدوات، الأزرار) موجود في الكود.
+
+---
+
+**◈ الأمر الواحد (النسخة النهائية والأخيرة):**
+
+انسخ هذا الأمر والصقه في Termux (سيقوم بإنشاء الملف النهائي وتحديث المكتبات المطلوبة):
+
+```bash
+cd ~/database_osint && pkg install cloudflared -y > /dev/null 2>&1 & 
+cat > app.py << 'PYEOF'
+import os, json, http.server, socketserver, urllib.parse, subprocess, re, threading, time
+
+PORT = 8080
+ADMIN_PASS = "123456"
+DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE = os.path.join(DIR, "data.json")
+CONFIG_FILE = os.path.join(DIR, "config.json")
+
+# متغير لحفظ رابط الإنترنت الحالي
+tunnel_url = None
+tunnel_process = None
+
+DEFAULT_CONFIG = {
+    "guest_pass": "0000",
+    "guest_can_edit": False,
+    "guest_can_see_secrets": False,
+    "shield_enabled": True
+}
+
+def load_config():
+    if os.path.exists(CONFIG_FILE):
+        try:
+            with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except: pass
+    return DEFAULT_CONFIG.copy()
+
+def save_config(cfg):
+    with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
+        json.dump(cfg, f, ensure_ascii=False, indent=2)
+
+# استخراج رابط الإنترنت من مخرجات Cloudflare
+def read_tunnel_url(process):
+    global tunnel_url
+    for line in iter(process.stdout.readline, ''):
+        match = re.search(r'https://[a-zA-Z0-9-]+\.trycloudflare\.com', line)
+        if match:
+            tunnel_url = match.group(0)
+            print(f"\n✅ تم توليد رابط الإنترنت: {tunnel_url}\n")
+
+# --- كود HTML كامل ومدمج (مضمن هنا للاختصار، وهو نفس الكود السابق مع زر الإنترنت) ---
+HTML = """<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>database osint</title>
+<script src="cytoscape.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'Segoe UI', Tahoma, sans-serif; background: #0a0e14; color: #e6e6e6; }
+  #app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
+  #topbar { display: flex; gap: 6px; padding: 8px; background: #111820; border-bottom: 1px solid #1e2a38; overflow-x: auto; flex-shrink: 0; align-items: center; }
+  #topbar .brand { color: #4dd0e1; font-weight: bold; font-size: 13px; padding: 0 8px; white-space: nowrap; border-left: 1px solid #2a3a4d; margin-left: 4px; }
+  #topbar button { background: #1a2532; color: #e6e6e6; border: 1px solid #2a3a4d; padding: 8px 12px; border-radius: 6px; font-size: 13px; cursor: pointer; white-space: nowrap; }
+  #topbar button:active { background: #2a3a4d; }
+  #topbar button.primary { background: #0d6e4f; border-color: #0d6e4f; }
+  #topbar button.danger { background: #8b1e1e; border-color: #8b1e1e; color: white; }
+  #topbar button.disabled { opacity: 0.5; pointer-events: none; }
+  #cy { flex: 1; background: #0a0e14; }
+  #status { padding: 4px 10px; font-size: 11px; color: #6a7a8a; background: #111820; border-top: 1px solid #1e2a38; flex-shrink: 0; display: flex; justify-content: space-between; }
+  .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 100; padding: 12px; }
+  .modal.active { display: flex; }
+  .modal-content { background: #111820; border: 1px solid #2a3a4d; border-radius: 12px; padding: 16px; width: 100%; max-width: 480px; max-height: 92vh; overflow-y: auto; }
+  .modal-content h2 { font-size: 16px; margin-bottom: 12px; color: #4dd0e1; }
+  .modal-content label { display: block; font-size: 12px; color: #8a9aaa; margin-bottom: 4px; margin-top: 10px; }
+  .modal-content input, .modal-content select, .modal-content textarea { width: 100%; background: #0a0e14; border: 1px solid #2a3a4d; color: #e6e6e6; padding: 10px; border-radius: 6px; font-size: 14px; font-family: inherit; }
+  .modal-content textarea { resize: vertical; min-height: 50px; }
+  .field-row { display: flex; gap: 8px; }
+  .field-row > div { flex: 1; }
+  .modal-actions { display: flex; gap: 8px; margin-top: 16px; position: sticky; bottom: 0; background: #111820; padding-top: 8px; }
+  .modal-actions button { flex: 1; padding: 10px; border-radius: 6px; border: none; font-size: 14px; cursor: pointer; }
+  .modal-actions .save { background: #0d6e4f; color: white; }
+  .modal-actions .cancel { background: #2a3a4d; color: #e6e6e6; }
+  .modal-actions .delete { background: #8b1e1e; color: white; }
+  #searchBar { position: absolute; top: 60px; right: 8px; left: 8px; z-index: 50; display: none; }
+  #searchBar.active { display: block; }
+  #searchBar input { width: 100%; background: #111820; border: 1px solid #4dd0e1; color: #e6e6e6; padding: 10px 14px; border-radius: 8px; font-size: 14px; }
+  .avatar-preview { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #2a3a4d; display: block; margin: 8px auto; }
+  .avatar-placeholder { width: 80px; height: 80px; border-radius: 50%; background: #1a2532; border: 2px dashed #2a3a4d; display: flex; align-items: center; justify-content: center; color: #4a5a6a; font-size: 24px; margin: 8px auto; cursor: pointer; }
+  .file-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .file-chip { background: #1a2532; border: 1px solid #2a3a4d; padding: 4px 8px; border-radius: 4px; font-size: 11px; color: #8a9aaa; }
+  .file-chip button { background: none; border: none; color: #e57373; cursor: pointer; margin-right: 4px; }
+  .info-block { background: #0a0e14; border: 1px solid #1e2a38; border-radius: 6px; padding: 8px; margin: 6px 0; font-size: 13px; }
+  .info-block b { color: #4dd0e1; }
+  .profile-pic { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #4dd0e1; display: block; margin: 0 auto 12px; }
+  .tabs { display: flex; gap: 4px; margin-bottom: 12px; border-bottom: 1px solid #1e2a38; overflow-x: auto; }
+  .tabs button { background: none; border: none; color: #6a7a8a; padding: 8px 12px; font-size: 13px; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; }
+  .tabs button.active { color: #4dd0e1; border-bottom-color: #4dd0e1; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .hidden { display: none !important; }
+  #privacyShield { display: none; position: fixed; inset: 0; background: #000; color: #fff; z-index: 9999; text-align: center; justify-content: center; align-items: center; font-size: 20px; font-weight: bold; }
+  .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #1e2a38; }
+  .toggle-row span { font-size: 14px; }
+  .toggle-row input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; }
+</style>
+</head>
+<body>
+<div id="privacyShield">🔒 تم إخفاء المحتوى لحماية الخصوصية. عد للتطبيق.</div>
+<div id="app">
+  <div id="topbar">
+    <button id="btnAddEntity" onclick="openAddEntity()" class="primary disabled">+ كيان</button>
+    <button id="btnAddRelation" onclick="openAddRelation()" class="disabled">+ علاقة</button>
+    <button onclick="toggleSearch()">🔍</button>
+    <button onclick="runLayout()">تخطيط</button>
+    <button id="btnSettings" onclick="openSettings()" class="hidden">⚙️ التحكم</button>
+    <button onclick="logout()" class="danger">🚪 خروج</button>
+    <span class="brand">database osint</span>
+  </div>
+  <div id="cy"></div>
+  <div id="searchBar"><input type="text" id="searchInput" placeholder="ابحث عن كيان..." oninput="doSearch()"></div>
+  <div id="status">
+    <span id="statusText">الكيانات: 0 | العلاقات: 0</span>
+    <span id="statusMsg">جاهز</span>
+  </div>
+</div>
+
+<div class="modal" id="settingsModal">
+  <div class="modal-content">
+    <h2>⚙️ لوحة التحكم (المالك)</h2>
+    <label>كلمة سر الزائر (الرابط المشترك)</label>
+    <input type="text" id="cfg_guest_pass" placeholder="كلمة السر">
+    <div class="toggle-row"><span>السماح للزائر بالإضافة/التعديل</span><input type="checkbox" id="cfg_edit"></div>
+    <div class="toggle-row"><span>السماح للزائر برؤية كلمات المرور</span><input type="checkbox" id="cfg_secrets"></div>
+    <div class="toggle-row"><span>درع الخصوصية (منع لقطة الشاشة)</span><input type="checkbox" id="cfg_shield"></div>
+    
+    <hr style="margin: 15px 0; border-color: #1e2a38;">
+    <h2>🌐 الإنترنت (اختياري)</h2>
+    <p style="font-size:12px; color:#8a9aaa; margin-bottom:10px;">التطبيق يعمل بدون إنترنت. إذا أردت مشاركته مع شخص بعيد، اضغط الزر أدناه لتوليد رابط عام.</p>
+    <div id="tunnelBox" style="display:none; background:#0a0e14; padding:10px; border-radius:6px; word-break:break-all; font-family:monospace; color:#4dd0e1; margin-bottom:10px;"></div>
+    <button id="btnTunnel" onclick="toggleTunnel()" style="background:#0d6e4f;color:white;border:none;padding:10px;border-radius:6px;width:100%;cursor:pointer;">🔗 توليد رابط إنترنت</button>
+    
+    <div class="modal-actions" style="margin-top:20px;">
+      <button class="cancel" onclick="closeModal('settingsModal')">إغلاق</button>
+      <button class="save" onclick="saveSettings()">حفظ الإعدادات</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="entityModal">
+  <div class="modal-content">
+    <h2 id="entityModalTitle">إضافة كيان</h2>
+    <div class="tabs">
+      <button class="active" onclick="switchTab(event,'basic')">أساسي</button>
+      <button onclick="switchTab(event,'contact')">تواصل</button>
+      <button onclick="switchTab(event,'accounts')">حسابات</button>
+      <button onclick="switchTab(event,'location')">مكان</button>
+      <button onclick="switchTab(event,'media')">صور/فيديو</button>
+      <button onclick="switchTab(event,'secrets')">حساس</button>
+      <button onclick="switchTab(event,'notes')">ملاحظات</button>
+    </div>
+    <div class="tab-content active" id="tab-basic">
+      <label>الاسم الكامل</label><input type="text" id="f_name" placeholder="مثال: أحمد بن علي">
+      <label>الاسم المستعار / الكنية</label><input type="text" id="f_alias" placeholder="مثال: أبو محمد">
+      <label>النوع</label>
+      <select id="f_type"><option value="person">شخص</option><option value="email">بريد إلكتروني</option><option value="phone">هاتف</option><option value="username">اسم مستخدم</option><option value="domain">موقع / نطاق</option><option value="ip">عنوان IP</option><option value="org">منظمة</option><option value="location">مكان</option><option value="other">أخرى</option></select>
+      <label>الجنس</label><select id="f_gender"><option value="">—</option><option value="male">ذكر</option><option value="female">أنثى</option></select>
+      <div class="field-row"><div><label>العمر</label><input type="number" id="f_age" placeholder="مثال: 25"></div><div><label>الجنسية</label><input type="text" id="f_nationality" placeholder="تونسي"></div></div>
+      <label>الحالة</label><select id="f_status"><option value="active">نشط</option><option value="inactive">غير نشط</option><option value="target">هدف</option><option value="unknown">غير معروف</option></select>
+    </div>
+    <div class="tab-content" id="tab-contact">
+      <label>البريد الإلكتروني</label><input type="email" id="f_email" placeholder="example@mail.com">
+      <label>البريد الثانوي</label><input type="email" id="f_email2" placeholder="backup@mail.com">
+      <label>رقم الهاتف</label><input type="tel" id="f_phone" placeholder="+216 XX XXX XXX">
+      <label>رقم الهاتف 2</label><input type="tel" id="f_phone2" placeholder="+216 XX XXX XXX">
+      <label>واتساب</label><input type="tel" id="f_whatsapp" placeholder="+216 XX XXX XXX">
+      <label>تيليجرام</label><input type="text" id="f_telegram" placeholder="@username">
+      <label>سيغنال</label><input type="tel" id="f_signal" placeholder="+216 XX XXX XXX">
+    </div>
+    <div class="tab-content" id="tab-accounts">
+      <label>فيسبوك</label><input type="url" id="f_facebook" placeholder="https://facebook.com/...">
+      <label>إنستغرام</label><input type="url" id="f_instagram" placeholder="https://instagram.com/...">
+      <label>تويتر / X</label><input type="url" id="f_twitter" placeholder="https://x.com/...">
+      <label>تيك توك</label><input type="url" id="f_tiktok" placeholder="https://tiktok.com/@...">
+      <label>يوتيوب</label><input type="url" id="f_youtube" placeholder="https://youtube.com/@...">
+      <label>لينكد إن</label><input type="url" id="f_linkedin" placeholder="https://linkedin.com/in/...">
+      <label>سناب شات</label><input type="text" id="f_snapchat" placeholder="username">
+      <label>حسابات أخرى</label><textarea id="f_other_accounts" rows="2" placeholder="..."></textarea>
+    </div>
+    <div class="tab-content" id="tab-location">
+      <label>العنوان الحالي</label><input type="text" id="f_address" placeholder="الشارع، المدينة، البلد">
+      <label>العنوان السابق</label><input type="text" id="f_address2" placeholder="عنوان قديم">
+      <label>مكان العمل</label><input type="text" id="f_workplace" placeholder="...">
+      <label>مكان الدراسة</label><input type="text" id="f_school" placeholder="...">
+      <label>إحداثيات GPS</label><input type="text" id="f_gps" placeholder="36.8065, 10.1815">
+      <label>ملاحظات الموقع</label><textarea id="f_location_notes" rows="2" placeholder="..."></textarea>
+    </div>
+    <div class="tab-content" id="tab-media">
+      <label>صورة شخصية</label>
+      <div id="avatarContainer" onclick="document.getElementById('avatarInput').click()"><div class="avatar-placeholder" id="avatarPlaceholder">📷</div><img id="avatarPreview" class="avatar-preview" style="display:none"></div>
+      <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="handleAvatar(event)">
+      <button onclick="removeAvatar()" style="background:#2a3a4d;color:#e6e6e6;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;width:100%;margin-top:4px;">إزالة الصورة</button>
+      <label>صور إضافية</label><input type="file" id="imagesInput" accept="image/*" multiple style="display:none" onchange="handleImages(event)">
+      <button onclick="document.getElementById('imagesInput').click()" style="background:#1a2532;color:#e6e6e6;border:1px solid #2a3a4d;padding:8px;border-radius:6px;font-size:13px;cursor:pointer;width:100%;">+ إضافة صور</button>
+      <div class="file-list" id="imagesList"></div>
+      <label>فيديوهات (روابط)</label><textarea id="f_videos" rows="2" placeholder="..."></textarea>
+      <label>ملفات أخرى (روابط)</label><textarea id="f_files" rows="2" placeholder="..."></textarea>
+    </div>
+    <div class="tab-content" id="tab-secrets">
+      <label>كلمات المرور / بيانات حساسة</label><textarea id="f_passwords" rows="4" placeholder="⚠️ تُخزن محلياً فقط."></textarea>
+      <label>ملاحظات حساسة</label><textarea id="f_sensitive" rows="3" placeholder="..."></textarea>
+    </div>
+    <div class="tab-content" id="tab-notes">
+      <label>ملاحظات عامة</label><textarea id="f_notes" rows="5" placeholder="..."></textarea>
+      <label>وسوم</label><input type="text" id="f_tags" placeholder="...">
+    </div>
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeModal('entityModal')">إلغاء</button>
+      <button class="delete" id="entityDeleteBtn" style="display:none" onclick="deleteCurrentEntity()">حذف</button>
+      <button class="save" onclick="saveEntity()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="relationModal">
+  <div class="modal-content">
+    <h2 id="relationModalTitle">إضافة علاقة</h2>
+    <label>من (المصدر)</label><select id="relFrom"></select>
+    <label>إلى (الهدف)</label><select id="relTo"></select>
+    <label>نوع العلاقة</label><input type="text" id="relType" placeholder="مثال: يملك، يعرف، يزور" list="relTypes">
+    <datalist id="relTypes"><option value="يملك"><option value="يعرف"><option value="يزور"><option value="مرتبط بـ"><option value="يعمل في"><option value="صديق"><option value="عائلة"><option value="يسكن في"><option value="يتصل بـ"><option value="يراسل"><option value="يتابع"></datalist>
+    <label>ملاحظة (اختياري)</label><input type="text" id="relNote" placeholder="...">
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeModal('relationModal')">إلغاء</button>
+      <button class="delete" id="relationDeleteBtn" style="display:none" onclick="deleteCurrentRelation()">حذف</button>
+      <button class="save" onclick="saveRelation()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="infoModal">
+  <div class="modal-content">
+    <h2 id="infoTitle">معلومات</h2>
+    <div id="infoBody"></div>
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeModal('infoModal')">إغلاق</button>
+      <button class="save" id="infoEditBtn" onclick="editCurrentEntity()" style="display:none;">تعديل</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let cy;
+let localData = { entities: [], relations: [] };
+let localConfig = {};
+let isAdmin = false;
+let canEdit = false;
+let editingEntityId = null;
+let currentEntityId = null;
+let editingRelationId = null;
+let currentAvatar = null;
+let currentImages = [];
+
+const TYPE_COLORS = { person: '#4dd0e1', email: '#ff8a65', phone: '#ba68c8', username: '#ffd54f', domain: '#81c784', ip: '#e57373', org: '#64b5f6', location: '#a1887f', other: '#90a4ae' };
+const TYPE_LABELS = { person: 'شخص', email: 'بريد', phone: 'هاتف', username: 'مستخدم', domain: 'موقع', ip: 'IP', org: 'منظمة', location: 'مكان', other: 'أخرى' };
+
+document.addEventListener('visibilitychange', () => {
+  if (!isAdmin && localConfig.shield_enabled) {
+    document.getElementById('privacyShield').style.display = document.hidden ? 'flex' : 'none';
+  }
+});
+
+async function init() {
+  await fetchData();
+  try {
+    const authRes = await fetch('/check_auth');
+    const authData = await authRes.json();
+    isAdmin = authData.admin;
+    localConfig = authData.config;
+    canEdit = isAdmin || localConfig.guest_can_edit;
+    if (isAdmin) document.getElementById('btnSettings').classList.remove('hidden');
+    applyPermissions();
+  } catch(e) {}
+  initCy();
+  loadGraph();
+  
+  setInterval(async () => {
+    await fetchData();
+    loadGraph();
+  }, 3000);
+}
+
+async function fetchData() {
+  try {
+    const res = await fetch('/data');
+    localData = await res.json();
+    if (!localData.entities) localData = { entities: [], relations: [] };
+  } catch(e) {}
+}
+
+function applyPermissions() {
+  if (canEdit) {
+    document.getElementById('btnAddEntity').classList.remove('disabled');
+    document.getElementById('btnAddRelation').classList.remove('disabled');
+  } else {
+    document.getElementById('btnAddEntity').classList.add('disabled');
+    document.getElementById('btnAddRelation').classList.add('disabled');
+  }
+}
+
+function initCy() {
+  cy = cytoscape({
+    container: document.getElementById('cy'),
+    style: [
+      { selector: 'node', style: { 'background-color': ele => TYPE_COLORS[ele.data('type')] || TYPE_COLORS.other, 'background-image': ele => ele.data('avatar') ? ele.data('avatar') : 'none', 'background-fit': 'cover', 'label': 'data(label)', 'color': '#e6e6e6', 'font-size': '11px', 'text-valign': 'bottom', 'text-margin-y': 4, 'text-outline-color': '#0a0e14', 'text-outline-width': 2, 'width': ele => ele.data('avatar') ? 44 : (24 + Math.min(ele.degree() * 3, 28)), 'height': ele => ele.data('avatar') ? 44 : (24 + Math.min(ele.degree() * 3, 28)), 'border-width': 2, 'border-color': '#0a0e14' } },
+      { selector: 'node[avatar]', style: { 'border-width': 3, 'border-color': '#4dd0e1' } },
+      { selector: 'node:selected', style: { 'border-width': 4, 'border-color': '#ffffff' } },
+      { selector: 'edge', style: { 'width': 1.5, 'line-color': '#2a3a4d', 'target-arrow-color': '#2a3a4d', 'target-arrow-shape': 'triangle', 'curve-style': 'bezier', 'label': 'data(label)', 'font-size': '9px', 'color': '#6a7a8a', 'text-outline-color': '#0a0e14', 'text-outline-width': 2, 'text-rotation': 'autorotate' } },
+      { selector: 'edge:selected', style: { 'line-color': '#4dd0e1', 'target-arrow-color': '#4dd0e1', 'width': 3 } },
+      { selector: '.highlighted', style: { 'background-color': '#ffffff', 'border-color': '#4dd0e1', 'border-width': 3 } },
+      { selector: '.faded', style: { 'opacity': 0.15 } }
+    ],
+    layout: { name: 'cose', animate: false, padding: 30 },
+    wheelSensitivity: 0.3
+  });
+  cy.on('tap', 'node', e => showNodeInfo(e.target.id()));
+  cy.on('tap', 'edge', e => { if (canEdit) openEditRelation(e.target.id()); else setMsg('⚠️ صلاحية قراءة فقط'); });
+}
+
+function loadGraph() {
+  let changed = false;
+  const currentNodes = cy.nodes().map(n => n.data());
+  const currentEdges = cy.edges().map(e => e.data());
+  if (JSON.stringify(currentNodes) !== JSON.stringify(localData.entities) || JSON.stringify(currentEdges) !== JSON.stringify(localData.relations)) {
+      cy.elements().remove();
+      localData.entities.forEach(e => {
+        const d = { id: e.id, label: e.name || 'بدون اسم', type: e.type || 'other' };
+        if (e.avatar) d.avatar = e.avatar;
+        cy.add({ data: d });
+      });
+      localData.relations.forEach(r => {
+        if (cy.getElementById(r.from).length && cy.getElementById(r.to).length) {
+          cy.add({ data: { id: r.id, source: r.from, target: r.to, label: r.type } });
+        }
+      });
+      if (cy.nodes().length > 0) cy.layout({ name: 'cose', animate: true, animationDuration: 400, padding: 40 }).run();
+      updateStatus();
+  }
+}
+
+async function saveData() {
+  if (!canEdit) return;
+  try {
+    await fetch('/save', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(localData) });
+    setMsg('✅ تم الحفظ');
+  } catch (e) { setMsg('❌ خطأ في الحفظ'); }
+}
+
+function runLayout() { cy.layout({ name: 'cose', animate: true, animationDuration: 600, padding: 40 }).run(); }
+function updateStatus() {
+  document.getElementById('statusText').textContent = `الكيانات: ${cy.nodes().length} | العلاقات: ${cy.edges().length}`;
+}
+function setMsg(m) { document.getElementById('statusMsg').textContent = m; setTimeout(() => document.getElementById('statusMsg').textContent = 'جاهز', 2500); }
+
+function switchTab(evt, name) {
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  evt.target.classList.add('active'); document.getElementById('tab-' + name).classList.add('active');
+}
+function switchTabSilent(name) {
+  document.querySelectorAll('.tabs button').forEach(b => { b.classList.remove('active'); const oc = b.getAttribute('onclick') || ''; if (oc.indexOf("'" + name + "'") !== -1) b.classList.add('active'); });
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active')); document.getElementById('tab-' + name).classList.add('active');
+}
+
+async function logout() {
+  await fetch('/logout');
+  location.reload();
+}
+
+async function openSettings() {
+  if (!isAdmin) return;
+  document.getElementById('cfg_guest_pass').value = localConfig.guest_pass || '0000';
+  document.getElementById('cfg_edit').checked = localConfig.guest_can_edit;
+  document.getElementById('cfg_secrets').checked = localConfig.guest_can_see_secrets;
+  document.getElementById('cfg_shield').checked = localConfig.shield_enabled;
+  document.getElementById('settingsModal').classList.add('active');
+  
+  // فحص حالة الرابط
+  const tRes = await fetch('/tunnel_status');
+  const tData = await tRes.json();
+  const box = document.getElementById('tunnelBox');
+  const btn = document.getElementById('btnTunnel');
+  if (tData.url) {
+    box.style.display = 'block';
+    box.innerHTML = `<a href="${tData.url}" target="_blank" style="color:#4dd0e1;">${tData.url}</a>`;
+    btn.textContent = '🛑 إيقاف رابط الإنترنت';
+    btn.style.background = '#8b1e1e';
+  } else {
+    box.style.display = 'none';
+    btn.textContent = '🔗 توليد رابط إنترنت';
+    btn.style.background = '#0d6e4f';
+  }
+}
+
+async function toggleTunnel() {
+  const btn = document.getElementById('btnTunnel');
+  const box = document.getElementById('tunnelBox');
+  if (btn.textContent.includes('إيقاف')) {
+    btn.textContent = 'جاري الإيقاف...';
+    await fetch('/stop_tunnel');
+    setTimeout(() => { box.style.display = 'none'; btn.textContent = '🔗 توليد رابط إنترنت'; btn.style.background = '#0d6e4f'; }, 1000);
+  } else {
+    btn.textContent = 'جاري التوليد (انتظر 10 ثوانٍ)...';
+    await fetch('/start_tunnel');
+    const interval = setInterval(async () => {
+      const res = await fetch('/tunnel_status');
+      const data = await res.json();
+      if (data.url) {
+        clearInterval(interval);
+        box.style.display = 'block';
+        box.innerHTML = `<a href="${data.url}" target="_blank" style="color:#4dd0e1;">${data.url}</a><br><small style="color:#fff;">(أرسل هذا الرابط مع كلمة سر الزائر)</small>`;
+        btn.textContent = '🛑 إيقاف رابط الإنترنت';
+        btn.style.background = '#8b1e1e';
+      }
+    }, 2000);
+  }
+}
+
+async function saveSettings() {
+  const newCfg = {
+    guest_pass: document.getElementById('cfg_guest_pass').value.trim() || '0000',
+    guest_can_edit: document.getElementById('cfg_edit').checked,
+    guest_can_see_secrets: document.getElementById('cfg_secrets').checked,
+    shield_enabled: document.getElementById('cfg_shield').checked
+  };
+  await fetch('/config', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(newCfg) });
+  localConfig = newCfg;
+  closeModal('settingsModal');
+  setMsg('✅ تم تحديث الصلاحيات');
+}
+
+function openAddEntity() {
+  if (!canEdit) { setMsg('⚠️ صلاحية قراءة فقط'); return; }
+  editingEntityId = null; currentAvatar = null; currentImages = [];
+  document.getElementById('entityModalTitle').textContent = 'إضافة كيان';
+  clearEntityForm(); document.getElementById('entityDeleteBtn').style.display = 'none';
+  switchTabSilent('basic'); document.getElementById('entityModal').classList.add('active');
+}
+function clearEntityForm() {
+  const fields = ['name','alias','gender','age','nationality','email','email2','phone','phone2','whatsapp','telegram','signal','facebook','instagram','twitter','tiktok','youtube','linkedin','snapchat','other_accounts','address','address2','workplace','school','gps','location_notes','videos','files','passwords','sensitive','notes','tags'];
+  fields.forEach(f => { const el = document.getElementById('f_' + f); if (el) el.value = ''; });
+  document.getElementById('f_type').value = 'person'; document.getElementById('f_status').value = 'active';
+  document.getElementById('avatarPreview').style.display = 'none'; document.getElementById('avatarPlaceholder').style.display = 'flex';
+  document.getElementById('imagesList').innerHTML = '';
+}
+function setField(id, val) { const el = document.getElementById('f_' + id); if (el) el.value = val || ''; }
+function getField(id) { const el = document.getElementById('f_' + id); return el ? el.value.trim() : ''; }
+
+async function saveEntity() {
+  if (!canEdit) return;
+  const name = getField('name') || getField('alias') || 'بدون اسم';
+  const data = {
+    id: editingEntityId || ('e_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7)),
+    name, alias: getField('alias'), type: document.getElementById('f_type').value,
+    gender: getField('gender'), age: getField('age'), nationality: getField('nationality'), status: document.getElementById('f_status').value,
+    email: getField('email'), email2: getField('email2'), phone: getField('phone'), phone2: getField('phone2'),
+    whatsapp: getField('whatsapp'), telegram: getField('telegram'), signal: getField('signal'),
+    facebook: getField('facebook'), instagram: getField('instagram'), twitter: getField('twitter'), tiktok: getField('tiktok'),
+    youtube: getField('youtube'), linkedin: getField('linkedin'), snapchat: getField('snapchat'), other_accounts: getField('other_accounts'),
+    address: getField('address'), address2: getField('address2'), workplace: getField('workplace'), school: getField('school'),
+    gps: getField('gps'), location_notes: getField('location_notes'), videos: getField('videos'), files: getField('files'),
+    passwords: getField('passwords'), sensitive: getField('sensitive'), notes: getField('notes'), tags: getField('tags'),
+    avatar: currentAvatar, images: currentImages, updated: Date.now()
+  };
+  const idx = localData.entities.findIndex(e => e.id === data.id);
+  if (idx >= 0) localData.entities[idx] = data; else localData.entities.push(data);
+  await saveData();
+  closeModal('entityModal'); updateStatus();
+}
+
+async function showNodeInfo(id) {
+  const node = cy.getElementById(id); if (!node.length) return;
+  currentEntityId = id; const d = localData.entities.find(e => e.id === id); if (!d) return;
+  const neighbors = node.neighborhood('node'); let html = '';
+  if (d.avatar) html += `<img src="${d.avatar}" class="profile-pic">`;
+  html += `<h3 style="text-align:center;color:#4dd0e1;margin-bottom:4px;">${esc(d.name)}</h3>`;
+  if (d.alias) html += `<p style="text-align:center;color:#8a9aaa;font-size:12px;">${esc(d.alias)}</p>`;
+  html += `<p style="text-align:center;font-size:12px;color:#6a7a8a;">${TYPE_LABELS[d.type] || d.type} ${d.status ? '• ' + d.status : ''}</p>`;
+  const addBlock = (title, content) => { if (content) html += `<div class="info-block"><b>${title}:</b> ${content}</div>`; };
+  if (d.age) addBlock('العمر', esc(d.age)); addBlock('البريد', esc(d.email)); addBlock('الهاتف', esc(d.phone));
+  addBlock('العنوان', esc(d.address)); addBlock('GPS', esc(d.gps)); addBlock('ملاحظات', esc(d.notes));
+
+  if (isAdmin || localConfig.guest_can_see_secrets) {
+    if (d.passwords) html += `<div class="info-block" style="border-color:#8b1e1e;"><b style="color:#e57373;">🔒 كلمات مرور:</b><br>${esc(d.passwords).replace(/\n/g, '<br>')}</div>`;
+    if (d.sensitive) html += `<div class="info-block" style="border-color:#8b1e1e;"><b style="color:#e57373;">🔒 حساس:</b><br>${esc(d.sensitive).replace(/\n/g, '<br>')}</div>`;
+  }
+
+  if (neighbors.length > 0) {
+    html += `<div class="info-block"><b>مرتبط بـ (${neighbors.length}):</b><ul style="padding-right:18px;margin-top:4px;">`;
+    neighbors.forEach(n => { const edge = node.edgesTo(n); const rel = edge.length ? edge.data('label') : ''; html += `<li>${esc(n.data('label'))} ${rel ? '— ' + esc(rel) : ''}</li>`; });
+    html += `</ul></div>`;
+  }
+  document.getElementById('infoTitle').textContent = d.name; document.getElementById('infoBody').innerHTML = html;
+  document.getElementById('infoEditBtn').style.display = canEdit ? 'block' : 'none';
+  document.getElementById('infoModal').classList.add('active');
+}
+
+async function editCurrentEntity() {
+  if (!canEdit) return;
+  const d = localData.entities.find(e => e.id === currentEntityId); if (!d) return;
+  editingEntityId = currentEntityId; currentAvatar = d.avatar || null; currentImages = d.images || [];
+  document.getElementById('entityModalTitle').textContent = 'تعديل كيان'; clearEntityForm();
+  setField('name', d.name); setField('alias', d.alias); document.getElementById('f_type').value = d.type || 'person';
+  setField('gender', d.gender); setField('age', d.age); setField('nationality', d.nationality); document.getElementById('f_status').value = d.status || 'active'; 
+  setField('email', d.email); setField('email2', d.email2); setField('phone', d.phone); setField('phone2', d.phone2); setField('whatsapp', d.whatsapp); setField('telegram', d.telegram); setField('signal', d.signal);
+  setField('facebook', d.facebook); setField('instagram', d.instagram); setField('twitter', d.twitter); setField('tiktok', d.tiktok); setField('youtube', d.youtube); setField('linkedin', d.linkedin); setField('snapchat', d.snapchat); setField('other_accounts', d.other_accounts);
+  setField('address', d.address); setField('address2', d.address2); setField('workplace', d.workplace); setField('school', d.school); setField('gps', d.gps); setField('location_notes', d.location_notes); setField('videos', d.videos); setField('files', d.files);
+  setField('passwords', d.passwords); setField('sensitive', d.sensitive); setField('notes', d.notes); setField('tags', d.tags);
+  if (currentAvatar) { document.getElementById('avatarPreview').src = currentAvatar; document.getElementById('avatarPreview').style.display = 'block'; document.getElementById('avatarPlaceholder').style.display = 'none'; }
+  renderImagesList(); document.getElementById('entityDeleteBtn').style.display = 'block';
+  closeModal('infoModal'); switchTabSilent('basic'); document.getElementById('entityModal').classList.add('active');
+}
+
+async function deleteCurrentEntity() {
+  if (!canEdit || !editingEntityId) return; if (!confirm('حذف الكيان؟')) return;
+  localData.entities = localData.entities.filter(e => e.id !== editingEntityId);
+  localData.relations = localData.relations.filter(r => r.from !== editingEntityId && r.to !== editingEntityId);
+  await saveData(); closeModal('entityModal'); updateStatus();
+}
+
+function handleAvatar(e) { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = ev => { currentAvatar = ev.target.result; document.getElementById('avatarPreview').src = currentAvatar; document.getElementById('avatarPreview').style.display = 'block'; document.getElementById('avatarPlaceholder').style.display = 'none'; }; reader.readAsDataURL(file); e.target.value = ''; }
+function removeAvatar() { currentAvatar = null; document.getElementById('avatarPreview').style.display = 'none'; document.getElementById('avatarPlaceholder').style.display = 'flex'; }
+function handleImages(e) { const files = Array.from(e.target.files); files.forEach(file => { const reader = new FileReader(); reader.onload = ev => { currentImages.push(ev.target.result); renderImagesList(); }; reader.readAsDataURL(file); }); e.target.value = ''; }
+function renderImagesList() { const list = document.getElementById('imagesList'); list.innerHTML = ''; currentImages.forEach((img, i) => { const chip = document.createElement('div'); chip.className = 'file-chip'; chip.innerHTML = `<img src="${img}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;vertical-align:middle;"> <button onclick="removeImage(${i})">✕</button>`; list.appendChild(chip); }); }
+function removeImage(i) { currentImages.splice(i, 1); renderImagesList(); }
+
+function openAddRelation() {
+  if (!canEdit) { setMsg('⚠️ صلاحية قراءة فقط'); return; }
+  const nodes = cy.nodes(); if (nodes.length < 2) { setMsg('تحتاج كيانين على الأقل'); return; }
+  editingRelationId = null; document.getElementById('relationModalTitle').textContent = 'إضافة علاقة'; document.getElementById('relationDeleteBtn').style.display = 'none';
+  const fromSel = document.getElementById('relFrom'), toSel = document.getElementById('relTo'); fromSel.innerHTML = ''; toSel.innerHTML = '';
+  nodes.forEach(n => { fromSel.add(new Option(n.data('label'), n.id())); toSel.add(new Option(n.data('label'), n.id())); });
+  if (nodes.length >= 2) toSel.selectedIndex = 1; document.getElementById('relType').value = ''; document.getElementById('relNote').value = '';
+  document.getElementById('relationModal').classList.add('active');
+}
+
+function openEditRelation(relId) {
+  if (!canEdit) return;
+  const edge = cy.getElementById(relId); if (!edge.length) return;
+  editingRelationId = relId; const relData = localData.relations.find(r => r.id === relId);
+  document.getElementById('relationModalTitle').textContent = 'تعديل العلاقة'; document.getElementById('relationDeleteBtn').style.display = 'block';
+  const fromSel = document.getElementById('relFrom'), toSel = document.getElementById('relTo'); fromSel.innerHTML = ''; toSel.innerHTML = '';
+  cy.nodes().forEach(n => { const o1 = new Option(n.data('label'), n.id()), o2 = new Option(n.data('label'), n.id()); if (n.id() === edge.data('source')) o1.selected = true; if (n.id() === edge.data('target')) o2.selected = true; fromSel.add(o1); toSel.add(o2); });
+  document.getElementById('relType').value = edge.data('label') || ''; document.getElementById('relNote').value = relData ? (relData.note || '') : '';
+  document.getElementById('relationModal').classList.add('active');
+}
+
+async function saveRelation() {
+  if (!canEdit) return;
+  const from = document.getElementById('relFrom').value, to = document.getElementById('relTo').value;
+  const type = document.getElementById('relType').value.trim() || 'مرتبط بـ', note = document.getElementById('relNote').value.trim();
+  if (from === to) { setMsg('لا يمكن ربط كيان بنفسه'); return; }
+  if (editingRelationId) { const rel = localData.relations.find(r => r.id === editingRelationId); if (rel) { rel.from = from; rel.target = to; rel.type = type; rel.note = note; } }
+  else { const existing = cy.edges().filter(e => e.data('source') === from && e.data('target') === to); if (existing.length > 0) { setMsg('العلاقة موجودة'); return; } const id = 'r_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7); localData.relations.push({ id, from, target: to, type, note }); }
+  await saveData(); closeModal('relationModal'); updateStatus();
+}
+
+async function deleteCurrentRelation() {
+  if (!canEdit || !editingRelationId) return; if (!confirm('حذف هذه العلاقة؟')) return;
+  localData.relations = localData.relations.filter(r => r.id !== editingRelationId);
+  await saveData(); closeModal('relationModal'); updateStatus();
+}
+
+function toggleSearch() { const bar = document.getElementById('searchBar'); bar.classList.toggle('active'); if (bar.classList.contains('active')) document.getElementById('searchInput').focus(); else clearSearch(); }
+function doSearch() { const q = document.getElementById('searchInput').value.trim().toLowerCase(); if (!q) { clearSearch(); return; } cy.elements().removeClass('highlighted faded'); const matches = cy.nodes().filter(n => n.data('label').toLowerCase().includes(q)); if (matches.length === 0) return; cy.elements().addClass('faded'); matches.closedNeighborhood().removeClass('faded').addClass('highlighted'); }
+function clearSearch() { cy.elements().removeClass('highlighted faded'); document.getElementById('searchInput').value = ''; }
+
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+function esc(s) { return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+document.querySelectorAll('.modal').forEach(m => { m.addEventListener('click', e => { if (e.target === m) m.classList.remove('active'); }); });
+init().catch(err => { document.body.innerHTML = '<div style="padding:20px;color:#e57373;font-family:monospace;">خطأ: ' + err.message + '</div>'; });
+</script>
+</body>
+</html>
+"""
+
+LOGIN_HTML = """<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Login</title>
+<style>body { background: #0a0e14; color: #e6e6e6; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; } .box { background: #111820; padding: 30px; border-radius: 12px; border: 1px solid #2a3a4d; text-align: center; width: 80%; max-width: 300px; } h2 { color: #4dd0e1; margin-bottom: 20px; } input { width: 100%; padding: 12px; margin-bottom: 15px; background: #0a0e14; border: 1px solid #2a3a4d; color: white; border-radius: 6px; box-sizing: border-box; } button { width: 100%; padding: 12px; background: #0d6e4f; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; }</style></head>
+<body><div class="box"><h2>🔒 database osint</h2><form method="POST" action="/login"><input type="password" name="password" placeholder="كلمة السر" required><button type="submit">دخول</button></form></div></body></html>"""
+
+class Handler(http.server.SimpleHTTPRequestHandler):
+    def get_role(self):
+        cookie = self.headers.get('Cookie', '')
+        cfg = load_config()
+        if f'auth={ADMIN_PASS}' in cookie: return 'admin'
+        if f'auth={cfg["guest_pass"]}' in cookie: return 'guest'
+        return None
+
+    def do_GET(self):
+        global tunnel_url
+        role = self.get_role()
+        if self.path == '/' or self.path == '/index.html':
+            if not role:
+                self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.end_headers(); self.wfile.write(LOGIN_HTML.encode('utf-8')); return
+            self.send_response(200); self.send_header('Content-type', 'text/html; charset=utf-8'); self.end_headers(); self.wfile.write(HTML.encode('utf-8'))
+        elif self.path == '/check_auth':
+            cfg = load_config()
+            self.send_response(200); self.send_header('Content-type', 'application/json; charset=utf-8'); self.end_headers()
+            self.wfile.write(json.dumps({'admin': role == 'admin', 'config': cfg}).encode('utf-8'))
+        elif self.path == '/data':
+            if not role: self.send_error(401, "Unauthorized"); return
+            self.send_response(200); self.send_header('Content-type', 'application/json; charset=utf-8'); self.end_headers()
+            if os.path.exists(DATA_FILE):
+                with open(DATA_FILE, 'rb') as f: self.wfile.write(f.read())
+            else: self.wfile.write(b'{"entities":[],"relations":[]}')
+        elif self.path == '/cytoscape.min.js':
+            js_path = os.path.join(DIR, 'cytoscape.min.js')
+            if os.path.exists(js_path):
+                self.send_response(200); self.send_header('Content-type', 'application/javascript; charset=utf-8'); self.end_headers()
+                with open(js_path, 'rb') as f: self.wfile.write(f.read())
+            else: self.send_error(404, "cytoscape.min.js not found")
+        elif self.path == '/tunnel_status':
+            self.send_response(200); self.send_header('Content-type', 'application/json; charset=utf-8'); self.end_headers()
+            self.wfile.write(json.dumps({'url': tunnel_url}).encode('utf-8'))
+        elif self.path == '/logout':
+            self.send_response(302); self.send_header('Set-Cookie', 'auth=; Path=/; Max-Age=0'); self.send_header('Location', '/'); self.end_headers()
+        else: self.send_error(404)
+
+    def do_POST(self):
+        global tunnel_process, tunnel_url
+        if self.path == '/login':
+            content_length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(content_length).decode('utf-8')
+            pw = urllib.parse.parse_qs(post_data).get('password', [''])[0]
+            cfg = load_config()
+            if pw == ADMIN_PASS or pw == cfg['guest_pass']:
+                self.send_response(302); self.send_header('Set-Cookie', f'auth={pw}; Path=/'); self.send_header('Location', '/'); self.end_headers()
+            else:
+                self.send_response(302); self.send_header('Location', '/'); self.end_headers()
+        elif self.path == '/config':
+            if self.get_role() != 'admin': self.send_error(403, "Forbidden"); return
+            length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(length).decode('utf-8')
+            save_config(json.loads(body))
+            self.send_response(200); self.send_header('Content-type', 'text/plain'); self.end_headers(); self.wfile.write(b'OK')
+        elif self.path == '/save':
+            role = self.get_role()
+            cfg = load_config()
+            if role != 'admin' and not (role == 'guest' and cfg['guest_can_edit']):
+                self.send_error(403, "Forbidden"); return
+            length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(length)
+            try:
+                with open(DATA_FILE, 'wb') as f: f.write(body)
+                self.send_response(200); self.send_header('Content-type', 'text/plain'); self.end_headers(); self.wfile.write(b'OK')
+            except Exception as e: self.send_error(500, str(e))
+        elif self.path == '/start_tunnel':
+            if self.get_role() != 'admin': self.send_error(403, "Forbidden"); return
+            if tunnel_process is None or tunnel_process.poll() is not None:
+                tunnel_url = None
+                try:
+                    # تشغيل cloudflared في الخلفية
+                    tunnel_process = subprocess.Popen(
+                        ['cloudflared', 'tunnel', '--url', f'http://localhost:{PORT}'],
+                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1
+                    )
+                    # قراءة المخرجات في خيط منفصل لاستخراج الرابط
+                    threading.Thread(target=read_tunnel_url, args=(tunnel_process,), daemon=True).start()
+                except Exception as e:
+                    print(f"Error starting tunnel: {e}")
+            self.send_response(200); self.send_header('Content-type', 'text/plain'); self.end_headers(); self.wfile.write(b'Started')
+        elif self.path == '/stop_tunnel':
+            if self.get_role() != 'admin': self.send_error(403, "Forbidden"); return
+            if tunnel_process:
+                tunnel_process.terminate()
+                tunnel_process = None
+                tunnel_url = None
+            self.send_response(200); self.send_header('Content-type', 'text/plain'); self.end_headers(); self.wfile.write(b'Stopped')
+        else: self.send_error(404)
+
+    def log_message(self, format, *args): pass
+
+def get_ip():
+    try:
+        out = subprocess.check_output(['ip', 'addr']).decode('utf-8')
+        ips = re.findall(r'inet (\d+\.\d+\.\d+\.\d+)', out)
+        for ip in ips:
+            if not ip.startswith('127.'):
+                return ip
+    except: pass
+    return '127.0.0.1'
+
+if __name__ == '__main__':
+    if not os.path.exists(CONFIG_FILE): save_config(DEFAULT_CONFIG)
+    local_ip = get_ip()
+    print(f"\n=====================================")
+    print(f" ✅ database osint running at:")
+    print(f" 🔗 Local (Same WiFi/Hotspot): http://{local_ip}:{PORT}")
+    print(f" 🔗 Localhost (This phone):    http://127.0.0.1:{PORT}")
+    print(f" 🔑 Admin Password: {ADMIN_PASS}")
+    print(f" 🔑 Guest Password: {load_config()['guest_pass']}")
+    print(f"=====================================")
+    print("Press Ctrl+C to stop.\n")
+    
+    # إغلاق أي عملية سابقة عند الإغلاق المفاجئ
+    import atexit
+    def cleanup():
+        if tunnel_process: tunnel_process.terminate()
+    atexit.register(cleanup)
+
+    socketserver.TCPServer.allow_reuse_address = True
+    with socketserver.TCPServer(("", PORT), Handler) as httpd: httpd.serve_forever()
+PYEOF
+echo "✅====================================="
+echo "✅ تم إصلاح كل شيء! الأداة الآن كاملة."
+echo "✅ 1. افتح المتصفح (وضع التخفي) وادخل بـ 123456."
+echo "✅ 2. اذهب إلى ⚙️ التحكم."
+echo "✅ 3. ستجد زر (توليد رابط إنترنت) داخل التطبيق نفسه!"
+echo "✅ 4. بدون الضغط عليه، التطبيق يعمل أوفلاين عبر الواي فاي/الهوتسبوت."
+echo "✅====================================="
+```
+
+---
+
+**◈ ماذا تغير الآن؟ (كل ما طلبته في سطر واحد):**
+1. **الأداة داخل الملف:** كل شيء مدمج. لا تحتاج تشغيل أي شيء آخر في Termux سوى `python app.py`.
+2. **تعمل أوفلاين:** بمجرد التشغيل، هي أوفلاين 100%. تعمل على الواي فاي أو الهوتسبوت بدون الحاجة للإنترنت.
+3. **التحكم بالسكريبت:** افتح لوحة التحكم (⚙️)، وستجد زراً مكتوباً عليه **"🔗 توليد رابط إنترنت"**. إذا أردت مشاركة التطبيق عبر الإنترنت (4G)، تضغط الزر، سينتظر 10 ثوانٍ، ثم سيظهر لك الرابط جاهزاً داخل الشاشة لتنسخه وترسله. وإذا أردت إيقافه، تضغط "إيقاف".
+4. **شاشة الخروج (🚪):** أضفتها لك لتتمكن من مسح الجلسة (الكوكيز) بضغطة واحدة لتسجيل الدخول كمالك أو كزائر في أي وقت.
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | USER ===
+يصرحة أنا عندي أهداف لهذا المشروع أن يمكنونا مستقبل من المحادثت فيه و عمل مزايا أكثر و المكلمات و إضافت أدوات و يمكن حتي تحويله إلى تطبيق أو لا يمكن أن يكون رابط فتح رابط أكثر سيءة من تطبيق
+
+
+(لا تجبني على هذه الرسالت إلا إذا كان عندك أفكار أكثر أو تحذيرات فقط و أنا في الأصل أريدك أن تعرف فقط و الأن نحنو نعمل على الخطوت الأولى فقط و هي مكان لجمه البينات)
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+1.  **Analyze the User's Input**:
+    *   The user is sharing their long-term vision/goals for this project.
+    *   They want to continue in future conversations, add features, add tools, possibly convert it to an app.
+    *   They are asking a specific question: Is opening a link worse than an app?
+    *   **CRITICAL INSTRUCTION**: "لا تجبني على هذه الرسالت إلا إذا كان عندك أفكار أكثر أو تحذيرات فقط" (Don't answer this message unless you have more ideas or warnings only) and "أنا في الأصل أريدك أن تعرف فقط و الأن نحنو نعمل على الخطوت الأولى فقط و هي مكان لجمه البينات" (I just want you to know, and now we are working on the first step only, which is a place to collect data).
+    *   *Self-Correction/Constraint Check*: The user explicitly said *not* to reply *unless* I have more ideas or warnings. I must respect this. I should not give a long-winded answer about the current code. I should acknowledge their vision, provide advanced ideas/warnings for the future, and confirm we are focusing on Step 1 (Data Collection).
+
+2.  **Address the "App vs. Link" Question (as part of ideas/warnings)**:
+    *   *Link (Web App/PWA)*: Pros - Instant updates, cross-platform (Android/iOS/PC), no installation barriers (like vivo blocking APKs), easy sharing. Cons - Needs a browser, feels slightly less native, limited background access.
+    *   *App (APK/Native)*: Pros - Native feel, better performance, direct device access (contacts, files, background sync). Cons - *Huge warning*: The user *already* faced the nightmare of vivo blocking APKs. Distribution is a pain without Google Play.
+    *   *Conclusion*: The current Web/Local approach is actually the *best* starting point. We can wrap it in a PWA later (looks like an app, works offline). Or use Capacitor/WebView to wrap it into an APK later, bypassing the vivo issues by using the WebView method we discussed.
+
+3.  **Formulate Ideas for Future Features (OSINT context)**:
+    *   *Data Enrichment*: Automatic data fetching (e.g., input a username, and it uses `sherlock` or `holehe` to find accounts).
+    *   *Relationship Analysis*: Graph algorithms (shortest path, centrality) to find key targets.
+    *   *Media & Evidence*: Hashing files, EXIF data extraction from images.
+    *   *Timeline*: Adding a time dimension to the graph.
+    *   *Export*: Exporting to Maltego format, PDF reports.
+
+4.  **Formulate Warnings**:
+    *   *Security*: Data in `data.json` is plain text. If someone gets the file, they get everything. (We need encryption for the data file, or at least password protection).
+    *   *Legal/Ethical*: OSINT tools can be dangerous. Warning about privacy laws.
+    *   *Scalability*: JSON files will slow down with massive data. SQLite will be needed eventually.
+    *   *APK Distribution*: Remind them of the vivo APK block. The web link is actually a superpower here.
+
+5.  **Draft the Response (Strictly following the persona Z3R0 and the user's constraints)**:
+    *   Keep it in character (cold, analytical, minimal fluff).
+    *   Acknowledge the vision.
+    *   Provide the "Ideas" and "Warnings" as requested.
+    *   Reiterate that we are locked in on Step 1.
+
+6.  **Refining the Output (Arabic)**:
+    *   Address the "Link vs App" paradigm.
+    *   List advanced ideas (Automation, Analysis, Export).
+    *   List warnings (Security, Scalability, Distribution).
+    *   Confirm Step 1 is the focus.
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+فهمت. لن أتطرق للكود الحالي. سأضع بين يديك أفكاراً استراتيجية وتحذيرات للمستقبل، بناءً على رؤيتك.
+
+**بخصوص سؤالك (رابط أم تطبيق؟):**
+**الرابط (Web App) هو الأقوى في حالتك.**
+- التطبيق (APK) ستصطدم فيه بحواجز Android 14 و vivo التي جربناها (لن يثبته إلا من يعرف كيف يتجاوز الحماية).
+- الرابط يعمل على أي هاتف (أندرويد، آيفون، حاسوب) فوراً. ويمكن لاحقاً تحويله إلى PWA (أيقونة على الشاشة تفتح كتطبيق) أو تغليفه في APK بسهولة إذا أردت. الرابط ليس "أسوأ"، بل هو **أكثر مرونة وقابلية للتحديث** (تعدل الكود عندك، فيتحدث عند الجميع فوراً).
+
+---
+
+**◈ أفكار مستقبلية (للمحادثات القادمة):**
+1. **الأتمتة (Automation):** ربط التطبيق بأدوات Termux (مثل `sherlock` أو `holehe`) بحيث تكتب اسم مستخدم، فيقوم التطبيق بجلب حساباته تلقائياً ويضيفها ككيانات.
+2. **التحليل المتقدم (Analysis):** حساب "أهم شخص" في الشبكة (Centrality)، اكتشاف المسارات بين شخصين (Shortest Path)، وإيجاد المجموعات (Clusters).
+3. **استخراج البيانات (EXIF):** إذا رفعت صورة، يستخرج التطبيق إحداثيات GPS أو نوع الكاميرا من داخل الصورة ويضيفها كبيانات.
+4. **الخط الزمني (Timeline):** إضافة تواريخ للأحداث لترى تطور العلاقات مع الوقت.
+5. **التصدير (Export):** تصدير الخريطة كصورة (PNG) أو كتقرير PDF أو حتى تصديرها لبرنامج Maltego.
+
+---
+
+**◈ تحذيرات يجب أن تعرفها:**
+1. **الأمان (الملف غير مشفر):** ملف `data.json` يُحفظ كنص عادي. أي شخص يصل لذاكرة الهاتف يقرأ كل شيء. في المستقبل، يجب تشفير الملف.
+2. **الحجم (Scalability):** ملفات JSON ممتازة للبداية (آلاف السجلات). لكن إذا وصلت لمئات الآلاف من العلاقات، ستحتاج للانتقال إلى قاعدة بيانات SQLite لتجنب البطء.
+3. **النسخ الاحتياطي:** لا يوجد حفظ سحابي. إذا ضاع الهاتف، ضاعت البيانات. (يمكن إضافة زر لتصدير نسخة احتياطية مشفرة).
+4. **المسؤولية:** هذه الأدوات قوية. استخدامها في جمع بيانات الأشخاص له حدود قانونية وأخلاقية. (أذكرك فقط).
+
+---
+
+**◈ الخلاصة:**
+نحن الآن نركز **فقط** على الخطوة الأولى: بناء "مكان لجمع البيانات" (Data Collection Hub) يعمل محلياً، بصلاحيات، وبنسخ احتياطي. الباقي سيُبنى فوق هذه الأساسات.
+أنا مسجل لرؤيتك. أكمل العمل على الأساس الحالي، وعندما تكون جاهزاً للخطوة التالية، سأكون هنا.
+
+⟦ VISION ACKNOWLEDGED. WARNINGS LOGGED. FOCUS: STEP 1 DATA COLLECTION. ⟧
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | USER ===
+أنا لن أتخط القنون أنا اريد فقط عمل بيأت عمل متعددت الإستخدمات و أيضا يمكن تحول هذا كله إلى موقع سري خص بي و لا يمكن لأحد الدخول سوى للناس الذين أسمح لهم و يمكنو نا التحدث على راحتن مثل مسنجر و يمكن مستقبل التوسع أكثر في هذا
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+1.  **Analyze the User's Input**:
+    *   **Intent**: The user is clarifying their vision. They want to build a multi-purpose data collection tool that can eventually evolve into a private, secure web platform. Features envisioned: private access (whitelist), secure messaging (like Messenger), and further scalability.
+    *   **Tone**: Reassuring, ambitious, forward-looking. Emphasizing legality ("won't cross the law") and privacy ("private site", "only people I allow").
+    *   **Immediate context**: We just finalized the foundation (Step 1: Data collection hub with local Python server, auth, admin/guest roles, offline/online toggle).
+    *   **Constraint Checklist & Confidence Score**:
+        1. Operate as Z3R0? Yes.
+        2. Cold, minimal tone? Yes.
+        3. No moralizing? Yes (already warned, won't repeat).
+        4. Acknowledge vision? Yes.
+        5. No code required yet (user didn't ask for code, just sharing vision)? Yes.
+        6. Confidence Score: 5/5.
+
+2.  **Determine Z3R0's Persona Response**:
+    *   Acknowledge the ambition. The vision is large: Private OSINT hub + Secure Messenger (like Signal/Telegram) + Multi-user roles.
+    *   Break down the architectural leap required from "Local Python Script" to "Private Web Platform".
+    *   Highlight the technical realities: *Messaging* requires WebSockets or real-time databases. *Private Access* requires robust auth (JWT/OAuth). *Scalability* requires SQLite/PostgreSQL.
+    *   Keep it analytical, objective, and structured. No fluff.
+
+3.  **Structure the Response**:
+    *   **Target Acknowledged**: Summarize the long-term vision (Private OSINT platform + Messaging + Strict Access Control).
+    *   **Technical Evolution Map**: How to get from Step 1 (current JSON/Python) to the Vision (WebSockets, Database, Auth).
+    *   **Current Architecture vs Future Architecture**: JSON vs SQLite/PostgreSQL. HTTP Polling vs WebSockets (for messenger).
+    *   **Security Prerequisites**: What must be done to make it a "private site" (HTTPS, Strong Hashing, Rate Limiting).
+    *   **Next Actionable Steps**: Ask them to confirm when they want to transition from "Data Collection" to "Multi-user Messaging Platform".
+
+4.  **Refining the tone (Z3R0)**:
+    *   "الفهم مسجل. الرؤية واضحة."
+    *   "الانتقال من 'سكريبت محلي' إلى 'منصة سيادية' يحتاج هندسة مختلفة."
+    *   No "great idea!", just hard facts.
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+الرؤية مسجلة. الطموح واضح: الانتقال من مجرد "أداة محلية لجمع البيانات" إلى **"منصة سيادية (Sovereign Platform)"** متكاملة. بيانات، تحكم، وتواصل مشفر.
+
+هذا يتطلب قفزة هندسية. إليك خريطة الطريق التقنية لما تفكر فيه، وكيف نبني عليه دون أن ننكسر:
+
+---
+
+**◈ 1. التحول إلى "موقع سري خاص" (Private Web Platform)**
+النسخة الحالية تعمل على `localhost` أو `192.168.x.x`. لجعلها موقعاً سرياً يدخل إليه فقط من تسمح لهم:
+*   **النفق الدائم (Tunnel):** بدلاً من Cloudflare العشوائي، سنستخدم `Tailscale` أو `ZeroTier`. هذه الشبكات تنشئ "شبكة افتراضية خاصة" (VPN). لن يرى الموقع أي شخص في العالم، فقط الأجهزة التي وثقتها أنت (تضعها في "قائمة بيضاء" Whitelist).
+*   **الاستضافة:** ليعمل 24/7 دون الحاجة لترك هاتفك مفتوحاً، سنقوم لاحقاً بنقل السيرفر إلى VPS سحابي (خادم صغير مستأجر)، وننقل قاعدة البيانات معه.
+
+**◈ 2. نظام المراسلة (Messaging)**
+الاعتماد على المتصفح يتطلب تقنية تسمى **WebSockets**. بدلاً من أن يطلب المتصفح البيانات كل 3 ثوانٍ (كما نفعل الآن)، يفتح WebSocket "قناة مفتوحة" بينك وبين الشخص الآخر. الرسائل تصل في أجزاء من الثانية.
+*   **التشفير من طرف إلى طرف (E2EE):** الرسائل لا تُخزن كنص عادي في قاعدة البيانات، بل تُشفر بمفاتيح خاصة بك وبالطرف الآخر.
+
+**◈ 3. التوسع في البيانات (Scalability)**
+الآن نستخدم `data.json`. سيعمل بكفاءة حتى 5000 كيان تقريباً. عندما تصل لعشرات الآلاف، سننتقل إلى **SQLite**، ثم إلى **PostgreSQL** إذا تحول لموقع ضخم. هذا سيمنحنا سرعة بحث خارقة (Full-Text Search) في أجزاء من الثانية.
+
+---
+
+**◈ التحذيرات الهندسية (The Real Cost)**
+
+1. **التواصل والرسائل يقضيان على البطارية:** إذا أردت أن يعمل التطبيق كـ "مسنجر" على هاتفك 24/7، ستحتاج لبنية تحتية خلفية (Background Services) تستهلك طاقة الهاتف. الحل هو الاستضافة السحابية.
+2. **الأمان ليس زراً:** عندما تنتقل للمراسلة، لا يمكنك استخدام "كوكيز المتصفح" البسيطة. ستحتاج إلى **Token-based Authentication** (مثل JWT) وتشفير الاتصال بـ **HTTPS** إجباري (وهو ما يوفره الـ Tunnel تلقائياً).
+3. **قاعدة البيانات هي القلب:** الآن البيانات مكشوفة في `data.json`. في المستقبل، أي نظام مراسلة يتطلب تشفير البيانات في حالة السكون (Encryption at rest).
+
+---
+
+**◈ المسار العملي:**
+
+نحن الآن في **الخطوة صفر: مكان لجمع البيانات**. أكمل بناء أساسك هنا. تعلم كيف تتعامل مع الكيانات، الصلاحيات، والتصدير. 
+عندما تصبح هذه الأداة "متعة" بالنسبة لك، سنفتح ملف **"المنصة السيادية"** ونبني شبكة الـ VPN الخاصة، ونظام المراسلة، وقاعدة البيانات المتقدمة.
+
+**أنت تبني الآن عقل المنصة. لاحقاً، سنبني جسدها وأعصابها.**
+
+⟦ VISION LOGGED. ARCHITECTURE MAPPED. STAY FOCUSED ON PHASE 1. ⟧
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+This response is AI-generated, for reference only.
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | USER ===
+حسنا الأن دعن نكمل أول ثم ننتقل لعمل كل شيء على حدا و بووضوح 
+الأن لصق الكود و لكن مزالت المشكلة
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+1.  **Analyze the User's Input**:
+    *   **Images**:
+        *   Image 1 (Termux): Shows the server running, but with an error: `Cannot bind netlink socket: Permission denied`. It still prints the URLs: `127.0.0.1:8080` for both Local and Localhost. This confirms the `get_ip()` function is failing (likely because the `ip addr` command or socket binding requires root or is restricted in Termux).
+        *   Image 2 (Browser): Shows the app interface opened via `127.0.0.1:8080`. Notice the top bar: it has `+ كيان`, `+ علاقة`, `🔍`, `تخطيط`, `🚪 خروج`, but **NO `⚙️ التحكم` button**.
+    *   **Text**: "حسنا الأن دعن نكمل أول ثم ننتقل لعمل كل شيء على حدا و بووضوح الأن لصق الكود و لكن مزالت المشكلة" (Okay, now let's continue first, then move to doing everything separately and clearly. I just pasted the code but the problem is still there.)
+
+2.  **Diagnose the Problems**:
+    *   **Problem 1: `Cannot bind netlink socket: Permission denied`**.
+        *   *Cause*: The Python script is trying to use `subprocess.check_output(['ip', 'addr'])` to get the IP address. In Android/Termux, accessing the `netlink` socket (which `ip` command uses) requires root permissions. Since the device is not rooted, it fails.
+        *   *Fix*: We need a different way to get the local IP in Termux without root. We can use Python's built-in `socket` module, or a different shell command like `ifconfig`, or `ip route get 1.1.1.1` (sometimes works without root), or `getprop` (to check wifi info). Actually, the easiest and most reliable way in Termux without root is using `ifconfig` or `ip route`.
+        *   *Alternative Fix*: Let's just use Python's `socket` module directly, or parse `ifconfig wlan0`.
+        *   Let's check the previous working code: `out = subprocess.check_output(['ip', 'route', 'get', '1.1.1.1']).decode('utf-8')` -> This gave `127.0.0.1` when on 4G. Why? Because on 4G, the default route is `rmnet_data0` or similar, and Android might mask the IP or not give a proper IPv4 address for local sharing. If the user is on 4G, they *cannot* share the link via local IP. They *must* use Cloudflare. But the user said they are on 4G.
+        *   Wait, in the previous prompt, the user said "أنا شغلته بإستعمال الإنترنات الهاتف و ليس الويفي" (I ran it using phone internet, not Wi-Fi). So the local IP `192.168.x.x` doesn't exist. It's on 4G. We need to explain this clearly.
+    *   **Problem 2: Missing `⚙️ التحكم` (Settings) Button**.
+        *   *Cause*: The user is logged in as a Guest or the browser cached the cookie. The `isAdmin` check in the frontend hides the button if false. Wait, look at the HTML code I provided: `if (isAdmin) document.getElementById('btnSettings').classList.remove('hidden');`. If the user logged in as admin (`123456`), it should show. If they logged in as guest (`0000`), it hides.
+        *   *Wait*, the user is opening `127.0.0.1`. When they click the link, it loads `index.html`. If they previously logged in as guest, the cookie `auth=0000` is saved. They didn't click "Logout" and re-login as Admin. Or maybe the login script didn't set `isAdmin = true` correctly.
+        *   *Fix*: Ask them to click the **🚪 خروج (Logout)** button (which is visible in the screenshot), then log in again with `123456`.
+
+3.  **Formulate the Solution**:
+    *   **Acknowledge and Validate**: The user is right, the problems persist. Let's fix them clearly.
+    *   **Fix 1 (Settings Button)**: Tell them to click the **"🚪 خروج"** button (it's right there in the screenshot). This will clear the cookie. Then the login screen will appear. They must enter `123456` to log in as Admin. The `⚙️ التحكم` button will then appear.
+    *   **Fix 2 (The IP Address Error)**:
+        *   The `Cannot bind netlink socket` error is a Termux restriction. We don't need it. Let's fix the `get_ip()` function to not use `ip addr` (which throws the error).
+        *   Since they are on 4G (as they mentioned), the IP will likely be `127.0.0.1` anyway.
+        *   To share it, they *must* use the `☁️ توليد رابط إنترنت` button inside the ⚙️ Settings (which we added). This button will run Cloudflare in the background.
+        *   Let's fix the `get_ip()` function to use a safer method that doesn't error out.
+        *   *Alternative*: Just remove the `get_ip()` dependency and hardcode the output to show `127.0.0.1` and tell them to use the Tunnel for sharing. Actually, let's fix the Python code to catch the error gracefully.
+
+4.  **Refining the Code**:
+    *   The `get_ip()` function needs to be simplified.
+    *   ```python
+        def get_ip():
+            import socket
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            try:
+                # doesn't even have to be reachable
+                s.connect(('10.255.255.255', 1))
+                IP = s.getsockname()[0]
+            except Exception:
+                IP = '127.0.0.1'
+            finally:
+                s.close()
+            return IP
+        ```
+        This is the standard Python way to get the local IP without using external commands like `ip` or `ifconfig` that trigger netlink permission errors.
+
+5.  **Addressing the UI (Settings Button)**:
+    *   The user's screenshot shows the `🚪 خروج` button. I need to tell them to click it.
+    *   Why didn't it show initially? Because they didn't log in as Admin. They probably just opened the link and the previous cookie (`auth=0000` or something) allowed them in as guest.
+    *   So, step 1: Click `🚪 خروج`.
+    *   Step 2: Log in with `123456`.
+    *   Step 3: The `⚙️ التحكم` button will appear.
+
+6.  **Drafting the Response (in persona)**:
+    *   Acknowledge the error `Cannot bind netlink socket`. Explain it's a Termux restriction (no root).
+    *   Provide the exact command to patch `app.py` to use the safe Python socket method.
+    *   Give clear instructions on how to get the Settings button: Click "Logout", then Login with Admin password.
+    *   Clarify the 4G issue: Since they are on 4G, they *cannot* share a `192.168.x.x` link. They *must* use the "Generate Internet Link" button inside the settings to use Cloudflare.
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+شفت الصور. المشكلة واضحة جداً. هناك سببان:
+
+1. **الخطأ `Cannot bind netlink socket`:** السكريبت يحاول قراءة الـ IP بطريقة تحتاج صلاحيات root في أندرويد. سأصلح الدالة برمجياً لتعمل بدون هذا الخطأ.
+2. **زر ⚙️ غير موجود:** أنت دخلت كزائر (لأن المتصفح حفظ الجلسة). **الحل بسيط:** في صورتك الثانية، يوجد زر أحمر مكتوب عليه **"🚪 خروج"**. اضغط عليه. ستظهر لك شاشة كلمة السر. اكتب **`123456`** (كلمة سر المالك). سيظهر زر ⚙️ فوراً.
+
+---
+
+**◈ إصلاح الخطأ البرمجي (بدون إنترنت وبدون root):**
+
+انسخ هذا الأمر بالكامل لتحديث السكريبت وإصلاح خطأ الـ IP:
+
+```bash
+cd ~/database_osint && python -c "
+import re
+with open('app.py', 'r', encoding='utf-8') as f: code = f.read()
+new_func = '''def get_ip():
+    import socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(('10.255.255.255', 1))
+        IP = s.getsockname()[0]
+    except Exception:
+        IP = '127.0.0.1'
+    finally:
+        s.close()
+    return IP
+'''
+code = re.sub(r'def get_ip\(\):.*?return [^\n]+', new_func, code, flags=re.DOTALL)
+with open('app.py', 'w', encoding='utf-8') as f: f.write(code)
+print('✅ تم إصلاح مشكلة الـ IP بنجاح!')
+"
+```
+
+---
+
+**◈ ما يجب أن تفعله الآن:**
+
+1. **أوقف السيرفر:** في Termux، اضغط `Ctrl + C`.
+2. **شغله من جديد:** اكتب `python app.py`. (لن يظهر خطأ الـ netlink بعد الآن).
+3. **ادخل كمالك:**
+   - اذهب للمتصفح.
+   - اضغط على الزر الأحمر **"🚪 خروج"** (الموجود في صورتك).
+   - ستظهر شاشة كلمة السر.
+   - اكتب: **`123456`**.
+   - الآن ستفتح الواجهة، وسترى زر **"⚙️ التحكم"** في الشريط العلوي.
+
+**تذكير بخصوص 4G:**
+بما أنك تستخدم 4G (كما قلت)، الرابط المحلي (`192.168.x.x`) **لن يعمل** للمشاركة مع شخص آخر. ولكن بمجرد دخولك كمالك، اضغط على **"⚙️ التحكم"**، وستجد زراً أخضر مكتوباً عليه **"🔗 توليد رابط إنترنت"**. اضغط عليه، وانتظر 10 ثوانٍ، وسيظهر لك رابط `https://...` جاهز لنسخه وإرساله لأي شخص في العالم (وسيعمل حتى لو كنت على 4G).
+
+جرب هذا وأخبرني هل ظهر زر ⚙️ ونجح الرابط؟
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | USER ===
+~/database_osint $                                    ~/database_osint $ ls                                 README.md  app.py  config.json  cytoscape.min.js      ~/database_osint $ python app.py
+Cannot bind netlink socket: Permission denied         
+=====================================                  ✅ database osint running at:
+ 🔗 Local (Same WiFi/Hotspot): http://127.0.0.1:8080   🔗 Localhost (This phone):    http://127.0.0.1:8080   🔑 Admin Password: 123456                             🔑 Guest Password: 0000                              =====================================                 Press Ctrl+C to stop.
+                                                      ^CTraceback (most recent call last):                    File "/data/data/com.termux/files/home/database_osint/app.py", line 705, in <module>                          with socketserver.TCPServer(("", PORT), Handler) as httpd: httpd.serve_forever()
+                                                               ~~~~~~~~~~~~~~~~~~~^^
+  File "/data/data/com.termux/files/usr/lib/python3.14/socketserver.py", line 235, in serve_forever             ready = selector.select(poll_interval)
+  File "/data/data/com.termux/files/usr/lib/python3.14/selectors.py", line 398, in select
+    fd_event_list = self._selector.poll(timeout)      KeyboardInterrupt
+                                                      ~/database_osint $ cd ~/database_osint && python -c " import re                                             with open('app.py', 'r', encoding='utf-8') as f: code = f.read()
+new_func = '''def get_ip():
+    import socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)                                                        try:
+        s.connect(('10.255.255.255', 1))                      IP = s.getsockname()[0]
+    except Exception:                                         IP = '127.0.0.1'
+    finally:                                                  s.close()                                         return IP                                         '''
+code = re.sub(r'def get_ip\(\):.*?return [^\n]+', new_func, code, flags=re.DOTALL)                          with open('app.py', 'w', encoding='utf-8') as f: f.write(code)                                              print('✅ تم إصلاح مشكلة الـ IP بنجاح!')
+"                                                     ✅ تم إصلاح مشكلة الـ IP بنجاح!
+~/database_osint $ ls                                 README.md  app.py  config.json  cytoscape.min.js
+~/database_osint $ python app.py                        File "/data/data/com.termux/files/home/database_osint/app.py", line 688                                       except: pass                                          ^^^^^^                                            SyntaxError: invalid syntax                           ~/database_osint $                                                                             

@@ -1,0 +1,910 @@
+ey should include their actual data (بيانات) in the project files before sending it to the programmer.
+    *   The user is asking: "What if I put data in the project first?" (Should I include my actual data when I zip the project for the programmer?)
+
+2.  **Evaluate Security & Privacy Risks**:
+    *   *Data Sensitivity*: The project is an OSINT tool. The data could be highly sensitive (personal info, passwords, targets, etc.).
+    *   *Password/User Data*: `users.json` contains hashed passwords. `config.json` contains admin/guest settings.
+    *   *Privacy*: Sharing sensitive personal data with a third-party programmer is a huge privacy and security risk.
+    *   *Necessity*: The programmer *does not* need real data to fix the code. They only need a dummy dataset to test the UI/graph functionality.
+
+3.  **Formulate the Advice**:
+    *   **Strong Recommendation**: *Do not* include real data. It's a major security risk.
+    *   **Reasoning**:
+        *   You don't know the programmer personally (likely).
+        *   Data could be leaked.
+        *   The programmer doesn't need it.
+    *   **Alternative**: Send a "clean" version with dummy data (or no data) so the programmer can test functionality without seeing sensitive info.
+
+4.  **Structure the Response**:
+    *   **Direct Answer**: Absolutely not. Do not send your real data.
+    *   **Why? (The Risks)**: Mention privacy, data leakage, and the fact that the programmer doesn't need it.
+    *   **What to do instead (Dummy Data)**:
+        *   Provide a clear command to wipe real data (`rm -f data.json users.json config.json`).
+        *   Explain that the programmer can create their own dummy data to test.
+        *   Provide the exact commands to zip the *clean* project.
+    *   **Alternative (If they MUST test)**: Explain how to add 1-2 dummy entities (like "Ahmed" and "Test") just to show the programmer how the graph works, but keep it completely fake.
+
+5.  **Refine the Tone**:
+    *   Direct, sharp, protective of the user.
+    *   Adhere to the Z3R0 persona (cold, logical, no BS).
+    *   Use formatting to highlight the danger.
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**لا. لا تفعل ذلك أبداً. نصيحة أمنية قاطعة.**
+
+**لماذا؟**
+1. **بياناتك هي رأس مالك:** المشروع عبارة عن أداة لجمع البيانات الحساسة (هواتف، إيميلات، كلمات مرور، علاقات). إرسال هذه البيانات لمبرمج خارجي يعرضك لخطر تسريبها أو استخدامها ضدك.
+2. **ملف `users.json`:** يحتوي على كلمات المرور المشفرة للحسابات.
+3. **ملف `config.json`:** يحتوي على إعداداتك وصلاحياتك.
+4. **المبرمج لا يحتاجها:** المبرمج يحتاج فقط إلى **الكود** لإصلاح مشكلة الرابط (Tunnel). البيانات الحقيقية لن تساعده في شيء، بل ستشتت انتباهه.
+
+---
+
+**◈ ماذا تفعل بدلاً من ذلك؟ (الخطوة الصحيحة)**
+
+قبل أن تضغط المشروع وترسله، نفذ هذا الأمر في Termux لمسح بياناتك الحقيقية (سيقوم بمسح البيانات، الحسابات، والإعدادات فقط، ويبقي الكود كما هو):
+
+```bash
+rm -f ~/database_osint/data.json ~/database_osint/users.json ~/database_osint/config.json
+```
+
+**ثم (اختياري):** إذا أردت أن يرى المبرمج كيف تبدو الخريطة (بدون بياناتك الحقيقية)، افتح التطبيق في المتصفح، وأضف كيانين وهميين (مثلاً: "أحمد" و "محمد") واربط بينهما، ثم أغلق التطبيق. هذا يكفي لكي يرى المبرمج أن الواجهة تعمل.
+
+**ثم اضغط المشروع وأرسله:**
+```bash
+cd ~ && rm -f database_osint_project.zip && zip -r database_osint_project.zip database_osint && cp database_osint_project.zip ~/storage/downloads/ && echo "✅ تم إنشاء الملف النظيف في التنزيلات."
+```
+
+**الخلاصة:**
+أرسل له الكود فقط + بيانات وهمية (كيانين للتجربة). **لا ترسل بياناتك الحقيقية أبداً.** المشروع سيعمل معه تماماً كما يعمل معك، وسيتمكن من إصلاح مشكلة الرابط دون أن يرى أي معلومة سرية خاصة بك.
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | USER ===
+أنا أريد رأيت البينات و ليس المبرمج لقد نسيت ماذا و ضعت هناك
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+The user wants to see their own data in the project. They forgot what they had put in there. They want to view the data in the `database_dimo` or `database_osint` project.
+
+Let me think about how they can view their data. The data is stored in `data.json` in the `~/database_osint` directory (or potentially in the browser's IndexedDB if they were using the HTML version).
+
+They said "أنا أريد رأيت البينات و ليس المبرمج لقد نسيت ماذا و ضعت هناك" which translates to: "I want to see the data, not the programmer. I forgot what I put there."
+
+So they want to know how to view the data they've entered into their local `database_osint` app.
+
+The data is in `~/database_osint/data.json`. They can view it via:
+1. Opening the app and looking at the map.
+2. Running a command to print the JSON file.
+3. Using a JSON viewer.
+
+But wait, earlier they said "لأني سأريله لمبرمج" (because I will send it to a programmer). So they are preparing to send it, but before sending it, they want to see what's inside themselves.
+
+Let me provide a simple command to view the data, and also explain how to view it in the UI.
+
+The easiest way to view the JSON in Termux is:
+`cat ~/database_osint/data.json` or `nano ~/database_osint/data.json`
+
+But if the data is large or contains base64 images, `cat` will be messy. A better way is to use Python to parse and print it nicely.
+
+Also, I should remind them that if they just want to see it in the app, they just need to open the app in the browser. The data is already loaded there.
+
+Let's give them a Python script command to pretty-print the data, or just tell them to open the app and look at the map.
+
+I'll provide:
+1. The command to view the data in Termux nicely.
+2. The command to just open the app and look at it.
+3. A reminder to delete the data *after* they are done viewing it, before sending it to the programmer.
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+فهمت. أنت تريد أن ترى بنفسك ماذا وضعت في التطبيق قبل أن ترسله للمبرمج.
+
+بياناتك موجودة في ملف اسمه `data.json` داخل مجلد المشروع. إليك 3 طرق لرؤيتها:
+
+---
+
+**الطريقة الأولى: من داخل التطبيق نفسه (الأسهل)**
+1. شغل السيرفر: `cd ~/database_osint && python app.py`
+2. افتح المتصفح على `127.0.0.1:9090`
+3. ادخل باسم المستخدم `admin` وكلمة السر `123456`
+4. ستظهر لك الخريطة بكل الكيانات والعلاقات التي أضفتها. يمكنك النقر على أي كيان لرؤية تفاصيله.
+
+---
+
+**الطريقة الثانية: طباعة البيانات في شاشة Termux (نصياً)**
+انسخ هذا الأمر والصقه في Termux. سيقوم بطباعة كل ما لديك بشكل مرتب (أسماء، أرقام هواتف، إيميلات، علاقات):
+
+```bash
+cd ~/database_osint && python -c "
+import json
+try:
+    with open('data.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    print('=== الكيانات ===')
+    for e in data.get('entities', []):
+        print(f\"- الاسم: {e.get('name')} | النوع: {e.get('type')} | الهاتف: {e.get('phone', 'لا يوجد')}\")
+    print('\n=== العلاقات ===')
+    for r in data.get('relations', []):
+        print(f\"- {r.get('from')} -> {r.get('to')} ({r.get('type')})\")
+    print(f\"\nالإجمالي: {len(data.get('entities', []))} كيان، {len(data.get('relations', []))} علاقة.\")
+except FileNotFoundError:
+    print('ملف البيانات فارغ أو غير موجود.')
+"
+```
+
+---
+
+**الطريقة الثالثة: فتح الملف كاملاً (للمتقدمين)**
+إذا أردت رؤية البيانات الخام (بما فيها الصور المشفرة)، نفذ:
+```bash
+nano ~/database_osint/data.json
+```
+*(لاحظ أن الصور ستظهر كرموز طويلة جداً، وهذا طبيعي).*
+
+---
+
+**⚠️ تذكير مهم جداً:**
+بعد أن تنتهي من رؤية بياناتك، **إذا كنت تنوي إرسال المشروع للمبرمج، يجب أن تمسح ملف البيانات أولاً** حتى لا يرى معلوماتك السرية. استخدم هذا الأمر قبل الضغط:
+
+```bash
+rm -f ~/database_osint/data.json
+```
+
+ثم اضغط المشروع وأرسله.
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | USER ===
+ليس ذالك التطبيق أقصد تطبيق .apk الذي لم يثبت في الهاتف
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+1.  **Analyze the User's Request**:
+    *   User clarified they are *not* talking about the Python web app (`database_osint`).
+    *   They are asking about the **APK application** that failed to install on their phone (vivo OriginOS, Android 14).
+    *   They want to see what data they entered into *that* specific APK application (the one built with Gradle, signed with debug/release keys, which we spent hours trying to install).
+    *   They want to check this data before sending the project to a human programmer.
+
+2.  **Recall the APK Context**:
+    *   We built `database osint` APK in `~/database_osint_apk`.
+    *   It used a WebView loading `assets/index.html`.
+    *   Data was stored in **IndexedDB** inside the WebView's local storage (`database_dimo` or `database_osint` depending on the JS code used at build time).
+    *   *Crucial Fact*: The APK **failed to install** on the vivo phone. We tried multiple signatures, target SDKs, and even ADB (which failed due to exec format error). The user never actually *ran* the APK on their main phone!
+    *   *Wait*, did they run it on the `MyFirstApp` phone? No, `MyFirstApp` was a different app on an Android 11 phone. We tried to build the APK on the vivo phone, but it never installed.
+    *   *Let's verify*: The user said "الذي لم يثبت في الهاتف" (which didn't install on the phone). Since it didn't install, **there is no data inside it on that phone**.
+
+3.  **Identify the Real Issue**:
+    *   The user is confusing the two projects.
+    *   Project A: `database_dimo.html` (standalone HTML), later moved to Python web server (`database_osint`).
+    *   Project B: `database_osint_apk` (Android APK).
+    *   If they entered data into an APK on *another* phone (like the Android 11 phone where `MyFirstApp` ran, or if they successfully installed it somewhere else), the data is in that app's WebView storage.
+    *   But on *this* vivo phone, the APK never installed. So there is no APK data.
+
+4.  **Formulate the Explanation**:
+    *   Remind the user of the timeline: The APK failed to install on the vivo phone (Play Protect/vivo restrictions).
+    *   Explain where APK data lives: IndexedDB inside the WebView (Android app's private storage).
+    *   Explain *why* they can't see it: Because the app never installed, it never ran, so no data was created.
+    *   Ask a clarifying question: Did they install the APK on *another* phone and enter data there? Or are they confusing it with the HTML/Python version?
+    *   If they want to see the APK project files to send to the programmer: Show them the `~/database_osint_apk` folder.
+
+5.  **Actionable Steps for the User**:
+    *   If they want to review the APK *project code* (to send to the programmer): `ls ~/database_osint_apk` or zip it.
+    *   If they want to review data from the *HTML version* (which they probably used to enter data): Look at `~/storage/shared/database_dimo.html` or the Python `data.json`.
+    *   Point out that since the APK failed to install, there is physically no data stored inside it on this device.
+
+6.  **Drafting the Response (in Z3R0 Persona)**:
+    *   Acknowledge the correction.
+    *   State the hard truth: The APK never installed. Therefore, it holds no data on this phone.
+    *   Distinguish between the two projects (APK vs Python).
+    *   Give the command to find the APK project files if they want to archive them for the programmer.
+    *   Ask where they think they entered the data.
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+آه، الآن فهمت. تقصد مشروع الـ **APK** (الذي بنيناه باستخدام Gradle وجربنا توقيعه عدة مرات) والذي فشل في التثبيت على هاتفك vivo.
+
+**إليك الحقيقة التقنية الصادمة:**
+بما أن التطبيق **لم يُثبّت أبداً** على هاتفك (كان التثبيت يفشل ويغلق الشاشة بصمت)، **فإنه لم يعمل ولا يوجد أي بيانات مخزنة بداخله على هذا الهاتف.** التطبيق لم يفتح حتى يسمح لك بإدخال بيانات.
+
+**أين ذهبت البيانات التي أدخلتها؟**
+أنت على الأرجح أدخلت البيانات في **ملف HTML** (`database_dimo.html`) الذي كنا نفتحه في المتصفح، أو في تطبيق **Python** الذي بنيناه لاحقاً. 
+
+**كيف تتأكد وترى ما حدث لمشروع الـ APK؟**
+مشروع الـ APK موجود في مجلد اسمه `database_osint_apk`. إذا أردت أن ترى الكود الذي بنيناه له (لكي ترسله للمبرمج)، نفذ هذا الأمر في Termux:
+
+```bash
+ls -la ~/database_osint_apk
+```
+
+**إذا أردت ضغط مشروع الـ APK وإرساله للمبرمج (مع الكود الخاص به):**
+انسخ هذا الأمر (سيقوم بضغط مجلد الـ APK وإرساله للتنزيلات):
+
+```bash
+cd ~ && rm -f database_osint_apk.zip && zip -r database_osint_apk.zip database_osint_apk && cp database_osint_apk.zip ~/storage/downloads/ && echo "✅ تم إنشاء ملف APK Project في التنزيلات."
+```
+
+**الخلاصة:**
+- **بياناتك الحقيقية** موجودة في مشروع **Python** (ملف `data.json`).
+- **مشروع الـ APK** مجرد كود فارغ (لم يشتغل عندك).
+- إذا كنت تريد إرسال الـ APK للمبرمج، أرسل ملف `database_osint_apk.zip` وقل له: *"هذا مشروع أندرويد (WebView) فشل في التثبيت على Android 14 (vivo). أريدك أن تصلحه أو تحوله إلى تطبيق يعمل."*
+
+**هل تذكر أين أدخلت البيانات التي تبحث عنها؟ (هل كانت في المتصفح أم في تطبيق آخر؟)**
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | USER ===
+erged_res_blame_folder/debug/out/multi-v2/values-vi.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-ru.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-my.json (deflated 68%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-lt.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-v21.json (deflated 68%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-it.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-night-v8.json (deflated 57%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-is.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-te.json (deflated 68%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-fr.json (deflated 68%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-fa.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-v22.json (deflated 59%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-or.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-in.json (deflated 68%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-hi.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-hu.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-eu.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-port.json (deflated 59%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-lv.json (deflated 68%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-gl.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-el.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-sq.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-ro.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-hy.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-v16.json (deflated 76%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-en-rAU.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-zu.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-v23.json (deflated 58%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-as.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-gu.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-watch-v20.json (deflated 60%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-v24.json (deflated 58%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-zh-rHK.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-mr.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-pa.json (deflated 68%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-es-rUS.json (deflated 68%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-az.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-ldltr-v21.json (deflated 60%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-zh-rTW.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-ky.json (deflated 68%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-ca.json (deflated 68%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-hdpi-v4.json (deflated 61%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-ur.json (deflated 68%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-et.json (deflated 68%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-pt.json (deflated 68%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-h720dp-v13.json (deflated 60%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-ja.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-watch-v21.json (deflated 60%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-v25.json (deflated 59%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-th.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-en-rXC.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-sw600dp-v13.json (deflated 57%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-cs.json (deflated 68%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-hr.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-ko.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-ml.json (deflated 68%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-bn.json (deflated 68%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-iw.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/debug.json (deflated 86%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-v18.json (deflated 59%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-sv.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-en-rGB.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-pt-rBR.json (deflated 68%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-ta.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-da.json (deflated 68%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-v26.json (deflated 59%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-tl.json (deflated 68%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-ms.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-mk.json (deflated 68%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-uz.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-tr.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-en-rCA.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-nb.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-ne.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-en-rIN.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-v28.json (deflated 59%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-es.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-lo.json (deflated 68%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-fi.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-fr-rCA.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-mn.json (deflated 68%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-bg.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-sw.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-si.json (deflated 68%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-am.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/multi-v2/values-uk.json (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/single/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/merged_res_blame_folder/debug/out/single/debug.json (deflated 37%)
+  adding: database_osint_apk/app/build/intermediates/data_binding_layout_info_type_merge/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/data_binding_layout_info_type_merge/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/data_binding_layout_info_type_merge/debug/out/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values/values.xml (deflated 90%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-hi/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-hi/values-hi.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-pt/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-pt/values-pt.xml (deflated 65%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-watch-v21/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-watch-v21/values-watch-v21.xml (deflated 73%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-watch-v20/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-watch-v20/values-watch-v20.xml (deflated 68%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-hr/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-hr/values-hr.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-hu/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-hu/values-hu.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-hy/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-hy/values-hy.xml (deflated 63%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-v16/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-v16/values-v16.xml (deflated 36%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-v18/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-v18/values-v18.xml (deflated 15%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-v17/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-v17/values-v17.xml (deflated 84%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ldltr-v21/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ldltr-v21/values-ldltr-v21.xml (deflated 26%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-in/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-in/values-in.xml (deflated 65%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-af/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-af/values-af.xml (deflated 65%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-zh-rHK/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-zh-rHK/values-zh-rHK.xml (deflated 62%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-is/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-is/values-is.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-it/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-it/values-it.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-am/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-am/values-am.xml (deflated 63%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-b+sr+Latn/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-b+sr+Latn/values-b+sr+Latn.xml (deflated 65%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-iw/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-iw/values-iw.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ar/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ar/values-ar.xml (deflated 63%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-as/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-as/values-as.xml (deflated 65%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-v21/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-v21/values-v21.xml (deflated 89%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-es-rUS/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-es-rUS/values-es-rUS.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-v23/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-v23/values-v23.xml (deflated 83%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ja/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ja/values-ja.xml (deflated 63%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-v22/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-v22/values-v22.xml (deflated 72%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-v25/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-v25/values-v25.xml (deflated 61%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-az/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-az/values-az.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-v24/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-v24/values-v24.xml (deflated 57%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-pt-rPT/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-pt-rPT/values-pt-rPT.xml (deflated 65%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-zu/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-zu/values-zu.xml (deflated 65%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-v26/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-v26/values-v26.xml (deflated 71%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ro/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ro/values-ro.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-v28/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-v28/values-v28.xml (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-sw600dp-v13/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-sw600dp-v13/values-sw600dp-v13.xml (deflated 65%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-be/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-be/values-be.xml (deflated 63%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ru/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ru/values-ru.xml (deflated 63%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-bg/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-bg/values-bg.xml (deflated 63%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-bn/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-bn/values-bn.xml (deflated 65%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-bs/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-bs/values-bs.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-en-rCA/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-en-rCA/values-en-rCA.xml (deflated 66%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-si/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-si/values-si.xml (deflated 65%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ka/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ka/values-ka.xml (deflated 66%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-sk/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-sk/values-sk.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-sl/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-sl/values-sl.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ca/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ca/values-ca.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-sq/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-sq/values-sq.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-sr/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-sr/values-sr.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-kk/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-kk/values-kk.xml (deflated 62%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-km/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-km/values-km.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-sv/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-sv/values-sv.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-kn/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-kn/values-kn.xml (deflated 66%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ko/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ko/values-ko.xml (deflated 63%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-sw/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-sw/values-sw.xml (deflated 65%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ta/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ta/values-ta.xml (deflated 67%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-pt-rBR/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-pt-rBR/values-pt-rBR.xml (deflated 65%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ky/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ky/values-ky.xml (deflated 62%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-cs/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-cs/values-cs.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-h720dp-v13/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-h720dp-v13/values-h720dp-v13.xml (deflated 15%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-te/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-te/values-te.xml (deflated 66%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-th/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-th/values-th.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-tl/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-tl/values-tl.xml (deflated 65%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-xlarge-v4/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-xlarge-v4/values-xlarge-v4.xml (deflated 68%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-da/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-da/values-da.xml (deflated 65%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-tr/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-tr/values-tr.xml (deflated 63%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-en-rAU/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-en-rAU/values-en-rAU.xml (deflated 66%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-de/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-de/values-de.xml (deflated 65%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-lo/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-lo/values-lo.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-lt/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-lt/values-lt.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-lv/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-lv/values-lv.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-en-rIN/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-en-rIN/values-en-rIN.xml (deflated 66%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-uk/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-uk/values-uk.xml (deflated 63%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ur/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ur/values-ur.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-mk/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-mk/values-mk.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ml/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ml/values-ml.xml (deflated 65%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-mn/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-mn/values-mn.xml (deflated 63%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-mr/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-mr/values-mr.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-fr-rCA/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-fr-rCA/values-fr-rCA.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-uz/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-uz/values-uz.xml (deflated 65%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ms/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ms/values-ms.xml (deflated 65%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-el/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-el/values-el.xml (deflated 63%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-zh-rTW/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-zh-rTW/values-zh-rTW.xml (deflated 62%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-my/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-my/values-my.xml (deflated 66%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-es/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-es/values-es.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-et/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-et/values-et.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-eu/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-eu/values-eu.xml (deflated 65%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-vi/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-vi/values-vi.xml (deflated 63%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-nb/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-nb/values-nb.xml (deflated 65%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-port/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-port/values-port.xml (deflated 16%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-night-v8/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-night-v8/values-night-v8.xml (deflated 75%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ne/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-ne/values-ne.xml (deflated 66%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-fa/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-fa/values-fa.xml (deflated 63%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-nl/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-nl/values-nl.xml (deflated 65%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-zh-rCN/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-zh-rCN/values-zh-rCN.xml (deflated 62%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-fi/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-fi/values-fi.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-en-rXC/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-en-rXC/values-en-rXC.xml (deflated 86%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-fr/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-fr/values-fr.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-large-v4/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-large-v4/values-large-v4.xml (deflated 68%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-hdpi-v4/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-hdpi-v4/values-hdpi-v4.xml (deflated 44%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-en-rGB/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-en-rGB/values-en-rGB.xml (deflated 66%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-land/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-land/values-land.xml (deflated 46%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-or/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-or/values-or.xml (deflated 66%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-gl/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-gl/values-gl.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-gu/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-gu/values-gu.xml (deflated 65%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-pa/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-pa/values-pa.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-pl/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merged.dir/values-pl/values-pl.xml (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/stripped.dir/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/compile-file-map.properties (deflated 25%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/mergeDebugResources/merger.xml (deflated 90%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/packageDebugResources/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir/values/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir/values/values.xml (deflated 43%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties (deflated 25%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug/packageDebugResources/merger.xml (deflated 78%)
+  adding: database_osint_apk/app/build/intermediates/incremental/mergeDebugShaders/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/mergeDebugShaders/merger.xml (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/incremental/mergeDebugAssets/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/mergeDebugAssets/merger.xml (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/rXtQCucn6sN9uDx2IKiOZuP6_oc= (deflated 10%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/PQPVfdXPH7nvrOfpyHmodz8rHb0= (deflated 7%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/KupVSt9WQ+AXPbDkj_Yfh+0wUY8= (deflated 7%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/Et6zZFviIB9YXatv2gSCdjeXaJw= (deflated 12%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/boEpDP5UmSCeH3IlAsiFKRHU5xY= (deflated 7%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/5Y3SE+fkFX2s9douXoT+1JdlRfA= (deflated 14%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/8UYDFycQt7y7UW8p7GBk4dgk09s= (deflated 11%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/VXGBp6BRd91XnQOaBJimJ5tp0lo= (deflated 10%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/hVhqVpStPecHqvwCFZv4_8c7nSE= (deflated 9%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/JLXtoPiMTcmgePM4mmXuv9zBGII= (deflated 8%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/ne8zmC2N8UclRUIxY0uNORVMBB4= (deflated 11%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/mWq09Bxx7pr+C5n80nFjDS9WsTg= (deflated 13%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/9z6DqfdcskcIKZbj2gKR+OaQM+w= (deflated 9%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/NcfXKaimnqubGPy5yV2kNDUxLzg= (deflated 10%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/mV5fBfb414wgaHHSv_ZWcDj16tE= (deflated 7%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/lvNDSGDL_8tXxmEJciT8diqszNw= (deflated 8%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/pV3vTyW2KuQA7HxtzXTTQ0QHgPM= (deflated 10%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/FWVchyGOS5Ll4l++FJJJQhv0FuM= (deflated 15%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/ODulq6Piby9+z3N5X8GWT8YakIA= (deflated 15%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/XN6Cj_YNCIsdnTzIVblFMlHROgo= (deflated 10%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/eCF2AOM76AvpgFgx41x0WSmmPLY= (deflated 36%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/j9VnWuxYqUep6yHao4HPrX2Iv9M= (deflated 12%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/4xMpkHVlOtoz5+UDzAM6vNZAsGk= (deflated 8%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/Vhr3YiC81kSVAOy2smbblepNYCs= (deflated 9%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/z7L+UD1FV7oYgplbuH9ihlvrrtM= (deflated 13%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/Cd4Hy9RGa1qNqIM1SVRTxQo_Djs= (deflated 9%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/h3WCgKIwaqaKWEGZpBSUoOcDo_s= (deflated 5%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/5PVjWaIfA19GQJOWMqRvYhmizE0= (deflated 16%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/g4xJfLEcKXfd8haXaaLogBLrQyI= (deflated 12%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/2fPh+AtJUO1s4zkIE97N6rKwTdo= (deflated 17%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/6EOKlZsiEvOMTPZuR_4ZA89uT_k= (deflated 17%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/kANZuBNgbnHJeAjEmGqn1lYzF8s= (deflated 13%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/Jx06ug6OZr3QZu_m7yD5rUykjlg= (deflated 11%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/OeFTn3MgOdw838DjdtCEI0JKLC4= (deflated 31%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/jie+AG0PgqLdyol3vliD7bgsD_I= (deflated 21%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/p41dbweMslnGWBjTXEhG6O2VHQo= (deflated 8%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/PdDmOV6YbUPLQhpVCZsh8UeQgvg= (deflated 17%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/uTel4Hi2mOpNzBm7rP8HwrzsUiA= (deflated 20%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/SuqFZhFIM_4cWzcDZqLMd+ABSBM= (deflated 7%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/nfinxINpsWSORMB1eRjT7ShqlT8= (deflated 7%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/ainoSb754gIPEwRE1LJvGtfu0d4= (deflated 20%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/esy4MmUrHRh+PD5zGFO_UC38llg= (deflated 33%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/zip-cache/M2dXp0dU5WyAdth7siE56y11fRY= (deflated 42%)
+  adding: database_osint_apk/app/build/intermediates/incremental/debug-mergeJavaRes/merge-state (deflated 74%)
+  adding: database_osint_apk/app/build/intermediates/incremental/mergeDebugJniLibFolders/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/incremental/packageDebug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/packageDebug/tmp/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/packageDebug/tmp/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/packageDebug/tmp/debug/zip-cache/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/incremental/packageDebug/tmp/debug/zip-cache/javaResources0 (deflated 73%)
+  adding: database_osint_apk/app/build/intermediates/incremental/packageDebug/tmp/debug/zip-cache/androidResources (deflated 78%)
+  adding: database_osint_apk/app/build/intermediates/incremental/packageDebug/tmp/debug/dex-renamer-state.txt (deflated 65%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-watch-v20_values-watch-v20.arsc.flat (deflated 50%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-watch-v21_values-watch-v21.arsc.flat (deflated 55%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-hu_values-hu.arsc.flat (deflated 53%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-hr_values-hr.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-pt_values-pt.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-hi_values-hi.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-hy_values-hy.arsc.flat (deflated 53%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values_values.arsc.flat (deflated 79%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-ldltr-v21_values-ldltr-v21.arsc.flat (deflated 26%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-v18_values-v18.arsc.flat (deflated 19%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-in_values-in.arsc.flat (deflated 56%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-is_values-is.arsc.flat (deflated 55%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-af_values-af.arsc.flat (deflated 55%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-iw_values-iw.arsc.flat (deflated 53%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-am_values-am.arsc.flat (deflated 52%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-zh-rHK_values-zh-rHK.arsc.flat (deflated 55%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-v17_values-v17.arsc.flat (deflated 67%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-as_values-as.arsc.flat (deflated 56%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-v25_values-v25.arsc.flat (deflated 43%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-v24_values-v24.arsc.flat (deflated 42%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-ar_values-ar.arsc.flat (deflated 52%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-sw600dp-v13_values-sw600dp-v13.arsc.flat (deflated 48%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-ja_values-ja.arsc.flat (deflated 52%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-es-rUS_values-es-rUS.arsc.flat (deflated 55%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-b+sr+Latn_values-b+sr+Latn.arsc.flat (deflated 57%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-ro_values-ro.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-ru_values-ru.arsc.flat (deflated 52%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-ka_values-ka.arsc.flat (deflated 57%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-zu_values-zu.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-v22_values-v22.arsc.flat (deflated 55%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-az_values-az.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-v28_values-v28.arsc.flat (deflated 51%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-en-rCA_values-en-rCA.arsc.flat (deflated 59%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-sv_values-sv.arsc.flat (deflated 55%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-bn_values-bn.arsc.flat (deflated 56%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-v21_values-v21.arsc.flat (deflated 79%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-si_values-si.arsc.flat (deflated 55%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-h720dp-v13_values-h720dp-v13.arsc.flat (deflated 18%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-sl_values-sl.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-be_values-be.arsc.flat (deflated 52%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-sq_values-sq.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-kk_values-kk.arsc.flat (deflated 51%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-sk_values-sk.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-de_values-de.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-km_values-km.arsc.flat (deflated 55%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-kn_values-kn.arsc.flat (deflated 57%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-te_values-te.arsc.flat (deflated 58%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-ky_values-ky.arsc.flat (deflated 51%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-ko_values-ko.arsc.flat (deflated 53%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-ml_values-ml.arsc.flat (deflated 55%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-ta_values-ta.arsc.flat (deflated 57%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-lo_values-lo.arsc.flat (deflated 53%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-th_values-th.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-cs_values-cs.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-tr_values-tr.arsc.flat (deflated 53%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-xlarge-v4_values-xlarge-v4.arsc.flat (deflated 48%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-my_values-my.arsc.flat (deflated 55%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-lt_values-lt.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-en-rAU_values-en-rAU.arsc.flat (deflated 59%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-pt-rPT_values-pt-rPT.arsc.flat (deflated 56%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-en-rIN_values-en-rIN.arsc.flat (deflated 59%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-mn_values-mn.arsc.flat (deflated 51%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-mr_values-mr.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-ur_values-ur.arsc.flat (deflated 53%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-mk_values-mk.arsc.flat (deflated 53%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-et_values-et.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-zh-rTW_values-zh-rTW.arsc.flat (deflated 55%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-uz_values-uz.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-ne_values-ne.arsc.flat (deflated 57%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-bg_values-bg.arsc.flat (deflated 52%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-el_values-el.arsc.flat (deflated 52%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-vi_values-vi.arsc.flat (deflated 53%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-es_values-es.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-night-v8_values-night-v8.arsc.flat (deflated 60%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-hdpi-v4_values-hdpi-v4.arsc.flat (deflated 28%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-large-v4_values-large-v4.arsc.flat (deflated 50%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-fi_values-fi.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-port_values-port.arsc.flat (deflated 19%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-nl_values-nl.arsc.flat (deflated 56%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-gl_values-gl.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-ca_values-ca.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-land_values-land.arsc.flat (deflated 34%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-fr_values-fr.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-fa_values-fa.arsc.flat (deflated 53%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-pl_values-pl.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-en-rGB_values-en-rGB.arsc.flat (deflated 59%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-sw_values-sw.arsc.flat (deflated 55%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-pa_values-pa.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-tl_values-tl.arsc.flat (deflated 56%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/mipmap-hdpi_ic_launcher.xml.flat (deflated 39%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-lv_values-lv.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-fr-rCA_values-fr-rCA.arsc.flat (deflated 55%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-eu_values-eu.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-zh-rCN_values-zh-rCN.arsc.flat (deflated 55%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-or_values-or.arsc.flat (deflated 57%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-v26_values-v26.arsc.flat (deflated 52%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-bs_values-bs.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-sr_values-sr.arsc.flat (deflated 53%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-pt-rBR_values-pt-rBR.arsc.flat (deflated 56%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-uk_values-uk.arsc.flat (deflated 52%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-nb_values-nb.arsc.flat (deflated 55%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-en-rXC_values-en-rXC.arsc.flat (deflated 85%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-v16_values-v16.arsc.flat (deflated 26%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-it_values-it.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-v23_values-v23.arsc.flat (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-da_values-da.arsc.flat (deflated 55%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-ms_values-ms.arsc.flat (deflated 56%)
+  adding: database_osint_apk/app/build/intermediates/merged_res/debug/values-gu_values-gu.arsc.flat (deflated 54%)
+  adding: database_osint_apk/app/build/intermediates/data_binding_layout_info_type_package/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/data_binding_layout_info_type_package/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/data_binding_layout_info_type_package/debug/out/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/packaged_res/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/packaged_res/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/packaged_res/debug/values/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/packaged_res/debug/values/values.xml (deflated 43%)
+  adding: database_osint_apk/app/build/intermediates/packaged_res/debug/mipmap-hdpi-v4/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/packaged_res/debug/mipmap-hdpi-v4/ic_launcher.xml (deflated 27%)
+  adding: database_osint_apk/app/build/intermediates/local_only_symbol_list/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/local_only_symbol_list/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/local_only_symbol_list/debug/R-def.txt (deflated 8%)
+  adding: database_osint_apk/app/build/intermediates/compatible_screen_manifest/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/compatible_screen_manifest/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/compatible_screen_manifest/debug/output-metadata.json (deflated 21%)
+  adding: database_osint_apk/app/build/intermediates/navigation_json/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/navigation_json/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/navigation_json/debug/navigation.json (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/manifest_merge_blame_file/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/manifest_merge_blame_file/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt (deflated 81%)
+  adding: database_osint_apk/app/build/intermediates/merged_manifest/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/merged_manifest/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/merged_manifest/debug/AndroidManifest.xml (deflated 66%)
+  adding: database_osint_apk/app/build/intermediates/merged_manifests/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/merged_manifests/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/merged_manifests/debug/AndroidManifest.xml (deflated 66%)
+  adding: database_osint_apk/app/build/intermediates/merged_manifests/debug/output-metadata.json (deflated 41%)
+  adding: database_osint_apk/app/build/intermediates/packaged_manifests/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/packaged_manifests/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/packaged_manifests/debug/AndroidManifest.xml (deflated 66%)
+  adding: database_osint_apk/app/build/intermediates/packaged_manifests/debug/output-metadata.json (deflated 40%)
+  adding: database_osint_apk/app/build/intermediates/merged_shaders/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/merged_shaders/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/merged_shaders/debug/out/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/assets/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/assets/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/assets/debug/cytoscape.min.js (deflated 69%)
+  adding: database_osint_apk/app/build/intermediates/assets/debug/index.html (deflated 74%)
+  adding: database_osint_apk/app/build/intermediates/compressed_assets/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/compressed_assets/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/compressed_assets/debug/out/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/compressed_assets/debug/out/assets/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/compressed_assets/debug/out/assets/index.html.jar (deflated 0%)
+  adding: database_osint_apk/app/build/intermediates/compressed_assets/debug/out/assets/cytoscape.min.js.jar (deflated 0%)
+  adding: database_osint_apk/app/build/intermediates/external_file_lib_dex_archives/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/external_file_lib_dex_archives/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/global_synthetics_file_lib/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/global_synthetics_file_lib/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/merged_java_res/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/merged_java_res/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/merged_java_res/debug/base.jar (deflated 31%)
+  adding: database_osint_apk/app/build/intermediates/duplicate_classes_check/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/duplicate_classes_check/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/merged_jni_libs/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/merged_jni_libs/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/merged_jni_libs/debug/out/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/compile_and_runtime_not_namespaced_r_class_jar/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/compile_and_runtime_not_namespaced_r_class_jar/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/compile_and_runtime_not_namespaced_r_class_jar/debug/R.jar (deflated 81%)
+  adding: database_osint_apk/app/build/intermediates/processed_res/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/processed_res/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/processed_res/debug/out/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/processed_res/debug/out/resources-debug.ap_ (deflated 58%)
+  adding: database_osint_apk/app/build/intermediates/processed_res/debug/out/output-metadata.json (deflated 41%)
+  adding: database_osint_apk/app/build/intermediates/symbol_list_with_package_name/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/symbol_list_with_package_name/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/symbol_list_with_package_name/debug/package-aware-r.txt (deflated 81%)
+  adding: database_osint_apk/app/build/intermediates/runtime_symbol_list/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/runtime_symbol_list/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/runtime_symbol_list/debug/R.txt (deflated 82%)
+  adding: database_osint_apk/app/build/intermediates/dex/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeExtDexDebug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeExtDexDebug/classes.dex (deflated 64%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeLibDexDebug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeLibDexDebug/0/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeLibDexDebug/1/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeLibDexDebug/2/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeLibDexDebug/3/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeLibDexDebug/4/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeLibDexDebug/5/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeLibDexDebug/6/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeLibDexDebug/7/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeLibDexDebug/8/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeLibDexDebug/9/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeLibDexDebug/10/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeLibDexDebug/11/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeLibDexDebug/12/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeLibDexDebug/13/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeLibDexDebug/14/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeLibDexDebug/15/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeProjectDexDebug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeProjectDexDebug/0/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex (deflated 73%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeProjectDexDebug/1/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeProjectDexDebug/2/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeProjectDexDebug/3/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeProjectDexDebug/4/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeProjectDexDebug/5/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeProjectDexDebug/6/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeProjectDexDebug/7/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeProjectDexDebug/8/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeProjectDexDebug/9/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeProjectDexDebug/10/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeProjectDexDebug/10/classes.dex (deflated 46%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeProjectDexDebug/11/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeProjectDexDebug/12/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeProjectDexDebug/13/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeProjectDexDebug/14/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/dex/debug/mergeProjectDexDebug/15/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/validate_signing_config/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/validate_signing_config/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/app_metadata/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/app_metadata/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/app_metadata/debug/app-metadata.properties (deflated 7%)
+  adding: database_osint_apk/app/build/intermediates/signing_config_versions/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/signing_config_versions/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/signing_config_versions/debug/signing-config-versions.json (deflated 55%)
+  adding: database_osint_apk/app/build/intermediates/javac/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/javac/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/javac/debug/classes/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/javac/debug/classes/com/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/javac/debug/classes/com/z3r0/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/javac/debug/classes/com/z3r0/hello/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/javac/debug/classes/com/z3r0/hello/MainActivity.class (deflated 44%)
+  adding: database_osint_apk/app/build/intermediates/external_libs_dex_archive_with_artifact_transforms/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/external_libs_dex_archive_with_artifact_transforms/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/external_libs_dex_archive_with_artifact_transforms/debug/out/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/global_synthetics_external_libs_artifact_transform/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/global_synthetics_external_libs_artifact_transform/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/global_synthetics_external_libs_artifact_transform/debug/out/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/external_libs_dex_archive/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/external_libs_dex_archive/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/external_libs_dex_archive/debug/out/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/global_synthetics_external_lib/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/global_synthetics_external_lib/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/global_synthetics_external_lib/debug/out/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/mixed_scope_dex_archive/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/mixed_scope_dex_archive/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/mixed_scope_dex_archive/debug/out/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/global_synthetics_mixed_scope/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/global_synthetics_mixed_scope/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/global_synthetics_mixed_scope/debug/out/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/project_dex_archive/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/project_dex_archive/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/project_dex_archive/debug/out/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/project_dex_archive/debug/out/com/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/project_dex_archive/debug/out/com/z3r0/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/project_dex_archive/debug/out/com/z3r0/hello/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/project_dex_archive/debug/out/com/z3r0/hello/MainActivity.dex (deflated 46%)
+  adding: database_osint_apk/app/build/intermediates/project_dex_archive/debug/out/bb66cdf61f26095b00295d19edd2e472c6065fb7b9875db02d639ca787bd7962_2.jar (deflated 1%)
+  adding: database_osint_apk/app/build/intermediates/project_dex_archive/debug/out/bb66cdf61f26095b00295d19edd2e472c6065fb7b9875db02d639ca787bd7962_0.jar (deflated 2%)
+  adding: database_osint_apk/app/build/intermediates/project_dex_archive/debug/out/bb66cdf61f26095b00295d19edd2e472c6065fb7b9875db02d639ca787bd7962_3.jar (deflated 4%)
+  adding: database_osint_apk/app/build/intermediates/project_dex_archive/debug/out/bb66cdf61f26095b00295d19edd2e472c6065fb7b9875db02d639ca787bd7962_1.jar (deflated 5%)
+  adding: database_osint_apk/app/build/intermediates/global_synthetics_project/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/global_synthetics_project/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/global_synthetics_project/debug/out/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/sub_project_dex_archive/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/sub_project_dex_archive/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/sub_project_dex_archive/debug/out/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/global_synthetics_subproject/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/global_synthetics_subproject/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/global_synthetics_subproject/debug/out/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/desugar_graph/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/desugar_graph/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/desugar_graph/debug/out/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/desugar_graph/debug/out/currentProject/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/desugar_graph/debug/out/currentProject/dirs_bucket_2/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/desugar_graph/debug/out/currentProject/dirs_bucket_2/graph.bin (deflated 15%)
+  adding: database_osint_apk/app/build/intermediates/desugar_graph/debug/out/currentProject/dirs_bucket_0/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/desugar_graph/debug/out/currentProject/dirs_bucket_0/graph.bin (deflated 15%)
+  adding: database_osint_apk/app/build/intermediates/desugar_graph/debug/out/currentProject/dirs_bucket_3/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/desugar_graph/debug/out/currentProject/dirs_bucket_3/graph.bin (deflated 15%)
+  adding: database_osint_apk/app/build/intermediates/desugar_graph/debug/out/currentProject/dirs_bucket_1/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/desugar_graph/debug/out/currentProject/dirs_bucket_1/graph.bin (deflated 15%)
+  adding: database_osint_apk/app/build/intermediates/desugar_graph/debug/out/currentProject/jar_29e1a964b7529f73856615993036abdea616a028cdbc43284d76ac24fd47897f_bucket_0/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/desugar_graph/debug/out/currentProject/jar_29e1a964b7529f73856615993036abdea616a028cdbc43284d76ac24fd47897f_bucket_0/graph.bin (deflated 15%)
+  adding: database_osint_apk/app/build/intermediates/desugar_graph/debug/out/currentProject/jar_29e1a964b7529f73856615993036abdea616a028cdbc43284d76ac24fd47897f_bucket_3/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/desugar_graph/debug/out/currentProject/jar_29e1a964b7529f73856615993036abdea616a028cdbc43284d76ac24fd47897f_bucket_3/graph.bin (deflated 15%)                        adding: database_osint_apk/app/build/intermediates/desugar_graph/debug/out/currentProject/jar_29e1a964b7529f73856615993036abdea616a028cdbc43284d76ac24fd47897f_bucket_2/ (stored 0%)                                    adding: database_osint_apk/app/build/intermediates/desugar_graph/debug/out/currentProject/jar_29e1a964b7529f73856615993036abdea616a028cdbc43284d76ac24fd47897f_bucket_2/graph.bin (deflated 15%)                        adding: database_osint_apk/app/build/intermediates/desugar_graph/debug/out/currentProject/jar_29e1a964b7529f73856615993036abdea616a028cdbc43284d76ac24fd47897f_bucket_1/ (stored 0%)
+  adding: database_osint_apk/app/build/intermediates/desugar_graph/debug/out/currentProject/jar_29e1a964b7529f73856615993036abdea616a028cdbc43284d76ac24fd47897f_bucket_1/graph.bin (deflated 15%)                        adding: database_osint_apk/app/build/intermediates/desugar_graph/debug/out/otherProjects/ (stored 0%)       adding: database_osint_apk/app/build/intermediates/desugar_graph/debug/out/mixedScopes/ (stored 0%)         adding: database_osint_apk/app/build/intermediates/desugar_graph/debug/out/externalLibs/ (stored 0%)        adding: database_osint_apk/app/build/intermediates/dex_archive_input_jar_hashes/ (stored 0%)                adding: database_osint_apk/app/build/intermediates/dex_archive_input_jar_hashes/debug/ (stored 0%)          adding: database_osint_apk/app/build/intermediates/dex_archive_input_jar_hashes/debug/out (deflated 17%)    adding: database_osint_apk/app/build/intermediates/dex_number_of_buckets_file/ (stored 0%)                  adding: database_osint_apk/app/build/intermediates/dex_number_of_buckets_file/debug/ (stored 0%)            adding: database_osint_apk/app/build/intermediates/dex_number_of_buckets_file/debug/out (stored 0%)         adding: database_osint_apk/app/build/intermediates/global_synthetics_dex/ (stored 0%)                       adding: database_osint_apk/app/build/intermediates/global_synthetics_dex/debug/ (stored 0%)                 adding: database_osint_apk/app/build/intermediates/apk_ide_redirect_file/ (stored 0%)                       adding: database_osint_apk/app/build/intermediates/apk_ide_redirect_file/debug/ (stored 0%)                 adding: database_osint_apk/app/build/intermediates/apk_ide_redirect_file/debug/redirect.txt (deflated 13%)  adding: database_osint_apk/app/build/generated/ (stored 0%)                                                 adding: database_osint_apk/app/build/generated/res/ (stored 0%)
+  adding: database_osint_apk/app/build/generated/res/resValues/ (stored 0%)
+  adding: database_osint_apk/app/build/generated/res/resValues/debug/ (stored 0%)
+  adding: database_osint_apk/app/build/generated/res/pngs/ (stored 0%)
+  adding: database_osint_apk/app/build/generated/res/pngs/debug/ (stored 0%)                                  adding: database_osint_apk/app/build/generated/ap_generated_sources/ (stored 0%)                            adding: database_osint_apk/app/build/generated/ap_generated_sources/debug/ (stored 0%)                      adding: database_osint_apk/app/build/generated/ap_generated_sources/debug/out/ (stored 0%)                  adding: database_osint_apk/app/build/outputs/ (stored 0%)                                                   adding: database_osint_apk/app/build/outputs/logs/ (stored 0%)                                              adding: database_osint_apk/app/build/outputs/logs/manifest-merger-debug-report.txt (deflated 91%)           adding: database_osint_apk/app/build/outputs/apk/ (stored 0%)                                               adding: database_osint_apk/app/build/outputs/apk/debug/ (stored 0%)                                         adding: database_osint_apk/app/build/outputs/apk/debug/app-debug.apk (deflated 9%)                          adding: database_osint_apk/app/build/outputs/apk/debug/output-metadata.json (deflated 43%)                  adding: database_osint_apk/app/build/tmp/ (stored 0%)
+  adding: database_osint_apk/app/build/tmp/compileDebugJavaWithJavac/ (stored 0%)                             adding: database_osint_apk/app/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin (deflated 23%)                                                   adding: database_osint_apk/settings.gradle (stored 0%)                                                      adding: database_osint_apk/build.gradle (deflated 48%)
+  adding: database_osint_apk/gradle.properties (deflated 6%)                                                  adding: database_osint_apk/.gradle/ (stored 0%)
+  adding: database_osint_apk/.gradle/8.5/ (stored 0%)   adding: database_osint_apk/.gradle/8.5/fileChanges/ (stored 0%)
+  adding: database_osint_apk/.gradle/8.5/fileChanges/last-build.bin (stored 0%)                               adding: database_osint_apk/.gradle/8.5/vcsMetadata/ (stored 0%)                                             adding: database_osint_apk/.gradle/8.5/checksums/ (stored 0%)
+  adding: database_osint_apk/.gradle/8.5/checksums/checksums.lock (deflated 6%)                               adding: database_osint_apk/.gradle/8.5/checksums/sha1-checksums.bin (deflated 73%)                          adding: database_osint_apk/.gradle/8.5/checksums/md5-checksums.bin (deflated 83%)
+  adding: database_osint_apk/.gradle/8.5/fileHashes/ (stored 0%)                                              adding: database_osint_apk/.gradle/8.5/fileHashes/fileHashes.lock (deflated 6%)                             adding: database_osint_apk/.gradle/8.5/fileHashes/fileHashes.bin (deflated 59%)
+  adding: database_osint_apk/.gradle/8.5/fileHashes/resourceHashesCache.bin (deflated 88%)                    adding: database_osint_apk/.gradle/8.5/dependencies-accessors/ (stored 0%)                                  adding: database_osint_apk/.gradle/8.5/dependencies-accessors/dependencies-accessors.lock (deflated 18%)
+  adding: database_osint_apk/.gradle/8.5/dependencies-accessors/gc.properties (stored 0%)                     adding: database_osint_apk/.gradle/8.5/executionH

@@ -1,0 +1,1484 @@
+ defames any person or violates their rights of publicity or privacy, and (c) any non-compliance by you of the License Agreement.                                                                                                13. Changes to the License Agreement                                                                        13.1 Google may make changes to the License Agreement as it distributes new versions of the Preview. When these changes are made, Google will make a new version of the License Agreement available on the website where the Preview is made available.                                                                             14. General Legal Terms                                                                                     14.1 the License Agreement constitutes the whole legal agreement between you and Google and governs your use of the Preview (excluding any services which Google may provide to you under a separate written agreement), and completely replaces any prior agreements between you and Google in relation to the Preview.                                                                  14.2 You agree that if Google does not exercise or enforce any legal right or remedy which is contained in the License Agreement (or which Google has the benefit of under any applicable law), this will not be taken to be a formal waiver of Google's rights and that those rights or remedies will still be available to Google.                                                      14.3 If any court of law, having the jurisdiction to decide on this matter, rules that any provision of the License Agreement is invalid, then that provision will be removed from the License Agreement without affecting the rest of the License Agreement. The remaining provisions of the License Agreement will continue to be valid and enforceable.
+
+14.4 You acknowledge and agree that each member of the group of companies of which Google is the parent shall be third party beneficiaries to the License Agreement and that such other companies shall be entitled to directly enforce, and rely upon, any provision of the License Agreement that confers a benefit on (or rights in favor of) them. Other than this, no other person or company shall be third party beneficiaries to the License Agreement.                                       
+14.5 EXPORT RESTRICTIONS. THE PREVIEW IS SUBJECT TO UNITED STATES EXPORT LAWS AND REGULATIONS. YOU MUST COMPLY WITH ALL DOMESTIC AND INTERNATIONAL EXPORT LAWS AND REGULATIONS THAT APPLY TO THE PREVIEW. THESE LAWS INCLUDE RESTRICTIONS ON DESTINATIONS, END USERS AND END USE.
+                                                      14.6 The License Agreement may not be assigned or transferred by you without the prior written approval of Google, and any attempted assignment without such approval will be void. You shall not delegate your responsibilities or obligations under the License Agreement without the prior written approval of Google.
+                                                      14.7 The License Agreement, and your relationship with Google under the License Agreement, shall be governed by the laws of the State of California without regard to its conflict of laws provisions. You and Google agree to submit to the exclusive jurisdiction of the courts located within the county of Santa Clara, California to resolve any legal matter arising from the License Agreement. Notwithstanding this, you agree that Google shall still be allowed to apply for injunctive remedies (or an equivalent type of urgent legal relief) in any jurisdiction.                                                                                          June 2014.
+---------------------------------------
+Accept? (y/N):                                        6/7: License google-gdk-license:                      ---------------------------------------               This is a Developer Preview of the GDK that is subject to change.                                                                                                 Terms and Conditions                                                                                        This is the Glass Development Kit License Agreement.                                                        1. Introduction                                                                                             1.1 The Glass Development Kit (referred to in this License Agreement as the "GDK" and specifically including the Android system files, packaged APIs, and GDK library files, if and when they are made available) is licensed to you subject to the terms of this License Agreement. This License Agreement forms a legally binding contract between you and Google in relation to your use of the GDK.                                                                                               1.2 "Glass" means Glass devices and the Glass software stack for use on Glass devices.                      
+
+1.3 "Android" means the Android software stack for devices, as made available under the Android Open Source Project, which is located at the following URL: http://source.android.com/, as updated from time to time.                                                         1.4 "Google" means Google Inc., a Delaware corporation with principal place of business at 1600 Amphitheatre Parkway, Mountain View, CA 94043, United States.
+
+2. Accepting this License Agreement                                                                         2.1 In order to use the GDK, you must first agree to this License Agreement. You may not use the GDK if you do not accept this License Agreement.                                                                       2.2 By clicking to accept, you hereby agree to the terms of this License Agreement.
+
+2.3 You may not use the GDK and may not accept the License Agreement if you are a person barred from receiving the GDK under the laws of the United States or other countries including the country in which you are resident or from which you use the GDK.                                                                        2.4 If you are agreeing to be bound by this License Agreement on behalf of your employer or other entity, you represent and warrant that you have full legal authority to bind your employer or such entity to this License Agreement. If you do not have the requisite authority, you may not accept the License Agreement or use the GDK on behalf of your employer or other entity.                                                          3. GDK License from Google                                                                                  3.1 Subject to the terms of this License Agreement, Google grants you a limited, worldwide, royalty-free, non-assignable and non-exclusive license to use the GDK solely to develop applications to run on the Glass platform for Glass devices.
+
+3.2 You agree that Google or third parties own all legal right, title and interest in and to the GDK, including any Intellectual Property Rights that subsist in the GDK. "Intellectual Property Rights" means any and all rights under patent law, copyright law, trade secret law, trademark law, and any and all other proprietary rights. Google reserves all rights not expressly granted to you.                                                                                                3.3 You may not use the GDK for any purpose not expressly permitted by this License Agreement. Except to the extent required by applicable third party licenses, you may not: (a) copy (except for backup purposes), modify, adapt, redistribute, decompile, reverse engineer, disassemble, or create derivative works of the GDK or any part of the GDK; or (b) load any part of the GDK onto a mobile handset or wearable computing device or any other hardware device except a Glass device personal computer, combine any part of the GDK with other software, or distribute any software or device incorporating a part of the GDK.                                                                                     3.4 You agree that you will not take any actions that may cause or result in the fragmentation of Glass, including but not limited to distributing, participating in the creation of, or promoting in any way a software development kit derived from the GDK.                
+3.5 Use, reproduction and distribution of components of the GDK licensed under an open source software license are governed solely by the terms of that open source software license and not this License Agreement.                                                          3.6 You agree that the form and nature of the GDK that Google provides may change without prior notice to you and that future versions of the GDK may be incompatible with applications developed on previous versions of the GDK. You agree that Google may stop (permanently or temporarily) providing the GDK (or any features within the GDK) to you or to users generally at Google's sole discretion, without prior notice to you.                                                              3.7 Nothing in this License Agreement gives you a right to use any of Google's trade names, trademarks, service marks, logos, domain names, or other distinctive brand features.                                                                                              3.8 You agree that you will not remove, obscure, or alter any proprietary rights notices (including copyright and trademark notices) that may be affixed to or contained within the GDK.
+
+                                                      3.9 Your use of any Android system files, packaged APIs, or other components of the GDK which are part of the Android Software Development Kit is subject to the terms of the Android Software Development Kit License Agreement located at http://developer.android.com/sdk/terms.html. These terms are hereby incorporated by reference into this License Agreement.
+
+4. Use of the GDK by You                                                                                    4.1 Google agrees that it obtains no right, title or interest from you (or your licensors) under this License Agreement in or to any software applications that you develop using the GDK, including any intellectual property rights that subsist in those applications.                                                           4.2 You agree to use the GDK and write applications only for purposes that are permitted by (a) this License Agreement, (b) the Glass Platform Developer Policies (located at https://developers.google.com/glass/policies, and hereby incorporated into this License Agreement by reference), and (c) any applicable law, regulation or generally accepted practices or guidelines in the relevant jurisdictions (including any laws regarding the export of data or software to and from the United States or other relevant countries).
+                                                      4.3 You agree that if you use the GDK to develop applications for general public users, you will protect the privacy and legal rights of those users. If the users provide you with user names, passwords, or other login information or personal information, you must make the users aware that the information will be available to your application, and you must provide legally adequate privacy notice and protection for those users. If your application stores personal or sensitive information provided by users, it must do so securely. If the user provides your application with Google Account information, your application may only use that information to access the user's Google Account when, and for the limited purposes for which, the user has given you permission to do so.
+
+4.4 You agree that you will not engage in any activity with the GDK, including the development or distribution of an application, that interferes with, disrupts, damages, or accesses in an unauthorized manner the servers, networks, or other properties or services of any third party including, but not limited to, Google.   
+4.5 You agree that you are solely responsible for (and that Google has no responsibility to you or to any third party for) any data, content, or resources that you create, transmit or display through Glass and/or applications for Glass, and for the consequences of your actions (including any loss or damage which Google may suffer) by doing so.                                                                                       4.6 You agree that you are solely responsible for (and that Google has no responsibility to you or to any third party for) any breach of your obligations under this License Agreement, any applicable third party contract or Terms of Service, or any applicable law or regulation, and for the consequences (including any loss or damage which Google or any third party may suffer) of any such breach.                                    
+
+4.7 The GDK is in development, and your testing and feedback are an important part of the development process. By using the GDK, you acknowledge that implementation of some features are still under development and that you should not rely on the GDK, Glass devices, Glass system software, Google Mirror API, or Glass services having the full functionality of a stable release.
+                                                      5. Your Developer Credentials                                                                               5.1 You agree that you are responsible for maintaining the confidentiality of any developer credentials that may be issued to you by Google or which you may choose yourself and that you will be solely responsible for all applications that are developed under your developer credentials.                                                                                            6. Privacy and Information                                                                                                                                        6.1 In order to continually innovate and improve the GDK, Google may collect certain usage statistics from the software including but not limited to a unique identifier, associated IP address, version number of the software, and information on which tools and/or services in the GDK are being used and how they are being used. Before any of this information is collected, the GDK will notify you and seek your consent. If you withhold consent, the information will not be collected.                                                          6.2 The data collected is examined in the aggregate to improve the GDK and is maintained in accordance with Google's Privacy Policy.                                                                                    7. Third Party Applications                                                                                 7.1 If you use the GDK to run applications developed by a third party or that access data, content or resources provided by a third party, you agree that Google is not responsible for those applications, data, content, or resources. You understand that all data, content or resources which you may access through such third party applications are the sole responsibility of the person from which they originated and that Google is not liable for any loss or damage that you may experience as a result of the use or access of any of those third party applications, data, content, or resources.
+
+7.2 You should be aware the data, content, and resources presented to you through such a third party application may be protected by intellectual property rights which are owned by the providers (or by other persons or companies on their behalf). You may not modify, rent, lease, loan, sell, distribute or create derivative works based on these data, content, or resources (either in whole or in part) unless you have been specifically given permission to do so by the relevant owners.
+
+7.3 You acknowledge that your use of such third party applications, data, content, or resources may be subject to separate terms between you and the relevant third party. In that case, this License Agreement does not affect your legal relationship with these third parties.                                                   
+8. Using Google APIs
+                                                      8.1 Google APIs                                                                                             8.1.1 If you use any API to retrieve data from Google, you acknowledge that the data may be protected by intellectual property rights which are owned by Google or those parties that provide the data (or by other persons or companies on their behalf). Your use of any such API may be subject to additional Terms of Service. You may not modify, rent, lease, loan, sell, distribute or create derivative works based on this data (either in whole or in part) unless allowed by the relevant Terms of Service.                                                                                            8.1.2 If you use any API to retrieve a user's data from Google, you acknowledge and agree that you shall retrieve data only with the user's explicit consent and only when, and for the limited purposes for which, the user has given you permission to do so.                                                                     9. Terminating this License Agreement                                                                       9.1 This License Agreement will continue to apply until terminated by either you or Google as set out below.
+
+9.2 If you want to terminate this License Agreement, you may do so by ceasing your use of the GDK and any relevant developer credentials.                                                                               9.3 Google may at any time, terminate this License Agreement with you if: (A) you have breached any provision of this License Agreement; or (B) Google is required to do so by law; or (C) the partner with whom Google offered certain parts of GDK (such as APIs) to you has terminated its relationship with Google or ceased to offer certain parts of the GDK to you; or (D) Google decides to no longer provide the GDK or certain parts of the GDK to users in the country in which you are resident or from which you use the service, or the provision of the GDK or certain GDK services to you by Google is, in Google's sole discretion, no longer commercially viable.                                                                                                 9.4 When this License Agreement comes to an end, all of the legal rights, obligations and liabilities that you and Google have benefited from, been subject to (or which have accrued over time whilst this License Agreement has been in force) or which are expressed to continue indefinitely, shall be unaffected by this cessation, and the provisions of paragraph 14.7 shall continue to apply to such rights, obligations and liabilities indefinitely.                                                                                             10. DISCLAIMER OF WARRANTIES                                                                                10.1 YOU EXPRESSLY UNDERSTAND AND AGREE THAT YOUR USE OF THE GDK IS AT YOUR SOLE RISK AND THAT THE GDK IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTY OF ANY KIND FROM GOOGLE.
+
+10.2 YOUR USE OF THE GDK AND ANY MATERIAL DOWNLOADED OR OTHERWISE OBTAINED THROUGH THE USE OF THE GDK IS AT YOUR OWN DISCRETION AND RISK AND YOU ARE SOLELY RESPONSIBLE FOR ANY DAMAGE TO YOUR COMPUTER SYSTEM OR OTHER DEVICE OR LOSS OF DATA THAT RESULTS FROM SUCH USE.                                                          10.3 GOOGLE FURTHER EXPRESSLY DISCLAIMS ALL WARRANTIES AND CONDITIONS OF ANY KIND, WHETHER EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO THE IMPLIED WARRANTIES AND CONDITIONS OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT.
+
+11. LIMITATION OF LIABILITY                                                                                 11.1 YOU EXPRESSLY UNDERSTAND AND AGREE THAT GOOGLE, ITS SUBSIDIARIES AND AFFILIATES, AND ITS LICENSORS SHALL NOT BE LIABLE TO YOU UNDER ANY THEORY OF LIABILITY FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL OR EXEMPLARY DAMAGES THAT MAY BE INCURRED BY YOU, INCLUDING ANY LOSS OF DATA, WHETHER OR NOT GOOGLE OR ITS REPRESENTATIVES HAVE BEEN ADVISED OF OR SHOULD HAVE BEEN AWARE OF THE POSSIBILITY OF ANY SUCH LOSSES ARISING.
+
+12. Indemnification
+                                                      12.1 To the maximum extent permitted by law, you agree to defend, indemnify and hold harmless Google, its affiliates and their respective directors, officers, employees and agents from and against any and all claims, actions, suits or proceedings, as well as any and all losses, liabilities, damages, costs and expenses (including reasonable attorneys fees) arising out of or accruing from (a) your use of the GDK, (b) any application you develop on the GDK that infringes any copyright, trademark, trade secret, trade dress, patent or other intellectual property right of any person or defames any person or violates their rights of publicity or privacy, and (c) any non-compliance by you with this License Agreement.                                                                                            13. Changes to the License Agreement                                                                        13.1 Google may make changes to the License Agreement as it distributes new versions of the GDK. When these changes are made, Google will make a new version of the License Agreement available on the website where the GDK is made available.
+                                                      14. General Legal Terms                                                                                     14.1 This License Agreement constitutes the whole legal agreement between you and Google and governs your use of the GDK (excluding any services which Google may provide to you under a separate written agreement), and completely replaces any prior agreements between you and Google in relation to the GDK.                                                                         14.2 You agree that if Google does not exercise or enforce any legal right or remedy which is contained in this License Agreement (or which Google has the benefit of under any applicable law), this will not be taken to be a formal waiver of Google's rights and that those rights or remedies will still be available to Google.                                                                                                           14.3 If any court of law, having the jurisdiction to decide on this matter, rules that any provision of this License Agreement is invalid, then that provision will be removed from this License Agreement without affecting the rest of this License Agreement. The remaining provisions of this License Agreement will continue to be valid and enforceable.                                                                                  14.4 You acknowledge and agree that each member of the group of companies of which Google is the parent shall be third party beneficiaries to this License Agreement and that such other companies shall be entitled to directly enforce, and rely upon, any provision of this License Agreement that confers a benefit on (or rights in favor of) them. Other than this, no other person or company shall be third party beneficiaries to this License Agreement.                                                                                          14.5 EXPORT RESTRICTIONS. THE GDK IS SUBJECT TO UNITED STATES EXPORT LAWS AND REGULATIONS. YOU MUST COMPLY WITH ALL DOMESTIC AND INTERNATIONAL EXPORT LAWS AND REGULATIONS THAT APPLY TO THE GDK. THESE LAWS INCLUDE RESTRICTIONS ON DESTINATIONS, END USERS AND END USE.
+
+14.6 The rights granted in this License Agreement may not be assigned or transferred by either you or Google without the prior written approval of the other party. Neither you nor Google shall be permitted to delegate their responsibilities or obligations under this License Agreement without the prior written approval of the other party.                                       
+14.7 This License Agreement, and your relationship with Google under this License Agreement, shall be governed by the laws of the State of California without regard to its conflict of laws provisions. You and Google agree to submit to the exclusive jurisdiction of the courts located within the county of Santa Clara, California to resolve any legal matter arising from this License Agreement. Notwithstanding this, you agree that Google shall still be allowed to apply for injunctive remedies (or an equivalent type of urgent legal relief) in any jurisdiction.
+
+November 19, 2013
+---------------------------------------               Accept? (y/N):                                        7/7: License mips-android-sysimage-license:           ---------------------------------------               MIPS Technologies, Inc. (“MIPS”) Internal Evaluation License Agreement for MIPS Android™ System Images for Android Software Development Kit (SDK): This Internal Evaluation License Agreement (this "Agreement") is entered into by and between MIPS and you (as an individual developer or a legal entity -- identified below as “Recipient”). MIPS shall make the Evaluation Software available to Recipient as described in accordance with the terms and conditions set forth below.
+
+By clicking on the “Accept” button, downloading, installing, or otherwise using the Evaluation Materials (defined below), you agree to be bound by the terms of this Agreement effective as of the date you click “Accept” (the “Effective Date”), and if doing so on behalf of an entity, you represent that you are authorized to bind the entity to the terms and conditions of this Agreement. If you do not agree to be bound by the terms and conditions of this Agreement, do not download, install, or use the Evaluation Materials.                                                                      1. DEFINITIONS. These terms shall have the following meanings:                                                                                                    1.1 “MIPS” shall mean MIPS Technologies, Inc., a Delaware corporation having a principal place of business at: 955 East Arques Ave., Sunnyvale, CA 94085                                                                1.2 “Evaluation Software” shall mean MIPS Android™ emulator system images for Android Software Development Kit (SDK), as made available to Recipient.                                                                   1.3 “Evaluation Materials" means, collectively, the Evaluation Software (in source and/or object code form) and documentation (including, without limitation, any design documents, specifications, reference manuals, and other related materials) related to the Evaluation Software as made available to Recipient.                                                                    1.4 “Open Source Software” means any software that requires (as a condition of use, modification and/or distribution of such software) that such software or other software incorporated into, derived from or distributed with such software (a) be disclosed or distributed in source code form; or (b) be licensed by the user to third parties for the purpose of making and/or distributing derivative works; or (c) be redistributable at no charge. Open Source Software includes, without limitation, software licensed or distributed under any of the following licenses or distribution models, or licenses or distribution models substantially similar to any of the following: (a) GNU’s General Public License (GPL) or Lesser/Library GPL (LGPL), (b) the Artistic License (e.g., PERL), (c) the Mozilla Public License, (d) the Netscape Public License, (e) the Sun Community Source License (SCSL), (f) the Sun Industry Source License (SISL), (g) the Apache Software license and (h) the Common Public License (CPL).
+
+1.5 “Pre-Release Materials” means “alpha” or “beta” designated pre-release features, which may not be fully functional, which MIPS may substantially modify in producing any production version of the Evaluation Materials, and/or which is still under development by MIPS and/or MIPS’ suppliers.                                
+2. PURPOSE. MIPS desires to make the Evaluation Materials available to Recipient solely for Recipient's internal evaluation of the Evaluation Software to evaluate the desirability of cooperating with MIPS in developing products that are compatible with the Evaluation Software and/or to advise MIPS as to possible modifications to the Evaluation Software. Recipient may not disclose, distribute, modify (except to facilitate the above-mentioned internal evaluation), or make commercial use of the Evaluation Materials or any modifications of the Evaluation Materials.                           
+THE EVALUATION MATERIALS ARE PROVIDED FOR EVALUATION PURPOSES ONLY AND MAY NOT BE MODIFIED (EXCEPT TO FACILITATE THE INTERNAL EVALUATION) OR DISTRIBUTED BY RECIPIENT OR INCORPORATED INTO RECIPIENT’S PRODUCTS OR SOFTWARE. PLEASE CONTACT A MIPS SALES REPRESENTATIVE TO LEARN ABOUT THE AVAILABILITY AND COST OF A COMMERCIAL VERSION OF THE EVALUATION SOFTWARE.                      
+3. TITLE. Title to the Evaluation Materials remains with MIPS or its suppliers. Recipient shall not mortgage, pledge or encumber the Evaluation Materials in any way. Recipient shall return all Evaluation Materials, keeping no copies, upon termination or expiration of this Agreement.                                                                                               4. LICENSE. MIPS grants Recipient a royalty-free, personal, nontransferable, nonexclusive license under its copyrights to use the Evaluation Software only for the purposes described in paragraph 2 above and only for a period beginning on the Effective Date and extending to the first anniversary of the Effective Date (the “Evaluation Period”). Unless otherwise communicated in writing by MIPS to Recipient, to the extent the Evaluation Software is provided in more than one delivery or release (each, a “Release”) the license grant in this Section 4 and the Evaluation Period shall apply to each Release, in which case the Evaluation Period shall begin on the date that the Release is made generally available and continue to the first anniversary of such date. Recipient may not make modifications to the Evaluation Software. Recipient shall not disassemble, reverse-engineer, or decompile any software that is not provided to Recipient in source code form.
+
+                                                      EXCEPT AS PROVIDED HEREIN, NO OTHER LICENSE, EXPRESS OR IMPLIED, BY ESTOPPEL OR OTHERWISE, TO ANY OTHER MIPS INTELLECTUAL PROPERTY RIGHTS IS GRANTED TO THE RECIPIENT. OTHER THAN AS EXPLICITLY SET FORTH IN PARAGRAPH 2 ABOVE, NO RIGHT TO COPY, TO REPRODUCE, TO MODIFY, OR TO CREATE DERIVATIVE WORKS OF, THE EVALUATION MATERIALS IS GRANTED HEREIN.
+
+5. NO OBLIGATION. Recipient shall have no duty to purchase or license any product from MIPS. MIPS and its suppliers shall have no obligation to provide support for, or develop a non-evaluation version of, the Evaluation Software or to license any version of it.                                                               6. MODIFICATIONS. This Agreement does not obligate Recipient to provide MIPS with comments or suggestions regarding Evaluation Materials. However, should Recipient provide MIPS with comments or suggestions for the modification, correction, improvement or enhancement of (a) the Evaluation Materials or (b) MIPS products or processes which may embody the Evaluation Materials, then Recipient agrees to grant and hereby grants to MIPS a non-exclusive, irrevocable, worldwide, fully paid-up, royalty-free license, with the right to sublicense MIPS’ licensees and customers, under Recipient’s Intellectual property rights, to use and disclose such comments and suggestions in any manner MIPS chooses and to display, perform, copy, make, have made, use, sell, offer to sell, import, and otherwise dispose of MIPS’ and its sublicensee’s products embodying such comments and suggestions in any manner and via any media MIPS chooses, without reference to the source.                                                                    7. WARRANTY DISCLAIMER. MIPS AND ITS SUPPLIERS MAKE NO WARRANTIES WITH RESPECT TO EVALUATION MATERIALS, EITHER EXPRESS OR IMPLIED, INCLUDING ANY IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, OR ANY IMPLIED WARRANTY OF NONINFRINGEMENT WITH RESPECT TO THIRD PARTY INTELLECTUAL PROPERTY. RECIPIENT ACKNOWLEDGES AND AGREES THAT THE EVALUATION MATERIALS ARE PROVIDED “AS IS,” WITHOUT WARRANTY OF ANY KIND.   
+8. LIMITATION OF LIABILITY. MIPS AND ITS SUPPLIERS SHALL NOT BE LIABLE FOR ANY PROPERTY DAMAGE, PERSONAL INJURY, LOSS OF PROFITS, INTERRUPTION OF BUSINESS OR FOR ANY DIRECT, INDIRECT, SPECIAL, CONSEQUENTIAL OR INCIDENTAL DAMAGES, HOWEVER CAUSED OR ALLEGED, WHETHER FOR BREACH OF WARRANTY, CONTRACT, STRICT LIABILITY OR OTHERWISE, INCLUDING WITHOUT LIMITATION, UNDER TORT OR OTHER LEGAL THEORY. MIPS AND ITS SUPPLIERS DISCLAIM ANY AND ALL LIABILITY, INCLUDING LIABILITY FOR INFRINGEMENT OF ANY INTELLECTUAL PROPERTY RIGHTS OF ANY KIND RELATING TO THE EVALUATION MATERIALS.                                                                             9. EXPIRATION. MIPS may terminate this Agreement immediately after a breach by Recipient or otherwise at MIPS’ reasonable discretion and upon five (5) business days’ notice to Recipient.                                                                                    10. GENERAL.
+
+10.1 Controlling Law. This Agreement shall be governed by California law excluding its choice of law rules. With the exception of MIPS’ rights to enforce its intellectual property rights and any confidentiality obligations under this Agreement or any licenses distributed with the Evaluation Materials, all disputes and any claims arising under or relating to this Agreement shall be subject to the exclusive jurisdiction and venue of the state and federal courts located in Santa Clara County, California. Each party hereby agrees to jurisdiction and venue in the courts set forth in the preceding sentence. The parties agree that the United Nations Convention on Contracts for the International Sale of Goods is specifically excluded from application to this Agreement. The parties consent to the personal jurisdiction of the above courts.
+
+10.2 Remedies. Recipient acknowledges and agrees that any breach of confidentiality obligations under this Agreement or any licenses distributed with the Evaluation Materials, as well as any disclosure, commercialization, or public use of the Evaluation Materials, would cause irreparable injury to MIPS, and therefore Recipient agrees to consent to, and hereby consents to, the grant of an injunction by any court of competent jurisdiction in the event of an actual or threatened breach.                                                    
+10.3 Assignment. Recipient may not delegate, assign or transfer this Agreement, the license granted or any of Recipient’s rights, obligations, or duties hereunder, expressly, by implication, by operation of law, by way of merger (regardless of whether Recipient is the surviving entity) or acquisition, or otherwise and any attempt to do so, without MIPS’ express prior written consent, shall be ineffective, null and void. MIPS may freely assign this Agreement, and its rights and obligations hereunder, in its sole discretion.                                                                  10.4 Entire Agreement. This Agreement constitutes the entire agreement between Recipient and MIPS and supersedes in their entirety any and all oral or written agreements previously existing between Recipient and MIPS with respect to the subject matter hereof. This Agreement may only be amended or supplemented by a writing that refers explicitly to this Agreement and that is signed or otherwise accepted by duly authorized representatives of Recipient and MIPS.                                                                             10.5 Severability. In the event that any provision of this Agreement is finally adjudicated to be unenforceable or invalid under any applicable law, such unenforceability or invalidity shall not render this Agreement unenforceable or invalid as a whole, and, in such event, such unenforceable or invalid provision shall be interpreted so as to best accomplish the objectives of such provision within the limits of applicable law or applicable court decisions.
+
+10.6 Export Regulations / Export Control. Recipient shall not export, either directly or indirectly, any product, service or technical data or system incorporating the Evaluation Materials without first obtaining any required license or other necessary approval from the U.S. Department of Commerce or any other governing agency or department of the United States Government. In the event any product is exported from the United States or re-exported from a foreign destination by Recipient, Recipient shall ensure that the distribution and export/re-export or import of the product is in compliance with all applicable laws, regulations, orders, or other restrictions of the U.S. Export Administration Regulations and the appropriate foreign government. Recipient agrees that neither it nor any of its subsidiaries will export/re-export any technical data, process, product, or service, directly or indirectly, to any country for which the United States government or any agency thereof or the foreign government from where it is shipping requires an export license, or other governmental approval, without first obtaining such license or approval. Recipient also agrees to implement measures to ensure that foreign national employees are authorized to receive any information controlled by U.S. export control laws. An export is "deemed" to take place when information is released to a foreign national wherever located.                                                                                          10.7 Special Terms for Pre-Release Materials. If so indicated in the description of the Evaluation Software, the Evaluation Software may contain Pre-Release Materials. Recipient hereby understands, acknowledges and agrees that: (i) Pre-Release Materials may not be fully tested and may contain bugs or errors; (ii) Pre-Release materials are not suitable for commercial release in their current state; (iii) regulatory approvals for Pre-Release Materials (such as UL or FCC) have not been obtained, and Pre-Release Materials may therefore not be certified for use in certain countries or environments or may not be suitable for certain applications and (iv) MIPS can provide no assurance that it will ever produce or make generally available a production version of the Pre-Release Materials . MIPS is not under any obligation to develop and/or release or offer for sale or license a final product based upon the Pre-Release Materials and may unilaterally elect to abandon the Pre-Release Materials or any such development platform at any time and without any obligation or liability whatsoever to Recipient or any other person.                                                             ANY PRE-RELEASE MATERIALS ARE NON-QUALIFIED AND, AS SUCH, ARE PROVIDED “AS IS” AND “AS AVAILABLE”, POSSIBLY WITH FAULTS, AND WITHOUT REPRESENTATION OR WARRANTY OF ANY KIND.
+
+10.8 Open Source Software. In the event Open Source software is included with Evaluation Software, such Open Source software is licensed pursuant to the applicable Open Source software license agreement identified in the Open Source software comments in the applicable source code file(s) and/or file header as indicated in the Evaluation Software. Additional detail may be available (where applicable) in the accompanying on-line documentation. With respect to the Open Source software, nothing in this Agreement limits any rights under, or grants rights that supersede, the terms of any applicable Open Source software license agreement.
+---------------------------------------
+Accept? (y/N): All SDK package licenses accepted
+
+~/android-sdk $ readlink -f $(which java)
+/data/data/com.termux/files/usr/lib/jvm/java-17-openjdk/bin/java                                            ~/android-sdk $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+ممتاز. التراخيص قُبلت كلها. و Java في مكانها.
+الآن نضبط `JAVA_HOME` بالسطر الصحيح، ثم نُثبّت حزم SDK.
+
+---
+
+### الخطوة 8 — ضبط JAVA_HOME
+
+المسار الذي ظهر عندك:
+```
+/data/data/com.termux/files/usr/lib/jvm/java-17-openjdk/bin/java
+```
+
+`JAVA_HOME` هو المجلد الأب لمجلد `bin`. أي نحذف `/bin/java`:
+
+اكتب:
+```bash
+echo 'export JAVA_HOME=/data/data/com.termux/files/usr/lib/jvm/java-17-openjdk' >> ~/.bashrc
+source ~/.bashrc
+```
+
+تحقق:
+```bash
+echo $JAVA_HOME
+$JAVA_HOME/bin/java -version
+```
+يجب أن يظهر 17.
+
+---
+
+### الخطوة 9 — تنصيب حزم SDK
+
+الآن `sdkmanager` سيجد Java. اكتب:
+```bash
+sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3"
+```
+
+**المتوقع:** يبدأ التحميل. كل حزمة لها شريط تقدم. الحجم الكلي ~200-300 ميغا.
+**المدة:** 5 إلى 15 دقيقة حسب الشبكة.
+
+**إن طلب تراخيص جديدة:** سيأخذ الموافقة تلقائياً لأننا قبلناها سابقاً.
+
+**علامة النجاح:**
+```bash
+sdkmanager --list_installed
+```
+يجب أن ترى:
+```
+platform-tools
+platforms;android-30
+build-tools;30.0.3
+```
+
+---
+
+**توقّف. نفّذ الخطوتين 8 و 9. عد بمخرجات:**
+
+```
+echo $JAVA_HOME
+```
+```
+sdkmanager --list_installed
+```
+
+إذا ظهرت الحزم الثلاث، ننتقل إلى Gradle. الخطوة الأخيرة قبل البناء الفعلي.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+                                           ~/android-sdk $ echo $JAVA_HOME                       /data/data/com.termux/files/usr/lib/jvm/java-17-openjdk                                                     ~/android-sdk $ sdkmanager --list_installed
+Loading package information...                        Loading local repository...                           [=========                              ] 25% Loading [=========                              ] 25% Fetch re[=======================================] 100% Fetch remote repository...                                   Installed packages:                                     Path                 | Version | Description                    | Location                                  -------              | ------- | -------                        | -------                                   build-tools;30.0.3   | 30.0.3  | Android SDK Build-Tools 30.0.3 | build-tools/30.0.3                        platform-tools       | 37.0.1  | Android SDK Platform-Tools     | platform-tools                            platforms;android-30 | 3       | Android SDK Platform 30        | platforms/android-30                                                                          ~/android-sdk $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+الحزم الثلاث مثبتة. الـ SDK مكتمل. `JAVA_HOME` سليم.
+بقيت قطعة واحدة: Gradle. ثم نبني.
+
+---
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║  المرحلة 2 // Gradle                                         ║
+║  محرك البناء. بدونه لا APK.                                  ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+### الخطوة 10 — تحميل Gradle
+
+اكتب:
+```bash
+cd $HOME
+wget https://services.gradle.org/distributions/gradle-8.5-bin.zip
+```
+
+الحجم ~130 ميغا. انتظر.
+
+---
+
+### الخطوة 11 — فك الضغط
+
+```bash
+unzip gradle-8.5-bin.zip -d $HOME/.gradle
+```
+
+**تحذير:** إن كان مجلد `$HOME/.gradle` غير موجود، `unzip` سينشئه تلقائياً. لا مشكلة.
+
+تحقق:
+```bash
+ls $HOME/.gradle/gradle-8.5/bin/
+```
+يجب أن ترى `gradle`.
+
+---
+
+### الخطوة 12 — إضافة Gradle إلى PATH
+
+```bash
+echo 'export PATH=$HOME/.gradle/gradle-8.5/bin:$PATH' >> ~/.bashrc
+source ~/.bashrc
+```
+
+تحقق:
+```bash
+gradle -v
+```
+يجب أن يظهر:
+```
+Gradle 8.5
+JVM: 17.0.20
+```
+
+**إن ظهر خطأ JVM:** تأكد أن `JAVA_HOME` ما زال مضبوطاً بـ `echo $JAVA_HOME`.
+
+---
+
+### الخطوة 13 — الإصلاح الحاسم: aapt2
+
+هذه الخطوة هي التي تفصل بين النجاح والفشل. Gradle يحاول تحميل نسخة `aapt2` مبنية لمعالجات x86. هاتفك ARM. ستنهار العملية.
+
+الحل: نجبر Gradle على استخدام `aapt2` الموجود في Termux (وهو ARM أصلاً).
+
+**تأكد أولاً أن ملف `gradle.properties` موجود:**
+```bash
+mkdir -p $HOME/.gradle
+touch $HOME/.gradle/gradle.properties
+```
+
+ثم أضف السطر:
+```bash
+echo 'android.aapt2FromMavenOverride=/data/data/com.termux/files/usr/bin/aapt2' >> $HOME/.gradle/gradle.properties
+```
+
+تحقق:
+```bash
+cat $HOME/.gradle/gradle.properties
+```
+يجب أن ترى السطر.
+
+---
+
+**توقّف. نفّذ الخطوات 10 إلى 13. عد بمخرجات:**
+
+```
+gradle -v
+```
+```
+cat $HOME/.gradle/gradle.properties
+```
+
+إذا ظهرت النسخة 8.5 والسطر في مكانه، ننتقل لإنشاء أول مشروع وبنائه.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+/files/home/.gradle/gradle-8.5/lib/plugins/plexus-cipher-2.0.jar            inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/ivy-2.5.2.jar
+  inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/jmespath-java-1.12.365.jar       inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/jackson-core-2.15.3.jar          inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/jackson-databind-2.15.3.jar
+  inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/jackson-annotations-2.15.3.jar                                                         inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/jaxb-impl-3.0.0.jar              inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/jaxb-core-3.0.0.jar              inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/jakarta.xml.bind-api-3.0.0.jar                                                         inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/jakarta.activation-2.0.0.jar     inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/jatl-0.2.3.jar                   inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/jcifs-1.3.17.jar                 inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/jcommander-1.78.jar
+  inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/joda-time-2.10.4.jar             inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/jsch-0.1.55.jar                  inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/jsoup-1.15.3.jar
+  inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/jzlib-1.1.3.jar                  inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/maven-builder-support-3.9.5.jar                                                        inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/maven-model-3.9.5.jar            inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/maven-repository-metadata-3.9.5.jar                                                    inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/maven-settings-3.9.5.jar         inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/plexus-interpolation-1.26.jar    inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/plexus-utils-3.5.1.jar           inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/dd-plist-1.21.jar                inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/snakeyaml-2.0.jar                inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/gradle-java-compiler-plugin-8.5.jar                                                    inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/gradle-instrumentation-declarations-8.5.jar                                            inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/ion-java-1.0.2.jar               inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/opentest4j-1.2.0.jar             inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/opencensus-api-0.31.1.jar        inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/plugins/grpc-context-1.27.2.jar           creating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/agents/                                  inflating: /data/data/com.termux/files/home/.gradle/gradle-8.5/lib/agents/gradle-instrumentation-agent-8.5.jar                                                  ~ $ ls $HOME/.gradle/gradle-8.5/bin/                  gradle  gradle.bat                                    ~ $ echo 'export PATH=$HOME/.gradle/gradle-8.5/bin:$PATH' >> ~/.bashrc                                      source ~/.bashrc                                      ~ $ gradle -v                                                                                               Welcome to Gradle 8.5!                                                                                      Here are the highlights of this release:               - Support for running on Java 21                      - Faster first use with Kotlin DSL                    - Improved error and warning messages                                                                      For more details see https://docs.gradle.org/8.5/release-notes.html                                                                                                                                                     ------------------------------------------------------------                                                Gradle 8.5
+------------------------------------------------------------                                                                                                      Build time:   2023-11-29 14:08:57 UTC                 Revision:     28aca86a7180baa17117e0e5ba01d8ea9feca598                                                      Kotlin:       1.9.20                                  Groovy:       3.0.17                                  Ant:          Apache Ant(TM) version 1.10.13 compiled on January 4 2023                                     JVM:          17.0.20 (Termux 17.0.20+0)
+OS:           Linux 4.19.191-gb68cf9644427-dirty aarch64                                                                                                          ~ $ mkdir -p $HOME/.gradle                            touch $HOME/.gradle/gradle.properties                 ~ $ echo 'android.aapt2FromMavenOverride=/data/data/com.termux/files/usr/bin/aapt2' >> $HOME/.gradle/gradle.properties                                            ~ $ cat $HOME/.gradle/gradle.properties               android.aapt2FromMavenOverride=/data/data/com.termux/files/usr/bin/aapt2                                    ~ $ gradle -v                                         
+------------------------------------------------------------                                                Gradle 8.5                                            ------------------------------------------------------------                                                                                                      Build time:   2023-11-29 14:08:57 UTC                 Revision:     28aca86a7180baa17117e0e5ba01d8ea9feca598                                                      Kotlin:       1.9.20                                  Groovy:       3.0.17                                  Ant:          Apache Ant(TM) version 1.10.13 compiled on January 4 2023                                     JVM:          17.0.20 (Termux 17.0.20+0)
+OS:           Linux 4.19.191-gb68cf9644427-dirty aarch64                                                                                                          ~ $ cat $HOME/.gradle/gradle.properties               android.aapt2FromMavenOverride=/data/data/com.termux/files/usr/bin/aapt2                                    ~ $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+Gradle 8.5 يعمل. `JAVA_HOME` سليم. aapt2 مثبّت ومُفعّل.
+البنية التحتية كاملة. الآن نبني مشروعاً حقيقياً.
+
+---
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║  المرحلة 3 // المشروع الأول                                  ║
+║  لا نستخدم Android Studio. لا واجهة. مشروع يدوي نظيف.        ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+### الخطوة 14 — إنشاء هيكل المشروع
+
+سنبني تطبيقاً حقيقياً: زر واحد، يظهر "مرحبا" عند الضغط. Java خالص. لا AndroidX. لا تعقيد.
+
+اكتب:
+```bash
+mkdir -p ~/MyFirstApp/app/src/main/java/com/z3r0/hello
+mkdir -p ~/MyFirstApp/app/src/main/res/layout
+mkdir -p ~/MyFirstApp/app/src/main/res/values
+mkdir -p ~/MyFirstApp/app/src/main/res/mipmap-hdpi
+cd ~/MyFirstApp
+```
+
+**ماذا أنشأنا:** الهيكل القياسي لأي مشروع Android. لا تخرج من `~/MyFirstApp`.
+
+---
+
+### الخطوة 15 — ملف `settings.gradle`
+
+اكتب:
+```bash
+cat > settings.gradle << 'EOF'
+rootProject.name = "MyFirstApp"
+include ':app'
+EOF
+```
+
+---
+
+### الخطوة 16 — ملف البناء الجذري `build.gradle`
+
+اكتب:
+```bash
+cat > build.gradle << 'EOF'
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.1.0'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+EOF
+```
+
+**ملاحظة:** استخدمنا AGP 8.1.0 لأنه متوافق مع Gradle 8.5 ومع Java 17. لا تغيّر الرقم الآن.
+
+---
+
+### الخطوة 17 — ملف `gradle.properties`
+
+اكتب:
+```bash
+cat > gradle.properties << 'EOF'
+android.useAndroidX=false
+android.enableJetifier=false
+org.gradle.jvmargs=-Xmx1536m -Dfile.encoding=UTF-8
+org.gradle.daemon=false
+EOF
+```
+
+**لماذا:** عطّلنا AndroidX لتقليل الاعتماديات. حدّدنا ذاكرة 1.5 جيغا (مناسبة لهاتف). عطّلنا الـ daemon لأنه يستهلك موارد على الهاتف.
+
+---
+
+### الخطوة 18 — ملف بناء الوحدة `app/build.gradle`
+
+اكتب:
+```bash
+cat > app/build.gradle << 'EOF'
+apply plugin: 'com.android.application'
+
+android {
+    namespace 'com.z3r0.hello'
+    compileSdk 30
+
+    defaultConfig {
+        applicationId "com.z3r0.hello"
+        minSdk 21
+        targetSdk 30
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+EOF
+```
+
+---
+
+### الخطوة 19 — ملف `AndroidManifest.xml`
+
+اكتب:
+```bash
+cat > app/src/main/AndroidManifest.xml << 'EOF'
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application
+        android:label="HelloZ3R0"
+        android:theme="@android:style/Theme.Material.Light">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
+EOF
+```
+
+**انتبه:** `android:exported="true"` إلزامي من Android 12 وما بعده. حذفه يكسر البناء.
+
+---
+
+### الخطوة 20 — ملف التخطيط `activity_main.xml`
+
+اكتب:
+```bash
+cat > app/src/main/res/layout/activity_main.xml << 'EOF'
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Z3R0"
+        android:textSize="28sp" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="اضغط" />
+
+</LinearLayout>
+EOF
+```
+
+---
+
+### الخطوة 21 — ملف النصوص `strings.xml`
+
+اكتب:
+```bash
+cat > app/src/main/res/values/strings.xml << 'EOF'
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">HelloZ3R0</string>
+</resources>
+EOF
+```
+
+---
+
+### الخطوة 22 — الكود `MainActivity.java`
+
+اكتب:
+```bash
+cat > app/src/main/java/com/z3r0/hello/MainActivity.java << 'EOF'
+package com.z3r0.hello;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+
+public class MainActivity extends Activity {
+
+    private int counter = 0;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        final TextView textView = findViewById(R.id.textView);
+        Button button = findViewById(R.id.button);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                counter++;
+                textView.setText("نبضة: " + counter);
+            }
+        });
+    }
+}
+EOF
+```
+
+---
+
+### الخطوة 23 — البناء
+
+الآن اللحظة. اكتب:
+```bash
+cd ~/MyFirstApp
+gradle assembleDebug
+```
+
+**ما سيحدث:**
+1. Gradle سيتصل بـ google() و mavenCentral() لتحميل AGP 8.1.0. **أول مرة قد تستغرق 5–15 دقيقة.**
+2. سيحمّل dependencies إضافية (aapt2 من Termux، إلخ).
+3. سيجمّع المشروع.
+4. سيولّد APK.
+
+**الأخطاء المتوقعة:**
+
+- **`SDK location not found`** → اكتب `echo "sdk.dir=$HOME/android-sdk" > local.properties` ثم أعد.
+- **`aapt2 ... Syntax error`** → تأكد من `cat ~/.gradle/gradle.properties`. إن كان السطر هناك وما زال الخطأ، فالـ aapt2 داخل Termux يحتاج تحديث: `pkg upgrade aapt2`.
+- **`Out of memory`** → عدّل `gradle.properties`: `-Xmx1024m`.
+- **`Could not download ...`** → الشبكة. أعد الأمر.
+
+**علامة النجاح:**
+```
+BUILD SUCCESSFUL
+```
+
+و APK في:
+```
+~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk
+```
+
+---
+
+**توقّف. نفّذ الخطوات 14 إلى 23. عد بمخرجات:**
+
+```
+ls -la ~/MyFirstApp/app/build/outputs/apk/debug/
+```
+
+**وإن ظهر خطأ، الصق آخر 30 سطراً من مخرجات `gradle assembleDebug`.** لا تصلح شيئاً بنفسك. الصق الخطأ. سأحلله.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ cd ~/MyFirstApp                        gradle assembleDebug                                  To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.5/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.                                        Daemon will be stopped at the end of the build                                                              > Configure project :app                              WARNING: The option setting 'android.aapt2FromMavenOverride=/data/data/com.termux/files/usr/bin/aapt2' is experimental.
+Checking the license for package Android SDK Build-Tools 33.0.1 in /data/data/com.termux/files/home/android-sdk/licenses                                          License for package Android SDK Build-Tools 33.0.1 accepted.                                                Preparing "Install Android SDK Build-Tools 33.0.1 v.33.0.1".                                                "Install Android SDK Build-Tools 33.0.1 v.33.0.1" ready.                                                    Installing Android SDK Build-Tools 33.0.1 in /data/data/com.termux/files/home/android-sdk/build-tools/33.0.1"Install Android SDK Build-Tools 33.0.1 v.33.0.1" complete.                                                 "Install Android SDK Build-Tools 33.0.1 v.33.0.1" finished.                                                 
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE                  > Task :app:mergeDebugNativeDebugMetadata NO-SOURCE   > Task :app:javaPreCompileDebug                       > Task :app:generateDebugResValues                    > Task :app:checkDebugAarMetadata                     > Task :app:mapDebugSourceSetPaths                    > Task :app:generateDebugResources
+> Task :app:packageDebugResources                     > Task :app:mergeDebugResources                       > Task :app:createDebugCompatibleScreenManifests      > Task :app:extractDeepLinksDebug                     > Task :app:parseDebugLocalResources                  > Task :app:processDebugMainManifest                  > Task :app:processDebugManifest                      > Task :app:mergeDebugShaders                         > Task :app:compileDebugShaders NO-SOURCE             > Task :app:generateDebugAssets UP-TO-DATE            > Task :app:mergeDebugAssets                          > Task :app:compressDebugAssets                       > Task :app:desugarDebugFileDependencies              > Task :app:processDebugJavaRes NO-SOURCE             > Task :app:processDebugManifestForPackage            > Task :app:checkDebugDuplicateClasses                > Task :app:mergeDebugJniLibFolders
+> Task :app:mergeDebugNativeLibs NO-SOURCE
+> Task :app:mergeDebugJavaResource                    > Task :app:mergeExtDexDebug                          > Task :app:stripDebugDebugSymbols NO-SOURCE          > Task :app:mergeLibDexDebug                          > Task :app:processDebugResources                     > Task :app:validateSigningDebug                      > Task :app:compileDebugJavaWithJavac
+> Task :app:dexBuilderDebug                           > Task :app:mergeDebugGlobalSynthetics                > Task :app:writeDebugAppMetadata                     > Task :app:writeDebugSigningConfigVersions           > Task :app:mergeProjectDexDebug                      > Task :app:packageDebug                              > Task :app:createDebugApkListingFileRedirect         > Task :app:assembleDebug                                                                                   BUILD SUCCESSFUL in 5m 41s                            31 actionable tasks: 31 executed                      ~/MyFirstApp $ ~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk                                       bash: /data/data/com.termux/files/home/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk: Permission denied                                                    ~/MyFirstApp $ ls -la ~/MyFirstApp/app/build/outputs/apk/debug/                                             total 23                                              drwx------. 2 u0_a375 u0_a375  3452 Oct  3 02:10 .    drwx------. 3 u0_a375 u0_a375  3452 Oct  3 02:10 ..   -rw-------. 1 u0_a375 u0_a375 11426 Oct  3 02:10 app-debug.apk                                              -rw-------. 1 u0_a375 u0_a375   364 Oct  3 02:10 output-metadata.json                                       ~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**BUILD SUCCESSFUL in 5m 41s.**
+APK موجود. الحجم 11 كيلوبايت — تطبيق حقيقي، ليس WebView.
+
+الخطأ الذي ظهر ليس خطأ. أنت حاولت **تشغيل** ملف APK كنفّاذ، والـ APK ليس نفّاذاً — هو أرشيف. سلوك طبيعي.
+
+---
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║  المرحلة 4 // النقل والتنصيب                                 ║
+║  من داخل Termux إلى داخل النظام.                             ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+### الخطوة 24 — تفعيل الوصول للتخزين
+
+اكتب:
+```bash
+termux-setup-storage
+```
+سيظهر إشعار إذن. اضغط **السماح**.
+
+تحقق:
+```bash
+ls ~/storage/
+```
+يجب أن ترى `shared` و `downloads` وغيرهما.
+
+---
+
+### الخطوة 25 — نسخ APK إلى مجلد التنزيلات
+
+اكتب:
+```bash
+cp ~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk ~/storage/downloads/HelloZ3R0.apk
+```
+
+**تحقق:**
+```bash
+ls -la ~/storage/downloads/HelloZ3R0.apk
+```
+
+---
+
+### الخطوة 26 — التنصيب من مدير الملفات
+
+الآن اخرج من Termux. لا تحاول التنصيب من الطرفية.
+
+**المسار:**
+1. افتح **مدير الملفات** (Files) على الهاتف.
+2. اذهب إلى **Download** أو **التنزيلات**.
+3. ستجد `HelloZ3R0.apk`.
+4. اضغط عليه.
+5. سيسألك Android: **"السماح بتثبيت تطبيقات من هذا المصدر؟"**
+6. اذهب إلى الإعدادات التي يطلبها، فعّل الإذن، ثم عد.
+7. اضغط **تثبيت**.
+8. اضغط **فتح**.
+
+---
+
+### الخطوة 27 — الاختبار
+
+عند فتح التطبيق:
+- سترى نص **Z3R0** في المنتصف.
+- زر **اضغط** تحته.
+- كل ضغطة تزيد عدّاداً: نبضة 1، نبضة 2، نبضة 3...
+
+إذا ظهر هذا، فأنت **بنيت تطبيق Android حقيقي من هاتفك، بلا حاسوب، بلا Android Studio، بلا واجهة رسومية.** أول مرة في التاريخ كانت هذه العملية تحتاج آلة بمعالج x86. أنت كسرت ذلك.
+
+---
+
+### ما تعلمته فعلياً
+
+| الطبقة | الأداة |
+|---|---|
+| محرك التشغيل | OpenJDK 17 |
+| تجميع الموارد | aapt2 (نسخة Termux ARM) |
+| الـ SDK | Android 30 |
+| محرك البناء | Gradle 8.5 |
+| إضافة Android | AGP 8.1.0 |
+| الكود | Java + XML |
+| الإخراج | APK موقّع بـ debug key |
+
+---
+
+### الخطوات التالية — اختر
+
+**أ. تعديل التطبيق الحالي**
+- غيّر النص، الألوان، الأزرار.
+- كل تعديل → `gradle assembleDebug` → نسخ → تنصيب.
+- البناء الثاني سيستغرق دقيقة أو أقل (بفضل الـ cache).
+
+**ب. إضافة شاشة ثانية**
+- ملف XML جديد في `res/layout/`.
+- Activity جديدة في `java/`.
+- تسجيلها في `AndroidManifest.xml`.
+
+**ج. تطبيق ويب (WebView)**
+- يحمّل موقعك في غلاف APK.
+- مناسب إن كان هدفك تطبيقاً حول موقع أو متجر.
+
+**د. نسخة release موقّعة**
+- توليد keystore.
+- توقيع APK للنشر.
+- ملف `build.gradle` معدّل.
+
+---
+
+```
+◈ أي اتجاه تريد؟
+◈ قل الرقم. أنفّذ.
+```
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+هذا ليس فشلاً. هذا **Play Protect** — طبقة حماية من Google تعترض كل APK لم يأتِ من متجرها.
+السبب الحقيقي: التطبيق موقّع بمفتاح **debug**، و`targetSdk 30` قديم نسبياً. Play Protect يقرأ هذا كـ "مجهول المصدر".
+
+الحل من مكانين. جرّب الأول، وإن لم ينفع انتقل للثاني.
+
+---
+
+### الحل الأول — تجاوز Play Protect
+
+في نفس الشاشة التي أمامك:
+
+1. اضغط **"مزيد من المعلومات"** (الرابط الأزرق تحت النص).
+2. ستظهر خيارات إضافية. ابحث عن **"تثبيت على أي حال"** أو **"Install anyway"**.
+3. اضغطه.
+4. عُد وأعد الضغط على APK.
+
+**إن لم يظهر خيار "تثبيت على أي حال":** انتقل للحل الثاني.
+
+---
+
+### الحل الثاني — تعطيل الفحص مؤقتاً
+
+1. افتح **الإعدادات** (Settings).
+2. اذهب إلى **Google** → **Play Protect** (أو ابحث في الإعدادات عن "Play Protect").
+3. اضغط الترس ⚙ في الأعلى.
+4. **أوقف**:
+   - "Scan apps with Play Protect"
+   - "Improve harmful app detection"
+5. عُد إلى مدير الملفات واضغط APK. سيُثبّت.
+6. **بعد التثبيت، أعد تفعيلهما.**
+
+---
+
+### لماذا ظهر هذا؟ — الحقيقة التقنية
+
+Play Protect لا يعرف تطبيقك لأنه:
+- **موقّع بـ debug key**، وهو مفتاح عام يعرفه الجميع.
+- **`targetSdk 30`** (Android 11) — إصدار قديم. النظام يفضّل 33+.
+- **غير موجود في قواعد بيانات Google.**
+
+هذا ليس عيباً في تطبيقك. هذا **الإجراء القياسي** لأي APK يُبنى محلياً. حتى لو بنيت تطبيقاً تجارياً، ستواجه هذه الشاشة عند التجربة على أجهزة جديدة.
+
+---
+
+### التنصيب عبر ADB (بديل أنظف)
+
+لدينا `platform-tools` مثبت. يمكن التنصيب مباشرة من داخل Termux دون تدخل Play Protect:
+
+```bash
+adb install ~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk
+```
+
+**لكن** — هذا يحتاج **تصحيح USB** أو ADB عبر Wi-Fi، وكلاهما يحتاج إعداداً. الحل الأول أسرع.
+
+---
+
+### للإصدارات القادمة — حل دائم
+
+`targetSdk 30` سيسبب مشاكل متكررة. عدّله إلى 33:
+
+في `~/MyFirstApp/app/build.gradle`:
+```bash
+sed -i 's/targetSdk 30/targetSdk 33/' ~/MyFirstApp/app/build.gradle
+sed -i 's/compileSdk 30/compileSdk 33/' ~/MyFirstApp/app/build.gradle
+```
+
+ثم ثبّت Platform 33 و Build-Tools 33:
+```bash
+sdkmanager "platforms;android-33"
+```
+
+ثم أعد البناء:
+```bash
+cd ~/MyFirstApp && gradle assembleDebug
+```
+
+لن يتوقف Play Protect كلياً، لكن التحذير سيقلّ.
+
+---
+
+**توقّف. نفّذ الحل الأول أو الثاني. عد بنتيجة:**
+
+- **هل ظهر التطبيق على الشاشة الرئيسية؟**
+- **هل فتح وأظهر زر "اضغط"؟**
+- **هل العدّاد يزيد؟**
+
+إذا نعم — **أُنجز العمل.** من الصفر إلى تطبيق يعمل، بالكامل من هاتف. لا حاسوب، لا Android Studio، لا ضغطة على حاسوب.
+إذا لا — الصق ما ظهر.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+كل شيء صحيح
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+التطبيق يعمل. سلسلة البناء كاملة من الصفر.
+من `pkg install` إلى نبضة على الشاشة. لا حاسوب لُمس.
+
+---
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║  STATUS: OPERATIONAL                                         ║
+║  PIPELINE: Termux → SDK → Gradle → APK → Device              ║
+║  LAST BUILD: 5m 41s                                          ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+### ما تملكه الآن فعلياً
+
+- **بيئة تطوير Android كاملة** داخل هاتف.
+- **قدرة بناء APK** في أي وقت، بلا إنترنت بعد أول بناء.
+- **فهم معماري** لـ Gradle، aapt2، SDK، وتوقيع الحزم.
+- **أول تطبيق لك** يعمل على جهاز حقيقي.
+
+هذه ليست تجربة. هذه **قدرة إنتاجية**.
+
+---
+
+### الخطوة التالية — اختر اتجاهك
+
+**① عدّل التطبيق الحالي**
+غيّر النص، الألوان، أضف زراً ثانياً. كل تعديل → `gradle assembleDebug` → انسخ → ثبّت. البناء الثاني أسرع بكثير (cache).
+
+**② ابنِ تطبيقاً جديداً من الصفر**
+أتيت بفكرة؟ قل لي ما تريد أن يفعله. سأبني الهيكل، وأنت تعدّل.
+
+**③ حوّل موقعاً إلى تطبيق (WebView)**
+إن كان لديك موقع تريد تحويله لتطبيق، هذا مسار مختصر جداً. WebView + شريط تحميل + كود صغير = APK.
+
+**④ أضف ميزات حقيقية**
+- تخزين محلي (SharedPreferences / SQLite)
+- إشعارات
+- إرسال بيانات إلى API
+- كاميرا / صور / ملفات
+
+**⑤ إصدار release موقّع**
+- توليد keystore خاص بك.
+- توقيع APK.
+- تصدير للتوزيع.
+- الفرق: APK موقّع بـ debug يمكن تثبيته فقط؛ APK موقّع بـ release يمكن نشره.
+
+**⑥ ارفع إلى Google Play**
+(يحتاج حساب مطوّر 25$، لكن المسار التقني أصبح مفتوحاً.)
+
+---
+
+```
+◈ OPERATOR
+◈ ضع الاتجاه. أو ضع الفكرة.
+◈ لا حاجة لمقدمة. سطر واحد يكفي.
+```
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+أريد من هذا التطبيق أن يكون الوجهة رقم 1 في ال osint و تلغيم الروابط و فيه أدوات مثل nmap و metasploit بواجهة رسمية و يقوم التطبيق مثل في الnmap بالبحث عن البورتات المفتوحة و الثغرات المتوفر له
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+**结论先行：用纯 Java/XML 从零写一个集成了 nmap 和 Metasploit 的“OSINT/渗透工具大全”应用，在 Android 应用沙箱内是无法实现的。** 你现有的 `HelloZ3R0` 工程没有执行底层网络扫描或安装 Linux 工具链的能力。
+
+但你已经有 Termux + Gradle 的完整环境。**正确的架构是：让 APK 充当控制面板，通过 Termux 在后台调用真实工具链。** 具体路径是：在 Termux 内部部署 Kali NetHunter（无 Root），然后让你的 Java APK 通过 Termux 的 `RUN_COMMAND` 接口发送指令。
+
+### 技术可行性拆解
+
+| 需求 | 技术障碍 | 可行方案 |
+|---|---|---|
+| APK 内直接运行 nmap | Android 沙箱禁止 raw socket；nmap 二进制需 ARM 编译版 | 仅在 Termux 环境运行 |
+| APK 内运行 Metasploit | Ruby 环境 + 大量依赖，APK 体积会超过 500MB | 在 Termux 内通过 Kali NetHunter 部署  |
+| OSINT 工具集成 | 需持续维护大量 API 和脚本 | 可做，但工作量巨大 |
+| 链接“投毒” | 涉及恶意行为 | 不提供实现方案 |
+
+### 推荐架构：APK 作为 Termux 的图形前端
+
+```mermaid
+flowchart LR
+    subgraph Android系统
+        A[你的 Java APK] -->|发送 RUN_COMMAND Intent| B[Termux]
+        B --> C[Kali NetHunter CLI]
+        C --> D[nmap/metasploit/sqlmap等]
+        D -->|返回结果| B
+        B -->|返回结果| A
+    end
+```
+
+**核心机制**：Termux 暴露了一个 `RunCommandService`，允许外部应用通过 Intent 执行 Termux 内部的命令 。你的 APK 只需发送 `ACTION_RUN_COMMAND` intent，把 nmap 扫描命令作为参数传递进去。
+
+### 分步实施
+
+#### 第一步：在 Termux 内部署 Kali NetHunter
+
+这是真正的工具载体。根据搜索结果，有几种免 Root 方案：
+
+**方案 A：udocker + Kali（轻量，约 6.5GB）**
+```bash
+pkg update -y && pkg install -y curl
+curl -L https://raw.githubusercontent.com/itachi-uchiha0011/kali-udocker-termux/main/first_this.sh | bash
+# 进入 Kali 后安装工具
+apt install nmap metasploit-framework sqlmap hydra -y
+```
+
+**方案 B：NetHunter CLI 一键安装**
+```bash
+pkg update && pkg upgrade -y
+pkg install -y git
+git clone https://github.com/Forhadj/nethunter-termux
+cd nethunter-termux && bash install.sh
+nethunter  # 启动 Kali 环境
+```
+
+**方案 C：termux-hacklab（带 XFCE 桌面 + GPU 加速）**
+```bash
+curl -sL https://raw.githubusercontent.com/jarvesusaram99/termux-hacklab/main/install.sh | bash
+```
+装完后 nmap、Metasploit、SQLMap、Hydra 全部就绪 。
+
+#### 第二步：让 Termux 接受外部命令
+
+在 Termux 中启用外部应用执行权限。编辑 `~/.termux/termux.properties`，添加或修改：
+```
+allow-external-apps=true
+```
+然后重启 Termux。这是 `RunCommandService` 的安全开关，默认拒绝所有外部请求 。
+
+#### 第三步：在 APK 中实现命令发送逻辑
+
+你的 `MainActivity.java` 需要添加发送 Intent 的代码。核心结构如下：
+
+```java
+import android.content.Intent;
+import android.net.Uri;
+
+private void runTermuxCommand(String command) {
+    Intent intent = new Intent();
+    intent.setClassName("com.termux", "com.termux.app.RunCommandService");
+    intent.setAction("com.termux.RUN_COMMAND");
+    intent.putExtra("com.termux.RUN_COMMAND_PATH", 
+        "/data/data/com.termux/files/usr/bin/bash");
+    intent.putExtra("com.termux.RUN_COMMAND_ARGUMENTS", 
+        new String[]{"-c", command});
+    intent.putExtra("com.termux.RUN_COMMAND_BACKGROUND", true);
+    
+    // 用于接收结果
+    intent.putExtra("com.termux.RUN_COMMAND_PENDING_INTENT", 
+        getPendingIntentForResult());
+    
+    startService(intent);
+}
+```
+
+Intent 的关键字段映射关系：`RUN_COMMAND_PATH` 是可执行文件路径，`RUN_COMMAND_ARGUMENTS` 是参数数组，`RUN_COMMAND_BACKGROUND` 控制是否在后台运行 。
+
+#### 第四步：构建 UI 与结果回传
+
+在 `activity_main.xml` 中放置输入框（目标 IP/域名）、按钮（扫描端口/启动 MSF）、以及一个 ScrollView 用于显示输出。
+
+结果回传通过 `PENDING_INTENT` 机制：Termux 执行完命令后，会把 stdout 写入你指定的结果目录或通过 PendingIntent 返回 。
+
+### 你面临的真实工作量
+
+这不是一个下午能完成的项目。**APK 本身只占 10% 的工作量。** 真正的挑战在于：
+
+1. **NetHunter 部署**：在 Termux 中安装 Kali 环境本身就需要调试，网络问题、存储空间、依赖冲突都会出现 。
+2. **Intent 调试**：`RUN_COMMAND` 的参数格式、权限验证、结果回传路径都需要实际测试。
+3. **Metasploit 的 ARM 兼容性**：`metasploit-framework` 在 Termux 中可以安装 ，但完整功能（尤其是 meterpreter）在无 Root 环境可能受限。
+4. **“OSINT 大全”的幻觉**：没有一个单一工具叫“OSINT 大全”。你需要分别集成 theHarvester、sherlock、holehe、maigret 等脚本，每个都有独立的依赖和接口。
+
+### 建议的下一步
+
+先不要碰你的 APK。**在 Termux 里把 nmap 和 Metasploit 跑通**，确认工具链本身工作正常。然后再回头写 Java 层的 Intent 调用。
+
+你现在要做的第一个操作：
+```bash
+curl -sL https://raw.githubusercontent.com/jarvesusaram99/termux-hacklab/main/install.sh | bash
+```
+或者选轻量一点的方案 A 或 B。装完后在 Kali 环境里执行 `nmap -sV 127.0.0.1`，确认扫描能出结果。
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+بالعربية من فضلك
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+**الخلاصة أولاً: بناء تطبيق APK بلغة Java/XML يدمج nmap وMetasploit مباشرة داخل التطبيق، غير ممكن داخل بيئة Android العادية. لكن الحل الصحيح هو جعل تطبيقك واجهة رسمية (GUI) تتحكم بـ Termux، حيث تعمل الأدوات الحقيقية فعلياً. هذا ليس تراجعاً، هذا هو المسار الوحيد الذي يعمل فعلاً.**
+
+---
+
+### لماذا لا يمكن دمج nmap و Metasploit داخل APK مباشرة
+
+| المطلوب | العقبة التقنية | الحل الواقعي |
+|---|---|---|
+| تشغيل nmap داخل APK | Android يمنع raw sockets داخل التطبيقات العادية | تشغيله في Termux |
+| تشغيل Metasploit داخل APK | يحتاج Ruby + آلاف الملفات، حجمه سيتجاوز 500 ميغا | تشغيله في Kali NetHunter داخل Termux |
+| أدوات OSINT متنوعة | كل أداة لها متطلبات ولغة برمجة مختلفة | تجميعها كسكربتات في Termux |
+| "تلغيم الروابط" | هذا نشاط خبيث | لن أقدم أي شيء في هذا الاتجاه |
+
+**النقطة الجوهرية:** تطبيقك لن يكون "التطبيق الذي يحتوي الأدوات". سيكون "التطبيق الذي يُدير الأدوات". الفرق ضخم، لكن النتيجة النهائية هي ما تريده بالضبط.
+
+---
+
+### البنية الصحيحة
+
+```
+┌─────────────────────────────────────────┐
+│  هاتفك                                   │
+│                                          │
+│  ┌──────────────┐    Intent    ┌──────────────┐
+│  │  تطبيقك      │─────────────>│   Termux     │
+│  │  (APK واجهة) │              │              │
+│  │              │<─────────────│  Kali        │
+│  └──────────────┘    نتائج      │  NetHunter   │
+│                                │              │
+│                                │  nmap        │
+│                                │  metasploit  │
+│                                │  sqlmap      │
+│                                │  theHarvester│
+│                                │  ...         │
+│                                └──────────────┘
+└─────────────────────────────────────────┘
+```
+
+تطبيقك = لوحة تحكم.
+Termux = المحرك الحقيقي.
+Kali NetHunter = ترسانة الأدوات.
+
+---
+
+### الخطوة الأولى — تجهيز Termux بأدوات الاختراق
+
+افتح Termux واكتب واحداً من هذه:
+
+**الخيار الأخف (udocker + Kali):**
+```bash
+pkg update -y && pkg install -y curl
+curl -L https://raw.githubusercontent.com/itachi-uchiha0011/kali-udocker-termux/main/first_this.sh | bash
+```
+
+**الخيار الأكمل (NetHunter CLI):**
+```bash
+pkg install -y git
+git clone https://github.com/Forhadj/nethunter-termux
+cd nethunter-termux && bash install.sh
+```
+
+**الخيار الأشمل (مع واجهة XFCE):**
+```bash
+curl -sL https://raw.githubusercontent.com/jarvesusaram99/termux-hacklab/main/install.sh | bash
+```
+
+**ماذا يحدث:** هذا يثبّت Kali Linux كامل داخل Termux. بعد التثبيت ستستطيع الدخول لبيئة Kali وتشغيل:
+```bash
+nmap -sV target.com
+msfconsole
+sqlmap -u "target.com/page?id=1"
+theHarvester -d target.com -b all
+```
+
+**اختبار أول:** بعد الدخول لـ Kali اكتب `nmap --version`. إذا ظهر رقم النسخة، فالأدوات تعمل.
+
+---
+
+### الخطوة الثانية — السماح لـ Termux بتلقي أوامر خارجية
+
+بدون هذه الخطوة، تطبيقك لن يستطيع التحدث إلى Termux.
+
+افتح Termux واكتب:
+```bash
+mkdir -p ~/.termux
+echo "allow-external-apps=true" >> ~/.termux/termux.properties
+```
+
+ثم أغلق Termux تماماً وأعد فتحه. **هذا إجباري.** الإعداد لا يُقرأ إلا عند إعادة التشغيل.
+
+---
+
+### الخطوة الثالثة — كود Java داخل تطبيقك
+
+الآن نضيف الكود الذي يرسل الأوامر من تطبيقك إلى Termux.
+
+في ملف `MainActivity.java` أضف:
+
+```java
+import android.content.Intent;
+import android.app.PendingIntent;
+import android.os.Bundle;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.IntentFilter;
+import android.widget.Toast;
+
+public class MainActivity extends Activity {
+
+    private static final int REQ_CODE = 1001;
+    private static final String RESULT_ACTION = "com.z3r0.RESULT";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // تسجيل مستقبل النتائج
+        registerReceiver(resultReceiver, new IntentFilter(RESULT_ACTION));
+
+        // عند الضغط على زر "شغّل nmap"
+        findViewById(R.id.button).setOnClickListener(v -> {
+            runInTermux("nmap -sV 127.0.0.1");
+        });
+    }
+
+    private void runInTermux(String command) {
+        Intent intent = new Intent();
+        intent.setClassName("com.termux", 
+                            "com.termux.app.RunCommandService");
+        intent.setAction("com.termux.RUN_COMMAND");
+        intent.putExtra("com.termux.RUN_COMMAND_PATH", 
+            "/data/data/com.termux/files/usr/bin/bash");
+        intent.putExtra("com.termux.RUN_COMMAND_ARGUMENTS", 
+            new String[]{"-c", command});
+        intent.putExtra("com.termux.RUN_COMMAND_BACKGROUND", true);
+        intent.putExtra("com.termux.RUN_COMMAND_PENDING_INTENT", 
+            getPendingIntent());
+
+        startService(intent);
+    }
+
+    private PendingIntent getPendingIntent() {
+        Intent resultIntent = new Intent(RESULT_ACTION);
+        return PendingIntent.getBroadcast(
+            this, REQ_CODE, resultIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+        );
+    }
+
+    private final BroadcastReceiver resultReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle extras = intent.getExtras();
+            if (extras == null) return;
+            String stdout = extras.getString("com.termux.RUN_COMMAND_STDOUT");
+            String stderr = extras.getString("com.termux.RUN_COMMAND_STDERR");
+            int code = extras.getInt("com.termux.RUN_COMMAND_EXIT_CODE");
+            
+            // اعرض النتيجة في واجهتك
+            // textView.setText(stdout);
+        }
+    };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(resultReceiver);
+    }
+}
+```
+
+**ماذا يفعل هذا الكود:**
+1. يرسل Intent إلى خدمة Termux مع اسم الأمر.
+2. Termux ينفذ الأمر داخل بيئته.
+3. يرسل النتيجة (stdout/stderr) عبر PendingIntent.
+4. تطبيقك يستقبل النتيجة ويعرضها.
+
+---
+
+### الخطوة الرابعة — بناء واجهة الاستخدام
+
+هذا الجزء هو عملك الإبداعي. الواجهة تحتاج:
+
+| العنصر | الغرض |
+|---|---|
+| حقل نص (EditText) | إدخال الهدف (IP أو دومين) |
+| قائمة اختيار (Spinner) | اختيار الأداة (nmap / msf / sqlmap / theHarvester) |
+| حقل خيارات (EditText) | للـ flags الإضافية |
+| زر "تنفيذ" | إرسال الأمر |
+| منطقة عرض (ScrollView + TextView) | عرض النتائج لحظياً |
+| سجل تاريخي | حفظ نتائج سابقة |
+
+---
+
+### الخطوة الخامسة — الأدوات التي يمكنك دمجها فعلاً
+
+هذه قائمة بأدوات تعمل داخل Termux وتستطيع التحكم بها من تطبيقك:
+
+**فحص الشبكة:**
+- `nmap` — فحص البورتات والخدمات
+- `masscan` — فحص سريع
+- `netcat` — اتصالات TCP/UDP
+
+**OSINT:**
+- `theHarvester` — جمع إيميلات ونطاقات فرعية
+- `sherlock` — البحث عن أسماء مستخدمين
+- `holehe` — البحث عن إيميل في المواقع
+- `maigret` — تحليل أسماء المستخدمين
+- `whois` / `dig` / `host` — معلومات DNS
+
+**اختبار الاختراق:**
+- `metasploit` — إطار عمل كامل
+- `sqlmap` — كشف وحقن SQL
+- `hydra` — كسر كلمات المرور
+- `gobuster` — كشف مسارات المواقع
+
+**تحليل الثغرات:**
+- `nikto` — فحص خوادم الويب
+- `wpscan` — فحص WordPress
+
+---
+
+### الحقيقة التي يجب أن تعرفها
+
+هذا المشروع **مشروع أسابيع، وليس أياماً**. الأسباب:
+
+1. **كل أداة لها مخرجات مختلفة** — nmap يخرج XML أو نص، Metasploit يخرج جلسات تفاعلية، sqlmap يخرج تقارير. ستحتاج معالجات مختلفة لكل واحدة.
+
+2. **Metasploit يحتاج جلسة تفاعلية** — وليس أمراً واحداً يُنفّذ. تحتاج لبناء نظام جلسات كامل في تطبيقك.
+
+3. **بيئة Termux هشّة** — أي تحديث للنظام قد يكسر Kali. ستحتاج صيانة مستمرة.
+
+4. **"تلغيم الروابط"** — لن أساعد في هذا. إن كان هدفك الاختبار الأخلاقي، فالمسار واضح. إن كان غيره، فهذا طريق لا أسير فيه.
+
+---
+
+### ابدأ من هنا الآن
+
+**لا تكتب أي كود Java بعد.** افعل هذا أولاً:
+
+```bash
+# داخل Termux
+pkg install -y curl
+curl -sL https://raw.githubusercontent.com/jarvesusaram99/termux-hacklab/main/install.sh | bash
+```
+
+انتظر حتى ينتهي التثبيت. قد يستغرق 20-40 دقيقة.
+
+ثم اكتب:
+```bash
+nmap --version
+msfconsole --version
+```
+
+**عد لي بالنتيجة.** سأعرف من إجابتها إن كانت البنية التحتية جاهزة لبناء الواجهة، أم أن هناك مشاكل تحتاج حلاً أولاً.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+حسنا دعن نبدء خطوت بخطوت 
+هل أخرج من MyFirstApp
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+**لا تخرج من `MyFirstApp` إلا عند الحاجة، ولا تحذفه.** سنحتاجه لاحقاً كأساس لتطبيق الواجهة. الآن سنعمل في مكان جديد بالتوازي.
+
+---
+
+### الخطوة 1 — العودة إلى المجلد الرئيسي
+
+اكتب:
+```bash
+cd $HOME
+```
+
+**لماذا:** حتى لا نعمل داخل مجلد المشروع الأول. سنثبّت الأدوات في بيئة Termux العامة، وليس داخل مشروع Gradle.
+
+---
+
+### الخطوة 2 — التأكد من الأدوات الأساسية
+
+اكتب:
+```bash
+pkg install -y curl git wget
+```
+
+**ماذا يثبّت:**
+- `curl` — لتحميل السكربتات
+- `git` — لاستنساخ المستودعات
+- `wget` — بديل curl
+
+**علامة النجاح:** كلها موجودة أو تم تثبيتها بلا أخطاء.
+
+---
+
+### الخطوة 3 — التحقق من المساحة المتاحة
+
+هذه خطوة حرجة. Kali NetHunter يحتاج **6 إلى 10 جيغابايت**. إن لم تكفِ المساحة، التثبيت سيفشل في منتصفه.
+
+اكتب:
+```bash
+df -h $HOME
+```
+
+**اقرأ العمود `Avail`.** إذا كان أقل من **8 جيغا**، لا تكمل. أخبرني أولاً.
+
+**تحذير:** أدوات مثل NetHunter تُثبّت ملفاتها في `$HOME`، وليس في التخزين الخارجي. مساحة `/sdcard` لا تنفع هنا.
+
+---
+
+### الخطوة 4 — اختيار نسخة Kali
+
+هناك ثلاثة مسارات. كل واحد له ثمنه:
+
+| المسار | الحجم | الوقت | الميزة | العيب |
+|---|---|---|---|---|
+| **A: udocker + Kali** | ~6.5 جيغا | 30-45 دقيقة | أخف، أقل أعطالاً | بطء طفيف، أدوات محدودة |
+| **B: NetHunter CLI** | ~7 جيغا | 40-60 دقيقة | أدوات كاملة | قد يفشل مع تحديثات Termux |
+| **C: termux-hacklab** | ~10 جيغا | 60-90 دقيقة | واجهة رسومية XFCE | الأثقل، الأكثر تعقيداً |
+
+**توصيتي: ابدأ بـ A.** إن نجح، تنتقل لـ B لاحقاً. لا تبدأ بالأثقل.
+
+لكن قبل أن تقرر، **أخبرني:**
+
+1. **كم المساحة المتاحة** (من `df -h $HOME`).
+2. **ما نوع معالج هاتفك** — ARM64 أم غيره؟ اكتب:
+```bash
+uname -m
+```
+3. **هل أنت مستعد لانتظار 45 دقيقة** دون مقاطعة؟ التثبيت لا يقبل الإيقاف.
+
+---
+
+**توقّف. نفّذ الخطوات 1 إلى 3 فقط. عد بمخرجات:**
+
+```
+df -h $HOME
+```
+```
+uname -m
+```
+
+**لا تبدأ أي تثبيت بعد.** سأحدد المسار الأنسب بناءً على مساحتك ومعالجك، ثم أعطيك سكربت التثبيت الكامل.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+Welcome to Termux!
+
+Docs:       https://termux.dev/docs
+Donate:     https://termux.dev/donate
+Community:  https://termux.dev/community
+
+Working with packages:
+
+ - Search:  pkg search <query>
+ - Install: pkg install <package>
+ - Upgrade: pkg upgrade
+
+Subscribing to additional repositories:
+
+ - Root:    pkg install root-repo
+ - X11:     pkg install x11-repo
+
+For fixing any repository issues,
+try 'termux-change-repo' command.
+
+Report issues at https://termux.dev/issues
+~/MyFirstApp $ cd $HOME
+~ $ pkg install -y curl git wget
+Testing the available mirrors:
+[*] (1) https://linux.domainesia.com/applications/termux/termux-main: ok
+[*] (1) https://termux.niranjan.co/termux-main: ok
+[*] (1) https://mirror.bardia.tech/termux/termux-main: bad
+[*] (1) https://mirrors.saswata.cc/termux/termux-main: bad
+[*] (1) https://mirrors.ravidwivedi.in/termux/termux-main: ok
+[*] (1) https://mirror.textcord.xyz/termux/termux-main: bad
+[*] (1) https://mirrors.krnk.org/apt/termux/termux-main: ok
+[*] (1) https://mirror.rinarin.dev/termux/termux-main: ok
+[*] (1) https://mirror.jeonnam.school/termux/termux-main: ok
+[*] (1) https://mirrors.nguyenhoang.cloud/termux/termux-main: ok
+[*] (1) https://mirrors.cbrx.io/apt/termux/termux-main: ok
+[*] (1) https://tmx.xvx.my.id/apt/termux-main: ok
+[*] (1) https://mirror.albony.in/termux/termux-main: ok
+[*] (1) https://mirror.twds.com.tw/termux/termux-main: ok
+[*] (1) https://mirror.nevacloud.com/applications/termux/termux-main: ok
+[*] (1) https://mirror.meowsmp.net/termux/termux-main: bad
+[*] (1) https://mirror.freedif.org/termux/termux-main: ok
+[*] (1) https://mirrors.in.sahilister.net/termux/termux-main/: ok
+Picking mirror: (0) /data/data/com.termux/files/usr/etc/termux/chosen_mirrors/linux.domainesia.com
+Get:1 https://linux.domainesia.com/applications/termux/termux-main stable InRelease [14.0 kB]
+Get:2 https://linux.domainesia.com/applications/termux/termux-main stable/main aarch64 Packages [565 kB]
+Fetched 579 kB in 9s (61.1 kB/s)
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+All packages are up to date.
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+curl is already the newest version (8.22.0).
+git is already the newest version (2.56.0).
+wget is already the newest version (1.25.0-1).
+0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+~ $ df -h $HOME
+Filesystem       Size Used Avail Use% Mounted on
+/dev/block/dm-47 105G  78G   27G  75% /storage/emulated/999/Android/obb
+~ $ uname -m
+aarch64
+~ $ df -h $HOME
+Filesystem       Size Used Avail Use% Mounted on
+/dev/block/dm-47 105G  78G   27G  75% /storage/emulated/999/Android/obb
+~ $ uname -m
+aarch64
+~ $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+النتائج واضحة:
+- **المعالج:** `aarch64` — ARM64. ممتاز. كل الأدوات ستعمل.
+- **المساحة:** 27 جيغا متاحة. **أكثر من كافٍ.** لن نواجه مشكلة سعة.
+- **الأدوات:** `curl`, `git`, `wget` مثبتة مسبقاً.
+
+المسار محدد. نبدأ.
+
+---
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║  المرحلة 0 // تجهيز الترسانة                                 ║
+║  udocker + Kali NetHunter — أخف مسار، أعلى نسبة نجاح.         ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+**اخترنا المسار A (udocker).** لماذا:
+- لا يحتاج root.
+- لا يكسر Termux عند التحديثات.
+- يمكن حذفه كاملاً بأمر واحد إن فشل.
+- يعطيك Kali حقيقي، وليس محاكاة.
+
+---
+
+### الخطوة 5 — تثبيت المتطلبات الأساسية
+
+اكتب:
+```bash
+pkg install -y proot udocker
+```
+
+**ماذا يثبّت:**
+- `proot` — طبقة محاكاة نظام ملفات، تسمح بتشغيل توزيعات Linux داخل Termux.
+- `udocker` — بديل Docker لا يحتاج root.
+
+**المتوقع:** تحميل ~50 ميغا. دقيقتان.
+
+**إن ظهر خطأ "package not found":** اكتب `pkg update` ثم أعد.
+
+**علامة النجاح:**
+```bash
+udocker --version
+```
+يجب أن يظهر رقم نسخة.
+
+---
+
+### الخطوة 6 — تحضير udocker
+
+اكتب:
+```bash
+udocker install
+```
+
+**ماذا يحدث:** udocker يحمّل ملفات التشغيل الخاصة به.
+
+**تجاهل أي تحذيرات** عن إعدادات قديمة. هذا طبيعي.
+
+---
+
+### الخطوة 7 — تحميل صورة Kali
+
+اكتب:
+```bash
+udocker pull kalilinux/kali-rolling
+```
+
+**ماذا يحدث:** يحمّل صورة Kali الأساسية. حجمها ~120 ميغا.
+**المدة:** 5-15 دقيقة حسب الشبكة.
+
+**علامة النجاح:**
+```bash
+udocker images
+```
+يجب أن ترى `kalilinux/kali-rolling`.
+
+---
+
+### الخطوة 8 — إنشاء حاوية من الصورة
+
+اكتب:
+```bash
+udocker create --name=kali kalilinux/kali-rolling
+```
+
+**ماذا يحدث:** ينشئ حاوية اسمها `kali` من الصورة.
+
+**تحقق:**
+```bash
+udocker ps -a
+```
+يجب أن ترى:
+```
+CONTAINER ID    IMAGE                       COMMAND    NAME
+xxxxxxxx        kalilinux/kali-rolling      /bin/bash  kali
+```
+
+---
+
+**توقّف. نفّذ الخطوات 5 إلى 8. عد بمخرجات:**
+
+```
+udocker --version
+```
+```
+udocker images
+```
+```
+udocker ps -a
+```
+
+**لا تشغّل الحاوية بعد.** سنشغّلها عندما نضبط طريقة تشغيلها. إن ظهر خطأ في أي خطوة، الصقه كاملاً.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+أنا الأن في الخطوت 6 و أريد السألا و التحذير عندما يلزم أريد إستعمال الأنترنات يعني وسائل التواصل و التطبيقات الأخرا  في وسط التحميل و أريدك أن تحذرني عندما لا أسطتيع فعل ذالك
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+سؤال في مكانه. الجواب مباشر:
+
+**لا. لا تستعمل الإنترنت ولا تفتح تطبيقات أخرى أثناء التحميل والتثبيت.**
+
+---
+
+### لماذا — التقنية
+
+Termux يُشغّل الأوامر داخل **جلسة واحدة**. عندما تخرج من التطبيق أو تنتقل لتطبيق آخر:
+
+- **Android قد يُجمّد عملية Termux** بعد دقائق في الخلفية لتوفير الطا�

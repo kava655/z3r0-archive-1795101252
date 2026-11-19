@@ -1,0 +1,1257 @@
+hdpi-v4/abc_text_select_handle_right_mtrl.png
+  signing: res/drawable-hdpi-v4/abc_textfield_activated_mtrl_alpha.9.png
+  signing: res/drawable-hdpi-v4/abc_textfield_default_mtrl_alpha.9.png
+  signing: res/drawable-hdpi-v4/abc_textfield_search_activated_mtrl_alpha.9.png
+  signing: res/drawable-hdpi-v4/abc_textfield_search_default_mtrl_alpha.9.png
+  signing: res/drawable-hdpi-v4/notification_bg_low_normal.9.png
+  signing: res/drawable-hdpi-v4/notification_bg_low_pressed.9.png
+  signing: res/drawable-hdpi-v4/notification_bg_normal.9.png
+  signing: res/drawable-hdpi-v4/notification_bg_normal_pressed.9.png
+  signing: res/drawable-hdpi-v4/notify_panel_notification_icon_bg.png
+  signing: res/drawable-ldrtl-hdpi-v17/abc_spinner_mtrl_am_alpha.9.png
+  signing: res/drawable-ldrtl-mdpi-v17/abc_spinner_mtrl_am_alpha.9.png
+  signing: res/drawable-ldrtl-xhdpi-v17/abc_spinner_mtrl_am_alpha.9.png
+  signing: res/drawable-ldrtl-xxhdpi-v17/abc_spinner_mtrl_am_alpha.9.png
+  signing: res/drawable-ldrtl-xxxhdpi-v17/abc_spinner_mtrl_am_alpha.9.png
+  signing: res/drawable-mdpi-v4/abc_ab_share_pack_mtrl_alpha.9.png
+  signing: res/drawable-mdpi-v4/abc_btn_check_to_on_mtrl_000.png
+  signing: res/drawable-mdpi-v4/abc_btn_check_to_on_mtrl_015.png
+  signing: res/drawable-mdpi-v4/abc_btn_radio_to_on_mtrl_000.png
+  signing: res/drawable-mdpi-v4/abc_btn_radio_to_on_mtrl_015.png
+  signing: res/drawable-mdpi-v4/abc_btn_switch_to_on_mtrl_00001.9.png
+  signing: res/drawable-mdpi-v4/abc_btn_switch_to_on_mtrl_00012.9.png
+  signing: res/drawable-mdpi-v4/abc_cab_background_top_mtrl_alpha.9.png
+  signing: res/drawable-mdpi-v4/abc_ic_commit_search_api_mtrl_alpha.png
+  signing: res/drawable-mdpi-v4/abc_list_divider_mtrl_alpha.9.png
+  signing: res/drawable-mdpi-v4/abc_list_focused_holo.9.png
+  signing: res/drawable-mdpi-v4/abc_list_longpressed_holo.9.png
+  signing: res/drawable-mdpi-v4/abc_list_pressed_holo_dark.9.png
+  signing: res/drawable-mdpi-v4/abc_list_pressed_holo_light.9.png
+  signing: res/drawable-mdpi-v4/abc_list_selector_disabled_holo_dark.9.png
+  signing: res/drawable-mdpi-v4/abc_list_selector_disabled_holo_light.9.png
+  signing: res/drawable-mdpi-v4/abc_menu_hardkey_panel_mtrl_mult.9.png
+  signing: res/drawable-mdpi-v4/abc_popup_background_mtrl_mult.9.png
+  signing: res/drawable-mdpi-v4/abc_scrubber_control_off_mtrl_alpha.png
+  signing: res/drawable-mdpi-v4/abc_scrubber_control_to_pressed_mtrl_000.png
+  signing: res/drawable-mdpi-v4/abc_scrubber_control_to_pressed_mtrl_005.png
+  signing: res/drawable-mdpi-v4/abc_scrubber_primary_mtrl_alpha.9.png
+  signing: res/drawable-mdpi-v4/abc_scrubber_track_mtrl_alpha.9.png
+  signing: res/drawable-mdpi-v4/abc_spinner_mtrl_am_alpha.9.png
+  signing: res/drawable-mdpi-v4/abc_switch_track_mtrl_alpha.9.png
+  signing: res/drawable-mdpi-v4/abc_tab_indicator_mtrl_alpha.9.png
+  signing: res/drawable-mdpi-v4/abc_text_select_handle_left_mtrl.png
+  signing: res/drawable-mdpi-v4/abc_text_select_handle_middle_mtrl.png
+  signing: res/drawable-mdpi-v4/abc_text_select_handle_right_mtrl.png
+  signing: res/drawable-mdpi-v4/abc_textfield_activated_mtrl_alpha.9.png
+  signing: res/drawable-mdpi-v4/abc_textfield_default_mtrl_alpha.9.png
+  signing: res/drawable-mdpi-v4/abc_textfield_search_activated_mtrl_alpha.9.png
+  signing: res/drawable-mdpi-v4/abc_textfield_search_default_mtrl_alpha.9.png
+  signing: res/drawable-mdpi-v4/notification_bg_low_normal.9.png
+  signing: res/drawable-mdpi-v4/notification_bg_low_pressed.9.png
+  signing: res/drawable-mdpi-v4/notification_bg_normal.9.png
+  signing: res/drawable-mdpi-v4/notification_bg_normal_pressed.9.png
+  signing: res/drawable-mdpi-v4/notify_panel_notification_icon_bg.png
+  signing: res/drawable-v21/abc_action_bar_item_background_material.xml
+  signing: res/drawable-v21/abc_btn_colored_material.xml
+  signing: res/drawable-v21/abc_dialog_material_background.xml
+  signing: res/drawable-v21/abc_edit_text_material.xml
+  signing: res/drawable-v21/abc_list_divider_material.xml
+  signing: res/drawable-v21/notification_action_background.xml
+  signing: res/drawable-v23/abc_control_background_material.xml
+  signing: res/drawable-watch-v20/abc_dialog_material_background.xml
+  signing: res/drawable-xhdpi-v4/abc_ab_share_pack_mtrl_alpha.9.png
+  signing: res/drawable-xhdpi-v4/abc_btn_check_to_on_mtrl_000.png
+  signing: res/drawable-xhdpi-v4/abc_btn_check_to_on_mtrl_015.png
+  signing: res/drawable-xhdpi-v4/abc_btn_radio_to_on_mtrl_000.png
+  signing: res/drawable-xhdpi-v4/abc_btn_radio_to_on_mtrl_015.png
+  signing: res/drawable-xhdpi-v4/abc_btn_switch_to_on_mtrl_00001.9.png
+  signing: res/drawable-xhdpi-v4/abc_btn_switch_to_on_mtrl_00012.9.png
+  signing: res/drawable-xhdpi-v4/abc_cab_background_top_mtrl_alpha.9.png
+  signing: res/drawable-xhdpi-v4/abc_ic_commit_search_api_mtrl_alpha.png
+  signing: res/drawable-xhdpi-v4/abc_list_divider_mtrl_alpha.9.png
+  signing: res/drawable-xhdpi-v4/abc_list_focused_holo.9.png
+  signing: res/drawable-xhdpi-v4/abc_list_longpressed_holo.9.png
+  signing: res/drawable-xhdpi-v4/abc_list_pressed_holo_dark.9.png
+  signing: res/drawable-xhdpi-v4/abc_list_pressed_holo_light.9.png
+  signing: res/drawable-xhdpi-v4/abc_list_selector_disabled_holo_dark.9.png
+  signing: res/drawable-xhdpi-v4/abc_list_selector_disabled_holo_light.9.png
+  signing: res/drawable-xhdpi-v4/abc_menu_hardkey_panel_mtrl_mult.9.png
+  signing: res/drawable-xhdpi-v4/abc_popup_background_mtrl_mult.9.png
+  signing: res/drawable-xhdpi-v4/abc_scrubber_control_off_mtrl_alpha.png
+  signing: res/drawable-xhdpi-v4/abc_scrubber_control_to_pressed_mtrl_000.png
+  signing: res/drawable-xhdpi-v4/abc_scrubber_control_to_pressed_mtrl_005.png
+  signing: res/drawable-xhdpi-v4/abc_scrubber_primary_mtrl_alpha.9.png
+  signing: res/drawable-xhdpi-v4/abc_scrubber_track_mtrl_alpha.9.png
+  signing: res/drawable-xhdpi-v4/abc_spinner_mtrl_am_alpha.9.png
+  signing: res/drawable-xhdpi-v4/abc_switch_track_mtrl_alpha.9.png
+  signing: res/drawable-xhdpi-v4/abc_tab_indicator_mtrl_alpha.9.png
+  signing: res/drawable-xhdpi-v4/abc_text_select_handle_left_mtrl.png
+  signing: res/drawable-xhdpi-v4/abc_text_select_handle_middle_mtrl.png
+  signing: res/drawable-xhdpi-v4/abc_text_select_handle_right_mtrl.png
+  signing: res/drawable-xhdpi-v4/abc_textfield_activated_mtrl_alpha.9.png
+  signing: res/drawable-xhdpi-v4/abc_textfield_default_mtrl_alpha.9.png
+  signing: res/drawable-xhdpi-v4/abc_textfield_search_activated_mtrl_alpha.9.png
+  signing: res/drawable-xhdpi-v4/abc_textfield_search_default_mtrl_alpha.9.png
+  signing: res/drawable-xhdpi-v4/notification_bg_low_normal.9.png
+  signing: res/drawable-xhdpi-v4/notification_bg_low_pressed.9.png
+  signing: res/drawable-xhdpi-v4/notification_bg_normal.9.png
+  signing: res/drawable-xhdpi-v4/notification_bg_normal_pressed.9.png
+  signing: res/drawable-xhdpi-v4/notify_panel_notification_icon_bg.png
+  signing: res/drawable-xxhdpi-v4/abc_ab_share_pack_mtrl_alpha.9.png
+  signing: res/drawable-xxhdpi-v4/abc_btn_check_to_on_mtrl_000.png
+  signing: res/drawable-xxhdpi-v4/abc_btn_check_to_on_mtrl_015.png
+  signing: res/drawable-xxhdpi-v4/abc_btn_radio_to_on_mtrl_000.png
+  signing: res/drawable-xxhdpi-v4/abc_btn_radio_to_on_mtrl_015.png
+  signing: res/drawable-xxhdpi-v4/abc_btn_switch_to_on_mtrl_00001.9.png
+  signing: res/drawable-xxhdpi-v4/abc_btn_switch_to_on_mtrl_00012.9.png
+  signing: res/drawable-xxhdpi-v4/abc_cab_background_top_mtrl_alpha.9.png
+  signing: res/drawable-xxhdpi-v4/abc_ic_commit_search_api_mtrl_alpha.png
+  signing: res/drawable-xxhdpi-v4/abc_list_divider_mtrl_alpha.9.png
+  signing: res/drawable-xxhdpi-v4/abc_list_focused_holo.9.png
+  signing: res/drawable-xxhdpi-v4/abc_list_longpressed_holo.9.png
+  signing: res/drawable-xxhdpi-v4/abc_list_pressed_holo_dark.9.png
+  signing: res/drawable-xxhdpi-v4/abc_list_pressed_holo_light.9.png
+  signing: res/drawable-xxhdpi-v4/abc_list_selector_disabled_holo_dark.9.png
+  signing: res/drawable-xxhdpi-v4/abc_list_selector_disabled_holo_light.9.png
+  signing: res/drawable-xxhdpi-v4/abc_menu_hardkey_panel_mtrl_mult.9.png
+  signing: res/drawable-xxhdpi-v4/abc_popup_background_mtrl_mult.9.png
+  signing: res/drawable-xxhdpi-v4/abc_scrubber_control_off_mtrl_alpha.png
+  signing: res/drawable-xxhdpi-v4/abc_scrubber_control_to_pressed_mtrl_000.png
+  signing: res/drawable-xxhdpi-v4/abc_scrubber_control_to_pressed_mtrl_005.png
+  signing: res/drawable-xxhdpi-v4/abc_scrubber_primary_mtrl_alpha.9.png
+  signing: res/drawable-xxhdpi-v4/abc_scrubber_track_mtrl_alpha.9.png
+  signing: res/drawable-xxhdpi-v4/abc_spinner_mtrl_am_alpha.9.png
+  signing: res/drawable-xxhdpi-v4/abc_switch_track_mtrl_alpha.9.png
+  signing: res/drawable-xxhdpi-v4/abc_tab_indicator_mtrl_alpha.9.png
+  signing: res/drawable-xxhdpi-v4/abc_text_select_handle_left_mtrl.png
+  signing: res/drawable-xxhdpi-v4/abc_text_select_handle_middle_mtrl.png
+  signing: res/drawable-xxhdpi-v4/abc_text_select_handle_right_mtrl.png
+  signing: res/drawable-xxhdpi-v4/abc_textfield_activated_mtrl_alpha.9.png
+  signing: res/drawable-xxhdpi-v4/abc_textfield_default_mtrl_alpha.9.png
+  signing: res/drawable-xxhdpi-v4/abc_textfield_search_activated_mtrl_alpha.9.png
+  signing: res/drawable-xxhdpi-v4/abc_textfield_search_default_mtrl_alpha.9.png
+  signing: res/drawable-xxxhdpi-v4/abc_btn_check_to_on_mtrl_000.png
+  signing: res/drawable-xxxhdpi-v4/abc_btn_check_to_on_mtrl_015.png
+  signing: res/drawable-xxxhdpi-v4/abc_btn_radio_to_on_mtrl_000.png
+  signing: res/drawable-xxxhdpi-v4/abc_btn_radio_to_on_mtrl_015.png
+  signing: res/drawable-xxxhdpi-v4/abc_btn_switch_to_on_mtrl_00001.9.png
+  signing: res/drawable-xxxhdpi-v4/abc_btn_switch_to_on_mtrl_00012.9.png
+  signing: res/drawable-xxxhdpi-v4/abc_scrubber_control_to_pressed_mtrl_000.png
+  signing: res/drawable-xxxhdpi-v4/abc_scrubber_control_to_pressed_mtrl_005.png
+  signing: res/drawable-xxxhdpi-v4/abc_spinner_mtrl_am_alpha.9.png
+  signing: res/drawable-xxxhdpi-v4/abc_switch_track_mtrl_alpha.9.png
+  signing: res/drawable-xxxhdpi-v4/abc_tab_indicator_mtrl_alpha.9.png
+  signing: res/drawable-xxxhdpi-v4/abc_text_select_handle_left_mtrl.png
+  signing: res/drawable-xxxhdpi-v4/abc_text_select_handle_right_mtrl.png
+  signing: res/drawable/abc_btn_borderless_material.xml
+  signing: res/drawable/abc_btn_check_material.xml
+  signing: res/drawable/abc_btn_check_material_anim.xml
+  signing: res/drawable/abc_btn_default_mtrl_shape.xml
+  signing: res/drawable/abc_btn_radio_material.xml
+  signing: res/drawable/abc_btn_radio_material_anim.xml
+  signing: res/drawable/abc_cab_background_internal_bg.xml
+  signing: res/drawable/abc_cab_background_top_material.xml
+  signing: res/drawable/abc_ic_ab_back_material.xml
+  signing: res/drawable/abc_ic_arrow_drop_right_black_24dp.xml
+  signing: res/drawable/abc_ic_clear_material.xml
+  signing: res/drawable/abc_ic_go_search_api_material.xml
+  signing: res/drawable/abc_ic_menu_copy_mtrl_am_alpha.xml
+  signing: res/drawable/abc_ic_menu_cut_mtrl_alpha.xml
+  signing: res/drawable/abc_ic_menu_overflow_material.xml
+  signing: res/drawable/abc_ic_menu_paste_mtrl_am_alpha.xml
+  signing: res/drawable/abc_ic_menu_selectall_mtrl_alpha.xml
+  signing: res/drawable/abc_ic_menu_share_mtrl_alpha.xml
+  signing: res/drawable/abc_ic_search_api_material.xml
+  signing: res/drawable/abc_ic_voice_search_api_material.xml
+  signing: res/drawable/abc_item_background_holo_dark.xml
+  signing: res/drawable/abc_item_background_holo_light.xml
+  signing: res/drawable/abc_list_selector_background_transition_holo_dark.xml
+  signing: res/drawable/abc_list_selector_background_transition_holo_light.xml
+  signing: res/drawable/abc_list_selector_holo_dark.xml
+  signing: res/drawable/abc_list_selector_holo_light.xml
+  signing: res/drawable/abc_ratingbar_indicator_material.xml
+  signing: res/drawable/abc_ratingbar_material.xml
+  signing: res/drawable/abc_ratingbar_small_material.xml
+  signing: res/drawable/abc_seekbar_thumb_material.xml
+  signing: res/drawable/abc_seekbar_tick_mark_material.xml
+  signing: res/drawable/abc_seekbar_track_material.xml
+  signing: res/drawable/abc_spinner_textfield_background_material.xml
+  signing: res/drawable/abc_star_black_48dp.xml
+  signing: res/drawable/abc_star_half_black_48dp.xml
+  signing: res/drawable/abc_switch_thumb_material.xml
+  signing: res/drawable/abc_tab_indicator_material.xml
+  signing: res/drawable/abc_text_cursor_material.xml
+  signing: res/drawable/abc_textfield_search_material.xml
+  signing: res/drawable/abc_vector_test.xml
+  signing: res/drawable/btn_checkbox_checked_mtrl.xml
+  signing: res/drawable/btn_checkbox_checked_to_unchecked_mtrl_animation.xml
+  signing: res/drawable/btn_checkbox_unchecked_mtrl.xml
+  signing: res/drawable/btn_checkbox_unchecked_to_checked_mtrl_animation.xml
+  signing: res/drawable/btn_radio_off_mtrl.xml
+  signing: res/drawable/btn_radio_off_to_on_mtrl_animation.xml
+  signing: res/drawable/btn_radio_on_mtrl.xml
+  signing: res/drawable/btn_radio_on_to_off_mtrl_animation.xml
+  signing: res/drawable/notification_bg.xml
+  signing: res/drawable/notification_bg_low.xml
+  signing: res/drawable/notification_icon_background.xml
+  signing: res/drawable/notification_tile_bg.xml
+  signing: res/drawable/test_level_drawable.xml
+  signing: res/drawable/tooltip_frame_dark.xml
+  signing: res/drawable/tooltip_frame_light.xml
+  signing: res/interpolator/btn_checkbox_checked_mtrl_animation_interpolator_0.xml
+  signing: res/interpolator/btn_checkbox_checked_mtrl_animation_interpolator_1.xml
+  signing: res/interpolator/btn_checkbox_unchecked_mtrl_animation_interpolator_0.xml
+  signing: res/interpolator/btn_checkbox_unchecked_mtrl_animation_interpolator_1.xml
+  signing: res/interpolator/btn_radio_to_off_mtrl_animation_interpolator_0.xml
+  signing: res/interpolator/btn_radio_to_on_mtrl_animation_interpolator_0.xml
+  signing: res/interpolator/fast_out_slow_in.xml
+  signing: res/layout-v21/notification_action.xml
+  signing: res/layout-v21/notification_action_tombstone.xml
+  signing: res/layout-v21/notification_template_custom_big.xml
+  signing: res/layout-v21/notification_template_icon_group.xml
+  signing: res/layout-v22/abc_alert_dialog_button_bar_material.xml
+  signing: res/layout-v26/abc_screen_toolbar.xml
+  signing: res/layout-watch-v20/abc_alert_dialog_button_bar_material.xml
+  signing: res/layout-watch-v20/abc_alert_dialog_title_material.xml
+  signing: res/layout/abc_action_bar_title_item.xml
+  signing: res/layout/abc_action_bar_up_container.xml
+  signing: res/layout/abc_action_menu_item_layout.xml
+  signing: res/layout/abc_action_menu_layout.xml
+  signing: res/layout/abc_action_mode_bar.xml
+  signing: res/layout/abc_action_mode_close_item_material.xml
+  signing: res/layout/abc_activity_chooser_view.xml
+  signing: res/layout/abc_activity_chooser_view_list_item.xml
+  signing: res/layout/abc_alert_dialog_button_bar_material.xml
+  signing: res/layout/abc_alert_dialog_material.xml
+  signing: res/layout/abc_alert_dialog_title_material.xml
+  signing: res/layout/abc_cascading_menu_item_layout.xml
+  signing: res/layout/abc_dialog_title_material.xml
+  signing: res/layout/abc_expanded_menu_layout.xml
+  signing: res/layout/abc_list_menu_item_checkbox.xml
+  signing: res/layout/abc_list_menu_item_icon.xml
+  signing: res/layout/abc_list_menu_item_layout.xml
+  signing: res/layout/abc_list_menu_item_radio.xml
+  signing: res/layout/abc_popup_menu_header_item_layout.xml
+  signing: res/layout/abc_popup_menu_item_layout.xml
+  signing: res/layout/abc_screen_content_include.xml
+  signing: res/layout/abc_screen_simple.xml
+  signing: res/layout/abc_screen_simple_overlay_action_mode.xml
+  signing: res/layout/abc_screen_toolbar.xml
+  signing: res/layout/abc_search_dropdown_item_icons_2line.xml
+  signing: res/layout/abc_search_view.xml
+  signing: res/layout/abc_select_dialog_material.xml
+  signing: res/layout/abc_tooltip.xml
+  signing: res/layout/custom_dialog.xml
+  signing: res/layout/notification_template_part_chronometer.xml
+  signing: res/layout/notification_template_part_time.xml
+  signing: res/layout/select_dialog_item_material.xml
+  signing: res/layout/select_dialog_multichoice_material.xml
+  signing: res/layout/select_dialog_singlechoice_material.xml
+  signing: res/layout/support_simple_spinner_dropdown_item.xml
+  signing: res/mipmap-hdpi-v4/ic_launcher.xml
+  signing: resources.arsc
+
+jar signed.
+
+Warning:
+The SHA1 algorithm specified for the -digestalg option is considered a security risk and is disabled.
+The SHA1withRSA algorithm specified for the -sigalg option is considered a security risk and is disabled.
+POSIX file permission and/or symlink attributes detected. These attributes are ignored when signing and are not protected by the signature.
+~/.../apk/debug $ cp app-debug.apk ~/storage/shared/database_osint.apk
+~/.../apk/debug $ find ~/android-sdk -name "apksigner" -type f 2>/dev/null
+/data/data/com.termux/files/home/android-sdk/build-tools/30.0.3/apksigner
+/data/data/com.termux/files/home/android-sdk/build-tools/33.0.1/apksigner
+/data/data/com.termux/files/home/android-sdk/build-tools/33.0.2/apksigner
+~/.../apk/debug $ rm -f ~/storage/shared/database_osint.apk
+rm -f ~/storage/shared/app-debug.apk
+~/.../apk/debug $ cd ~/database_osint_apk
+gradle clean
+gradle assembleDebug
+Starting a Gradle Daemon, 1 incompatible and 1 stopped Daemons could not be reused, use --status for details
+
+> Configure project :app
+WARNING: The option setting 'android.aapt2FromMavenOverride=/data/data/com.termux/files/usr/bin/aapt2' is experimental.
+
+> Task :app:clean
+
+BUILD SUCCESSFUL in 42s
+1 actionable task: 1 executed
+
+> Configure project :app
+WARNING: The option setting 'android.aapt2FromMavenOverride=/data/data/com.termux/files/usr/bin/aapt2' is experimental.
+
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:javaPreCompileDebug
+> Task :app:generateDebugResValues
+> Task :app:checkDebugAarMetadata
+> Task :app:mapDebugSourceSetPaths
+> Task :app:generateDebugResources
+> Task :app:packageDebugResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :app:parseDebugLocalResources
+> Task :app:processDebugMainManifest
+> Task :app:mergeDebugResources
+> Task :app:processDebugManifest
+> Task :app:mergeDebugShaders
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets
+> Task :app:compressDebugAssets
+> Task :app:desugarDebugFileDependencies
+> Task :app:processDebugJavaRes NO-SOURCE
+> Task :app:mergeDebugJniLibFolders
+> Task :app:checkDebugDuplicateClasses
+> Task :app:mergeDebugNativeLibs NO-SOURCE
+> Task :app:stripDebugDebugSymbols NO-SOURCE
+> Task :app:mergeLibDexDebug
+> Task :app:validateSigningDebug
+> Task :app:writeDebugAppMetadata
+> Task :app:writeDebugSigningConfigVersions
+> Task :app:processDebugManifestForPackage
+> Task :app:mergeDebugJavaResource
+10-12 20:57:16.446 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300b7.
+10-12 20:57:16.447 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030069.
+10-12 20:57:16.447 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03010b.
+10-12 20:57:16.447 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300e6.
+10-12 20:57:16.447 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030093.
+10-12 20:57:16.447 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030033.
+10-12 20:57:16.447 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030035.
+10-12 20:57:16.447 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030034.
+10-12 20:57:16.447 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030064.
+10-12 20:57:16.447 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03008f.
+10-12 20:57:16.447 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030092.
+10-12 20:57:16.447 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300c7.
+10-12 20:57:16.447 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030098.
+10-12 20:57:16.447 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300c6.
+10-12 20:57:16.447 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030091.
+10-12 20:57:16.447 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03009b.
+10-12 20:57:16.447 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030090.
+10-12 20:57:16.447 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03007d.
+10-12 20:57:16.447 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03004d.
+10-12 20:57:16.447 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030099.
+10-12 20:57:16.447 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03007f.
+10-12 20:57:16.447 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030042.
+10-12 20:57:16.447 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300a5.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300b4.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300da.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300a4.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300d9.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030041.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300df.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030100.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030101.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300fd.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300fe.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300ff.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030032.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030031.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030030.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03002f.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03002e.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03009f.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030080.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03009d.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03008b.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030070.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030076.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030071.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03006e.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030073.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03006f.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030074.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030075.
+10-12 20:57:16.448 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03007e.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030117.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030120.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030118.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030119.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03011c.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03011b.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03011d.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03011a.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03011e.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03011f.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030007.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030006.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030008.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03001f.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030020.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030002.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030005.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030004.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030009.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03001d.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03000a.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030003.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030000.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030001.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03000e.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03000f.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03001c.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030011.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030010.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03001b.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030013.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030015.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030014.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030017.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030019.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03001a.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030016.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03001e.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030012.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030018.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300ed.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300f4.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300f1.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030068.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030067.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300a3.
+10-12 20:57:16.449 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030066.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03000c.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030079.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300dc.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03000b.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03003e.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03003a.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300d3.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300d4.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030039.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03006d.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03006b.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030023.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03010d.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03010c.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300c2.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300c4.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03007b.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03007a.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030097.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300f3.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300f2.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300f6.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300d1.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300a8.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300aa.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300a9.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300ac.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300ad.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300ae.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300ab.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030078.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300a7.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300ee.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300ef.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300f0.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300bf.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300c1.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300c0.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300a0.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030058.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030059.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030051.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030056.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030054.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030055.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030053.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03005a.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030063.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030052.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030026.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030024.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030025.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030027.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300f5.
+10-12 20:57:16.450 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03003d.
+10-12 20:57:16.451 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03003b.
+10-12 20:57:16.451 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03003c.
+10-12 20:57:16.451 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03002d.
+10-12 20:57:16.451 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030043.
+10-12 20:57:16.451 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030044.
+10-12 20:57:16.451 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03004a.
+10-12 20:57:16.451 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03004b.
+10-12 20:57:16.451 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03007c.
+10-12 20:57:16.451 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300cb.
+10-12 20:57:16.451 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300cc.
+10-12 20:57:16.451 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300cd.
+10-12 20:57:16.451 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300ce.
+10-12 20:57:16.451 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300d2.
+10-12 20:57:16.451 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300dd.
+10-12 20:57:16.451 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300ea.
+10-12 20:57:16.451 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300a6.
+10-12 20:57:16.451 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03010f.
+10-12 20:57:16.451 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03010e.
+10-12 20:57:16.451 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030057.
+10-12 20:57:16.451 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030115.
+10-12 20:57:16.451 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300a2.
+10-12 20:57:16.451 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300a1.
+10-12 20:57:16.451 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030028.
+10-12 20:57:16.451 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300ca.
+10-12 20:57:16.451 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300d5.
+10-12 20:57:16.451 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030047.
+10-12 20:57:16.451 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030048.
+10-12 20:57:16.452 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030049.
+10-12 20:57:16.452 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030029.
+10-12 20:57:16.452 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03009c.
+10-12 20:57:16.452 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03003f.
+10-12 20:57:16.452 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030045.
+10-12 20:57:16.452 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030046.
+10-12 20:57:16.452 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030050.
+10-12 20:57:16.452 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300db.
+10-12 20:57:16.452 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030072.
+10-12 20:57:16.452 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03008d.
+10-12 20:57:16.452 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03002b.
+10-12 20:57:16.452 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03002c.
+10-12 20:57:16.452 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030038.
+10-12 20:57:16.452 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300f9.
+10-12 20:57:16.452 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030083.
+10-12 20:57:16.452 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030087.
+10-12 20:57:16.452 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030088.
+10-12 20:57:16.452 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030084.
+10-12 20:57:16.452 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030085.
+10-12 20:57:16.452 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030086.
+10-12 20:57:16.452 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030089.
+10-12 20:57:16.452 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03008a.
+10-12 20:57:16.452 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030081.
+10-12 20:57:16.452 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03008c.
+10-12 20:57:16.452 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03008b.
+10-12 20:57:16.452 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030114.
+10-12 20:57:16.453 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300b2.
+10-12 20:57:16.453 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03006a.
+10-12 20:57:16.453 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300d7.
+10-12 20:57:16.453 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03006c.
+10-12 20:57:16.453 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03002a.
+10-12 20:57:16.453 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300b9.
+10-12 20:57:16.453 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300d6.
+10-12 20:57:16.453 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03000d.
+10-12 20:57:16.453 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030022.
+10-12 20:57:16.453 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030021.
+10-12 20:57:16.453 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03005c.
+10-12 20:57:16.453 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030110.
+10-12 20:57:16.453 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030094.
+10-12 20:57:16.453 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030095.
+10-12 20:57:16.453 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300c5.
+10-12 20:57:16.453 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300e1.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300ba.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300e0.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300bb.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300be.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03009e.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030096.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300c9.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030065.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03004c.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03008e.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300d0.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300cf.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030116.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03005b.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300e7.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300c8.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300e2.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300c3.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300fb.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300fc.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030111.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030112.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030113.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300fa.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300eb.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300e8.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300e9.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300de.
+10-12 20:57:16.454 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300d8.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030082.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300ec.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300f7.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03008b.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030109.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300e4.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030102.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300e3.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030103.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030106.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030105.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030107.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030104.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030108.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030061.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03005d.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03005f.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030060.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030062.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03005e.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300b1.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030040.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03004f.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03004e.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300b6.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300b5.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300af.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300b0.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f03010a.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300e5.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300b3.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300bd.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300bc.
+10-12 20:57:16.455 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f0300f8.
+10-12 20:57:16.456 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030036.
+10-12 20:57:16.456 24787 24787 E aapt2   : No package ID 7f found for resource ID 0x7f030037.
+
+> Task :app:processDebugResources
+
+> Task :app:compileDebugJavaWithJavac
+Note: /data/data/com.termux/files/home/database_osint_apk/app/src/main/java/com/z3r0/osint/MainActivity.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :app:dexBuilderDebug
+> Task :app:mergeDebugGlobalSynthetics
+> Task :app:mergeProjectDexDebug
+> Task :app:mergeExtDexDebug
+> Task :app:packageDebug
+> Task :app:createDebugApkListingFileRedirect
+> Task :app:assembleDebug
+
+BUILD SUCCESSFUL in 45s
+31 actionable tasks: 31 executed
+~/database_osint_apk $
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+البناء نجح. `BUILD SUCCESSFUL`. الأخطاء التي رأيتها (`aapt2: No package ID 7f found`) **تحذيرات** من aapt2 في Termux. لا تمنع البناء. تجاهلها.
+
+**الآن: وقّع APK باستخدام `apksigner`. هذا هو الحل الحقيقي.**
+
+**نفّذ هذه الأوامر بالترتيب:**
+
+**1. اذهب لمجلد APK:**
+```bash
+cd ~/database_osint_apk/app/build/outputs/apk/debug
+ls -la
+```
+يجب أن ترى `app-debug.apk` جديد (بتاريخ اليوم).
+
+**2. وقّع باستخدام `apksigner`:**
+```bash
+~/android-sdk/build-tools/33.0.2/apksigner sign --ks ~/database_osint_apk/my.keystore --ks-pass pass:123456 --key-pass pass:123456 --ks-key-alias mykey --out app-signed.apk app-debug.apk
+```
+
+**3. تحقق من التوقيع:**
+```bash
+~/android-sdk/build-tools/33.0.2/apksigner verify --verbose app-signed.apk
+```
+
+**يجب أن ترى:**
+```
+Verifies
+Verified using v1 scheme (JAR signing): true
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): true
+```
+
+**4. إذا ظهر `true` للثلاثة — انسخ:**
+```bash
+cp app-signed.apk ~/storage/shared/database_osint.apk
+```
+
+**5. ثبّت:**
+افتح `database_osint.apk` من مدير الملفات.
+
+---
+
+**◈ لماذا هذا سينجح بينما `jarsigner` فشل؟**
+
+- `jarsigner` = v1 فقط. Android 11+ يرفض.
+- `apksigner` = v1 + v2 + v3. Android يقبل.
+
+**هذا هو الفرق الوحيد. لكنه حاسم.**
+
+---
+
+**◈ أرسل لي:**
+
+ناتج الخطوة 3 (`apksigner verify --verbose`). سأعرف فوراً إذا كان التوقيع صحيحاً.
+
+إذا نجح التثبيت، أخبرني. ثم ننتقل إلى:
+- تحسين الأيقونة.
+- إضافة المزيد من الميزات.
+- نسخ احتياطي.
+
+⟦ apksigner IS THE FIX. EXECUTE. REPORT VERIFY OUTPUT. ⟧
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | USER ===
+~/database_osint_apk $ cd ~/database_osint_apk/app/build/outputs/apk/debug
+ls -la
+total 3103
+drwx------. 2 u0_a375 u0_a375    3452 Oct 12 20:57 .
+drwx------. 3 u0_a375 u0_a375    3452 Oct 12 20:57 ..
+-rw-------. 1 u0_a375 u0_a375 3165562 Oct 12 20:57 app-debug.apk
+-rw-------. 1 u0_a375 u0_a375     364 Oct 12 20:57 output-metadata.json
+~/.../apk/debug $
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+APK جديد. جاهز. الآن وقّع.
+
+**نفّذ هذه الأوامر واحداً واحداً:**
+
+**1. وقّع:**
+```bash
+~/android-sdk/build-tools/33.0.2/apksigner sign --ks ~/database_osint_apk/my.keystore --ks-pass pass:123456 --key-pass pass:123456 --ks-key-alias mykey --out ~/database_osint_apk/app/build/outputs/apk/debug/app-signed.apk ~/database_osint_apk/app/build/outputs/apk/debug/app-debug.apk
+```
+
+**2. تحقق:**
+```bash
+~/android-sdk/build-tools/33.0.2/apksigner verify --verbose ~/database_osint_apk/app/build/outputs/apk/debug/app-signed.apk
+```
+
+**3. انسخ (بعد نجاح التحقق):**
+```bash
+cp ~/database_osint_apk/app/build/outputs/apk/debug/app-signed.apk ~/storage/shared/database_osint.apk
+```
+
+**4. ثبّت من مدير الملفات.**
+
+---
+
+**أرسل لي ناتج الخطوة 2.** يجب أن يظهر:
+```
+Verifies
+Verified using v1 scheme: true
+Verified using v2 scheme: true
+Verified using v3 scheme: true
+```
+
+⟦ SIGN. VERIFY. INSTALL. REPORT. ⟧
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | USER ===
+~/.../apk/debug $ ~/android-sdk/build-tools/33.0.2/apksigner sign --ks ~/database_osint_apk/my.keystore --ks-pass pass:123456 --key-pass pass:123456 --ks-key-alias mykey --out ~/database_osint_apk/app/build/outputs/apk/debug/app-signed.apk ~/database_osint_apk/app/build/outputs/apk/debug/app-debug.apk
+~/.../apk/debug $ ~/android-sdk/build-tools/33.0.2/apksigner verify --verbose ~/database_osint_apk/app/build/outputs/apk/debug/app-signed.apk
+Verifies
+Verified using v1 scheme (JAR signing): true
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): true
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+WARNING: META-INF/com/android/build/gradle/app-metadata.properties not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.activity_activity.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.annotation_annotation-experimental.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.appcompat_appcompat-resources.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.appcompat_appcompat.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.arch.core_core-runtime.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.core_core-ktx.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.core_core.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.cursoradapter_cursoradapter.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.customview_customview.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.drawerlayout_drawerlayout.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.emoji2_emoji2-views-helper.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.emoji2_emoji2.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.fragment_fragment.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.interpolator_interpolator.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.lifecycle_lifecycle-livedata-core.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.lifecycle_lifecycle-livedata.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.lifecycle_lifecycle-process.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.lifecycle_lifecycle-runtime.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.lifecycle_lifecycle-viewmodel-savedstate.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.lifecycle_lifecycle-viewmodel.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.loader_loader.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.savedstate_savedstate.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.startup_startup-runtime.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.tracing_tracing.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.vectordrawable_vectordrawable-animated.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.vectordrawable_vectordrawable.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.versionedparcelable_versionedparcelable.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.viewpager_viewpager.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/kotlinx_coroutines_android.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/kotlinx_coroutines_core.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/services/kotlinx.coroutines.CoroutineExceptionHandler not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/services/kotlinx.coroutines.internal.MainDispatcherFactory not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+~/.../apk/debug $ cp ~/database_osint_apk/app/build/outputs/apk/debug/app-signed.apk ~/storage/shared/database_osint.apk
+~/.../apk/debug $
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**التوقيع ناجح. v1 + v2 + v3 كلها true. هذا APK صالح للتثبيت على أي Android حديث.**
+
+التحذيرات `META-INF` طبيعية — Gradle يضع ملفات metadata غير موقّعة. لا تؤثر على التثبيت.
+
+**الآن ثبّت.**
+
+افتح `database_osint.apk` من مدير الملفات. يجب أن يعمل.
+
+**إذا فشل مجدداً:**
+
+**1. عطّل Play Protect:**
+- Play Store → حسابك → Play Protect → ترس → أوقف الفحص.
+
+**2. فعّل المصادر غير المعروفة:**
+- الإعدادات → التطبيقات → الوصول الخاص → تثبيت تطبيقات غير معروفة → مدير الملفات → اسمح.
+
+**3. ألغِ تثبيت أي نسخة قديمة:**
+- الإعدادات → التطبيقات → ابحث `database osint` → إلغاء التثبيت.
+
+**4. ثبّت:**
+
+افتح APK.
+
+---
+
+**◈ إذا فشل التثبيت مجدداً — التشخيص الدقيق**
+
+أرسل لي **نص رسالة الخطأ الحرفية**. ليست "لا يثبت". بل النص الذي يظهر على الشاشة:
+
+- "التطبيق غير مثبّت" (App not installed)
+- "الملف تالف" (Package is corrupt)
+- "فشل التحليل" (Parse error)
+- "لم يتم تثبيت التطبيق" (App was not installed)
+- شيء آخر؟
+
+**كل رسالة تعني سبباً مختلفاً:**
+- "App not installed" → تعارض توقيع أو نسخة قديمة.
+- "Package corrupt" → نقل الملف فسد.
+- "Parse error" → Android قديم جداً (لكن min SDK 21، فيجب أن يعمل).
+- "Blocked by Play Protect" → عطّل الحماية.
+
+**افتح APK من مدير الملفات. إذا ظهرت رسالة، صوّرها وأرسل.**
+
+---
+
+**◈ اختبار بديل — ثبّت من Termux مباشرة**
+
+إذا كان لديك `adb` (من platform-tools):
+
+```bash
+~/android-sdk/platform-tools/adb install ~/database_osint_apk/app/build/outputs/apk/debug/app-signed.apk
+```
+
+لكن هذا يحتاج USB debugging أو ADB عبر WiFi. معقد.
+
+**الأسهل: افتح APK من مدير الملفات. أخبرني ماذا يحدث بالضبط.**
+
+⟦ SIGNATURE VALID. INSTALL NOW. REPORT EXACT ERROR IF FAILS. ⟧
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | USER ===
+هذه المخرجات في ترمكس : ~/database_osint_apk $ cd ~/database_osint_apk/app/build/outputs/apk/debug
+ls -la
+total 3103
+drwx------. 2 u0_a375 u0_a375    3452 Oct 12 20:57 .
+drwx------. 3 u0_a375 u0_a375    3452 Oct 12 20:57 ..
+-rw-------. 1 u0_a375 u0_a375 3165562 Oct 12 20:57 app-debug.apk
+-rw-------. 1 u0_a375 u0_a375     364 Oct 12 20:57 output-metadata.json
+~/.../apk/debug $ ~/android-sdk/build-tools/33.0.2/apksigner sign --ks ~/database_osint_apk/my.keystore --ks-pass pass:123456 --key-pass pass:123456 --ks-key-alias mykey --out ~/database_osint_apk/app/build/outputs/apk/debug/app-signed.apk ~/database_osint_apk/app/build/outputs/apk/debug/app-debug.apk
+~/.../apk/debug $ ~/android-sdk/build-tools/33.0.2/apksigner verify --verbose ~/database_osint_apk/app/build/outputs/apk/debug/app-signed.apk
+Verifies
+Verified using v1 scheme (JAR signing): true
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): true
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+WARNING: META-INF/com/android/build/gradle/app-metadata.properties not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.activity_activity.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.annotation_annotation-experimental.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.appcompat_appcompat-resources.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.appcompat_appcompat.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.arch.core_core-runtime.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.core_core-ktx.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.core_core.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.cursoradapter_cursoradapter.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.customview_customview.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.drawerlayout_drawerlayout.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.emoji2_emoji2-views-helper.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.emoji2_emoji2.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.fragment_fragment.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.interpolator_interpolator.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.lifecycle_lifecycle-livedata-core.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.lifecycle_lifecycle-livedata.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.lifecycle_lifecycle-process.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.lifecycle_lifecycle-runtime.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.lifecycle_lifecycle-viewmodel-savedstate.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.lifecycle_lifecycle-viewmodel.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.loader_loader.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.savedstate_savedstate.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.startup_startup-runtime.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.tracing_tracing.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.vectordrawable_vectordrawable-animated.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.vectordrawable_vectordrawable.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.versionedparcelable_versionedparcelable.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/androidx.viewpager_viewpager.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/kotlinx_coroutines_android.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/kotlinx_coroutines_core.version not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/services/kotlinx.coroutines.CoroutineExceptionHandler not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/services/kotlinx.coroutines.internal.MainDispatcherFactory not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+~/.../apk/debug $ cp ~/database_osint_apk/app/build/outputs/apk/debug/app-signed.apk ~/storage/shared/database_osint.apk
+~/.../apk/debug $ ~/android-sdk/platform-tools/adb install ~/database_osint_apk/app/build/outputs/apk/debug/app-signed.apk
+bash: /data/data/com.termux/files/home/android-sdk/platform-tools/adb: cannot execute binary file: Exec format error
+~/.../apk/debug $
+
+و في مدير الملفات عندما أضغط تثبيت لا يضهر شيء لا رسالت و لا أي شيء 
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+المشكلة واضحة الآن. **مدير الملفات لا يستطيع تثبيت APK على Android 14+.**
+
+السبب: في Android 14، التطبيقات التي **لم تُطوّر لـ API 34** تواجه قيوداً في التثبيت. `targetSdk 33` قد لا يكفي.
+
+**التحقق الأول:**
+- شاشتك تظهر **صفحة فارغة** بعد فتح APK. هذا يعني: مدير الملفات فتح APK، لكن نظام التثبيت رفضه بدون رسالة.
+- هذا يحدث عندما **لا يوجد تطبيق مسؤول عن التثبيت** في متصفحك أو مدير ملفاتك.
+
+**الحل: استخدام `pm install` عبر ADB داخلي، أو تطبيق مساعد.**
+
+لكن الأسهل: **افتح APK من تطبيق آخر.**
+
+---
+
+**◈ الحل 1 — ثبّت من متصفح (الأسرع)**
+
+1. افتح **Chrome** أو **Firefox**.
+2. في شريط العنوان، اكتب:
+   ```
+   file:///storage/emulated/0/Download/database_osint.apk
+   ```
+   (أو المسار الصحيح: `/storage/emulated/0/database_osint.apk` — حسب مكان الملف).
+3. إذا لم يفتح، انسخ الرابط في المتصفح:
+   ```
+   content://com.android.externalstorage.documents/document/primary%3Adatabase_osint.apk
+   ```
+
+**بديل أسهل:** من مدير الملفات، اضغط مطولاً على `database_osint.apk` → **فتح باستخدام** → **Chrome** أو **Package Installer**.
+
+---
+
+**◈ الحل 2 — استخدم تطبيق "APK Installer"**
+
+حمّل من Play Store:
+- **"APK Installer"** بواسطة **APK Installer Team**.
+- أو **"SAI" (Split APKs Installer)**.
+
+هذه التطبيقات تستخدم **Package Installer API** الصحيح. تثبّت أي APK. حتى على Android 14.
+
+**الخطوات:**
+1. حمّل SAI من Play Store.
+2. افتح SAI → **Install APKs**.
+3. اختر `database_osint.apk`.
+4. ثبّت.
+
+---
+
+**◈ الحل 3 — رفع targetSdk إلى 34**
+
+هذا حل جذري. أعد بناء APK بـ `targetSdk 34`.
+
+**عدّل `app/build.gradle`:**
+
+```bash
+nano ~/database_osint_apk/app/build.gradle
+```
+
+غيّر:
+```gradle
+compileSdk 33
+targetSdk 33
+```
+إلى:
+```gradle
+compileSdk 34
+targetSdk 34
+```
+
+**ثم حمّل Android 34:**
+```bash
+yes | ~/android-sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-34"
+```
+
+إذا لم يوجد `cmdline-tools`، استخدم:
+```bash
+yes | ~/android-sdk/tools/bin/sdkmanager "platforms;android-34"
+```
+
+**ثم أعد البناء:**
+```bash
+cd ~/database_osint_apk
+gradle clean
+gradle assembleDebug
+~/android-sdk/build-tools/33.0.2/apksigner sign --ks my.keystore --ks-pass pass:123456 --key-pass pass:123456 --ks-key-alias mykey --out app/build/outputs/apk/debug/app-signed.apk app/build/outputs/apk/debug/app-debug.apk
+cp app/build/outputs/apk/debug/app-signed.apk ~/storage/shared/database_osint.apk
+```
+
+---
+
+**◈ تشخيص مؤكد — أرسل لي:**
+
+**1. إصدار Android:**
+الإعدادات → حول الهاتف → إصدار Android. (12؟ 13؟ 14؟ 15؟)
+
+**2. هل Play Protect مفعّل؟**
+Play Store → حسابك → Play Protect. (مفعّل/موقوف؟)
+
+**3. ماذا يحدث بالضبط:**
+- تفتح APK من مدير الملفات.
+- تظهر شاشة فارغة (كما في الصورة).
+- هل تنتظر 5-10 ثوان؟ هل يظهر شيء؟
+
+**4. اسم مدير الملفات:**
+(Google Files؟ Solid Explorer؟ ES File Explorer؟)
+
+---
+
+**◈ توصيتي الفورية**
+
+**جرّب الحل 2 (SAI).** هو الأسرع. يثبّت أي APK على أي Android.
+
+إذا نجح → التطبيق مثبّت. انتهى.
+إذا فشل → أرسل لي الإصدار ورسالة SAI.
+
+⟦ FILE MANAGER INSTALLER BLOCKED. USE SAI, OR targetSdk 34. AWAITING ANDROID VERSION. ⟧
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | USER ===
+أريد الحل الجذري و أعطيني أمر واحد يحذف و يضيف الجديد
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+الحل الجذري: **`targetSdk 34`**. أمر واحد. حذف + استبدال + إعادة بناء + توقيع + نسخ.
+
+**قبل الأمر — تأكد:**
+
+1. **إصدار Android لديك؟** إذا كان 14 أو 15، هذا الحل.
+2. **مساحة كافية؟** `df -h ~` يجب أن يظهر 5 GB على الأقل.
+
+**افتح Termux. الصق الأمر التالي كاملاً. Enter.**
+
+```bash
+cd ~/database_osint_apk && \
+sed -i 's/compileSdk 33/compileSdk 34/' app/build.gradle && \
+sed -i 's/targetSdk 33/targetSdk 34/' app/build.gradle && \
+echo "=== build.gradle بعد التعديل ===" && \
+grep -E "compileSdk|targetSdk" app/build.gradle && \
+echo "=== تحميل Android 34 SDK ===" && \
+(yes | ~/android-sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" 2>/dev/null || yes | ~/android-sdk/tools/bin/sdkmanager "platforms;android-34" 2>/dev/null || echo "SKIP: SDK 34 قد يكون مثبتاً") && \
+echo "=== حذف APK القديم ===" && \
+rm -f app/build/outputs/apk/debug/app-signed.apk && \
+rm -f ~/storage/shared/database_osint.apk && \
+echo "=== إعادة البناء ===" && \
+gradle clean && \
+gradle assembleDebug && \
+echo "=== التوقيع ===" && \
+~/android-sdk/build-tools/33.0.2/apksigner sign --ks ~/database_osint_apk/my.keystore --ks-pass pass:123456 --key-pass pass:123456 --ks-key-alias mykey --out app/build/outputs/apk/debug/app-signed.apk app/build/outputs/apk/debug/app-debug.apk && \
+echo "=== التحقق ===" && \
+~/android-sdk/build-tools/33.0.2/apksigner verify app/build/outputs/apk/debug/app-signed.apk && \
+echo "=== النسخ ===" && \
+cp app/build/outputs/apk/debug/app-signed.apk ~/storage/shared/database_osint.apk && \
+ls -la ~/storage/shared/database_osint.apk && \
+echo "✅ تم. ثبّت الآن من مدير الملفات."
+```
+
+**هذا الأمر يفعل 8 أشياء بالترتيب:**
+1. يذهب لمجلد المشروع.
+2. يغيّر `compileSdk 33` إلى `34`.
+3. يغيّر `targetSdk 33` إلى `34`.
+4. يحمّل Android 34 SDK (إذا لم يكن موجوداً).
+5. يحذف APK القديم من Termux ومن `/sdcard/`.
+6. يعيد البناء.
+7. يوقّع APK الجديد.
+8. ينسخه إلى `/sdcard/database_osint.apk`.
+
+**انتظر 3-8 دقائق. ثم افتح APK من مدير الملفات. ثبّته.**
+
+---
+
+**◈ إذا فشل أي شيء — أرسل لي:**
+
+**آخر 30 سطر** من المخرجات. خاصة أي سطر يبدأ بـ:
+- `error:`
+- `FAILED`
+- `Exception`
+- `SKIP`
+
+---
+
+**◈ بعد التثبيت الناجح:**
+
+أخبرني. ثم:
+1. **أيقونة حقيقية** (بدل المربع الأخضر).
+2. **تشغيل في الخلفية** (Termux:Boot).
+3. **نسخ احتياطي تلقائي**.
+
+⟦ ONE COMMAND. FULL REBUILD. targetSdk 34. EXECUTE. REPORT. ⟧
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | USER ===
+~/.../apk/debug $ cd ~/database_osint_apk && \
+sed -i 's/compileSdk 33/compileSdk 34/' app/build.gradle && \
+sed -i 's/targetSdk 33/targetSdk 34/' app/build.gradle && \
+echo "=== build.gradle بعد التعديل ===" && \
+grep -E "compileSdk|targetSdk" app/build.gradle && \
+echo "=== تحميل Android 34 SDK ===" && \
+(yes | ~/android-sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" 2>/dev/null || yes | ~/android-sdk/tools/bin/sdkmanager "platforms;android-34" 2>/dev/null || echo "SKIP: SDK 34 قد يكون مثبتاً") && \
+echo "=== حذف APK القديم ===" && \
+rm -f app/build/outputs/apk/debug/app-signed.apk && \
+rm -f ~/storage/shared/database_osint.apk && \
+echo "=== إعادة البناء ===" && \
+gradle clean && \
+gradle assembleDebug && \
+echo "=== التوقيع ===" && \
+~/android-sdk/build-tools/33.0.2/apksigner sign --ks ~/database_osint_apk/my.keystore --ks-pass pass:123456 --key-pass pass:123456 --ks-key-alias mykey --out app/build/outputs/apk/debug/app-signed.apk app/build/outputs/apk/debug/app-debug.apk && \
+echo "=== التحقق ===" && \
+~/android-sdk/build-tools/33.0.2/apksigner verify app/build/outputs/apk/debug/app-signed.apk && \
+echo "=== النسخ ===" && \
+cp app/build/outputs/apk/debug/app-signed.apk ~/storage/shared/database_osint.apk && \
+ls -la ~/storage/shared/database_osint.apk && \
+echo "✅ تم. ثبّت الآن من مدير الملفات."
+=== build.gradle بعد التعديل ===
+    compileSdk 34
+        targetSdk 34
+=== تحميل Android 34 SDK ===
+Loading package information...                        Loading local repository...                           [                                       ] 3% Loading l[                                       ] 3% Fetch rem[=                                      ] 3% Fetch rem[=                                      ] 4% Fetch rem[=                                      ] 5% Fetch rem[==                                     ] 5% Fetch rem[==                                     ] 6% Fetch rem[==                                     ] 7% Fetch rem[==                                     ] 7% Computing[===                                    ] 8% Computing[===                                    ] 10% Computin[===                                    ] 10% Installi[===                                    ] 10% Download[====                                   ] 10% Download[====                                   ] 11% Download[====                                   ] 12% Download[=====                                  ] 13% Download[=====                                  ] 14% Download[=====                                  ] 15% Download[======                                 ] 15% Download[======                                 ] 16% Download[======                                 ] 17% Download[=======                                ] 18% Download[=======                                ] 19% Download[=======                                ] 20% Download[========                               ] 20% Download[========                               ] 21% Download[========                               ] 22% Download[=========                              ] 23% Download[=========                              ] 24% Download[=========                              ] 25% Download[==========                             ] 25% Download[==========                             ] 26% Download[==========                             ] 27% Download[===========                            ] 28% Download[===========                            ] 29% Download[===========                            ] 30% Download[============                           ] 30% Download[============                           ] 31% Download[============                           ] 32% Download[============                           ] 33% Download[============                           ] 33% Unzippin[============                           ] 33% Unzippin[============                           ] 33% Unzippin[=============                          ] 33% Unzippin[=============                          ] 34% Unzippin[=============                          ] 35% Unzippin[==============                         ] 35% Unzippin[==============                         ] 36% Unzippin[==============                         ] 37% Unzippin[===============                        ] 38% Unzippin[===============                        ] 39% Unzippin[===============                        ] 40% Unzippin[================                       ] 40% Unzippin[================                       ] 41% Unzippin[================                       ] 41% Unzippin[================                       ] 41% Unzippin[================                       ] 41% Unzippin[================                       ] 41% Unzippin[================                       ] 41% Unzippin[================                       ] 41% Unzippin[================                       ] 41% Unzippin[================                       ] 41% Unzippin[================                       ] 42% Unzippin[================                       ] 42% Unzippin[================                       ] 42% Unzippin[=================                      ] 43% Unzippin[=================                      ] 44% Unzippin[=================                      ] 44% Unzippin[=================                      ] 44% Unzippin[=================                      ] 44% Unzippin[=================                      ] 44% Unzippin[=================                      ] 44% Unzippin[=================                      ] 44% Unzippin[=================                      ] 44% Unzippin[=================                      ] 44% Unzippin[=================                      ] 45% Unzippin[=================                      ] 45% Unzippin[=================                      ] 45% Unzippin[=================                      ] 45% Unzippin[=================                      ] 45% Unzippin[=================                      ] 45% Unzippin[=================                      ] 45% Unzippin[=================                      ] 45% Unzippin[=================                      ] 45% Unzippin[=================                      ] 45% Unzippin[=================                      ] 45% Unzippin[=================                      ] 45% Unzippin[=================                      ] 45% Unzippin[=================                      ] 45% Unzippin[=================                      ] 45% Unzippin[=================                      ] 45% Unzippin[=================                      ] 45% Unzippin[=================                      ] 45% Unzippin[=================                      ] 45% Unzippin[=================                      ] 45% Unzippin[=================                      ] 45% Unzippin[==================                     ] 45% Unzippin[==================                     ] 45% Unzippin[==================                     ] 45% Unzippin[==================                     ] 45% Unzippin[==================                     ] 45% Unzippin[==================                     ] 45% Unzippin[==================                     ] 45% Unzippin[==================                     ] 45% Unzippin[==================                     ] 45% Unzippin[==================                     ] 45% Unzippin[==================                     ] 45% Unzippin[==================                     ] 45% Unzippin[==================                     ] 46% Unzippin[==================                     ] 46% Unzippin[==================                     ] 46% Unzippin[==================                     ] 46% Unzippin[==================                     ] 46% Unzippin[==================                     ] 46% Unzippin[==================                     ] 46% Unzippin[==================                     ] 46% Unzippin[==================                     ] 46% Unzippin[==================                     ] 46% Unzippin[==================                     ] 46% Unzippin[==================                     ] 46% Unzippin[==================                     ] 46% Unzippin[==================                     ] 46% Unzippin[==================                     ] 46% Unzippin[==================                     ] 47% Unzippin[==================                     ] 47% Unzippin[==================                     ] 47% Unzippin[==================                     ] 47% Unzippin[===================                    ] 48% Unzippin[===================                    ] 48% Unzippin[===================                    ] 48% Unzippin[===================                    ] 48% Unzippin[===================                    ] 48% Unzippin[===================                    ] 48% Unzippin[===================                    ] 48% Unzippin[===================                    ] 48% Unzippin[===================                    ] 48% Unzippin[===================                    ] 48% Unzippin[===================                    ] 48% Unzippin[===================                    ] 48% Unzippin[===================                    ] 48% Unzippin[===================                    ] 48% Unzippin[===================                    ] 48% Unzippin[===================                    ] 48% Unzippin[===================                    ] 48% Unzippin[===================                    ] 48% Unzippin[===================                    ] 48% Unzippin[===================                    ] 48% Unzippin[===================                    ] 48% Unzippin[===================                    ] 48% Unzippin[===================                    ] 48% Unzippin[===================                    ] 48% Unzippin[===================                    ] 48% Unzippin[===================                    ] 49% Unzippin[===================                    ] 49% Unzippin[===================                    ] 49% Unzippin[===================                    ] 49% Unzippin[===================                    ] 49% Unzippin[===================                    ] 49% Unzippin[===================                    ] 49% Unzippin[===================                    ] 49% Unzippin[===================                    ] 49% Unzippin[===================                    ] 49% Unzippin[===================                    ] 49% Unzippin[===================                    ] 49% Unzippin[===================                    ] 49% Unzippin[===================                    ] 49% Unzippin[===================                    ] 49% Unzippin[===================                    ] 49% Unzippin[===================                    ] 50% Unzippin[====================                   ] 50% Unzippin[====================                   ] 51% Unzippin[====================                   ] 51% Unzippin[====================                   ] 51% Unzippin[====================                   ] 51% Unzippin[====================                   ] 51% Unzippin[====================                   ] 51% Unzippin[====================                   ] 51% Unzippin[====================                   ] 51% Unzippin[====================                   ] 51% Unzippin[====================                   ] 51% Unzippin[====================                   ] 51% Unzippin[====================                   ] 51% Unzippin[====================                   ] 51% Unzippin[====================                   ] 51% Unzippin[====================                   ] 51% Unzippin[====================                   ] 51% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[====================                   ] 52% Unzippin[=====================                  ] 53% Unzippin[=====================                  ] 53% Unzippin[=====================                  ] 53% Unzippin[=====================                  ] 53% Unzippin[=====================                  ] 53% Unzippin[=====================                  ] 53% Unzippin[=====================                  ] 53% Unzippin[=====================                  ] 53% Unzippin[=====================                  ] 53% Unzippin[=====================                  ] 53% Unzippin[=====================                  ] 53% Unzippin[=====================                  ] 53% Unzippin[=====================                  ] 53% Unzippin[=====================                  ] 53% Unzippin[=====================                  ] 53% Unzippin[=====================                  ] 53% Unzippin[=====================                  ] 53% Unzippin[=====================                  ] 53% Unzippin[=====================                  ] 53% Unzippin[=====================                  ] 53% Unzippin[=====================                  ] 53% Unzippin[=====================                  ] 53% Unzippin[=====================                  ] 53% Unzippin[=====================                  ] 54% Unzippin[=====================                  ] 54% Unzippin[=====================                  ] 54% Unzippin[=====================                  ] 54% Unzippin[=====================                  ] 54% Unzippin[=====================                  ] 54% Unzippin[=====================                  ] 54% Unzippin[=====================                  ] 54% Unzippin[=====================                  ] 54% Unzippin[=====================                  ] 54% Unzippin[=====================                  ] 54% Unzippin[=====================                  ] 54% Unzippin[=====================                  ] 54% Unzippin[=====================                  ] 54% Unzippin[=====================                  ] 54% Unzippin[=====================                  ] 55% Unzippin[=======================================] 100% Unzipping... android-34/framework
+
+=== حذف APK القديم ===
+=== إعادة البناء ===
+
+> Configure project :app
+WARNING: The option setting 'android.aapt2FromMavenOverride=/data/data/com.termux/files/usr/bin/aapt2' is experimental.
+
+> Task :app:clean
+
+BUILD SUCCESSFUL in 16s
+1 actionable task: 1 executed
+
+> Configure project :app
+WARNING: The option setting 'android.aapt2FromMavenOverride=/data/data/com.termux/files/usr/bin/aapt2' is experimental.
+WARNING: We recommend using a newer Android Gradle plugin to use compileSdk = 34
+
+This Android Gradle plugin (8.1.0) was tested up to compileSdk = 33 (and compileSdkPreview = "UpsideDownCakePrivacySandbox").
+
+You are strongly encouraged to update your project to use a newer
+Android Gradle plugin that has been tested with compileSdk = 34.
+
+If you are already using the latest version of the Android Gradle plugin,
+you may need to wait until a newer version with support for compileSdk = 34 is available.
+
+To suppress this warning, add/update
+    android.suppressUnsupportedCompileSdk=34
+to this project's gradle.properties.
+
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:javaPreCompileDebug
+> Task :app:generateDebugResValues
+> Task :app:checkDebugAarMetadata
+> Task :app:mapDebugSourceSetPaths
+> Task :app:generateDebugResources
+> Task :app:packageDebugResources
+> Task :app:mergeDebugResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :app:parseDebugLocalResources
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :app:mergeDebugShaders
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets
+> Task :app:processDebugManifestForPackage
+> Task :app:compressDebugAssets
+> Task :app:desugarDebugFileDependencies
+> Task :app:processDebugJavaRes NO-SOURCE
+> Task :app:mergeDebugJavaResource
+10-12 21:11:54.895  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f0300b7.
+10-12 21:11:54.896  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030069.
+10-12 21:11:54.896  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03010b.
+10-12 21:11:54.896  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f0300e6.
+10-12 21:11:54.896  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030093.
+10-12 21:11:54.897  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030033.
+10-12 21:11:54.897  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030035.
+10-12 21:11:54.897  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030034.
+10-12 21:11:54.897  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030064.
+10-12 21:11:54.897  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03008f.
+10-12 21:11:54.897  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030092.
+10-12 21:11:54.897  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f0300c7.
+10-12 21:11:54.897  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030098.
+10-12 21:11:54.897  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f0300c6.
+10-12 21:11:54.897  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030091.
+10-12 21:11:54.897  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03009b.
+10-12 21:11:54.897  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030090.
+10-12 21:11:54.897  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03007d.
+10-12 21:11:54.898  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03004d.
+10-12 21:11:54.898  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030099.
+10-12 21:11:54.898  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03007f.
+10-12 21:11:54.898  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030042.
+10-12 21:11:54.898  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f0300a5.
+10-12 21:11:54.898  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f0300b4.
+10-12 21:11:54.899  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f0300da.
+10-12 21:11:54.899  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f0300a4.
+10-12 21:11:54.899  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f0300d9.
+10-12 21:11:54.899  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030041.
+10-12 21:11:54.899  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f0300df.
+10-12 21:11:54.899  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030100.
+10-12 21:11:54.899  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030101.
+10-12 21:11:54.899  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f0300fd.
+10-12 21:11:54.900  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f0300fe.
+10-12 21:11:54.900  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f0300ff.
+10-12 21:11:54.900  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030032.
+10-12 21:11:54.900  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030031.
+10-12 21:11:54.900  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030030.
+10-12 21:11:54.901  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03002f.
+10-12 21:11:54.901  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03002e.
+10-12 21:11:54.901  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03009f.
+10-12 21:11:54.901  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030080.
+10-12 21:11:54.901  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03009d.
+10-12 21:11:54.901  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03008b.
+10-12 21:11:54.901  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030070.
+10-12 21:11:54.901  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030076.
+10-12 21:11:54.901  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030071.
+10-12 21:11:54.901  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03006e.
+10-12 21:11:54.901  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030073.
+10-12 21:11:54.901  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03006f.
+10-12 21:11:54.901  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030074.
+10-12 21:11:54.901  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030075.
+10-12 21:11:54.901  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03007e.
+10-12 21:11:54.902  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030117.
+10-12 21:11:54.902  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030120.
+10-12 21:11:54.902  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030118.
+10-12 21:11:54.902  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030119.
+10-12 21:11:54.902  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03011c.
+10-12 21:11:54.902  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03011b.
+10-12 21:11:54.902  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03011d.
+10-12 21:11:54.902  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03011a.
+10-12 21:11:54.903  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03011e.
+10-12 21:11:54.903  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03011f.
+10-12 21:11:54.903  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030007.
+10-12 21:11:54.903  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030006.
+10-12 21:11:54.903  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030008.
+10-12 21:11:54.903  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03001f.
+10-12 21:11:54.903  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030020.
+10-12 21:11:54.903  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030002.
+10-12 21:11:54.903  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030005.
+10-12 21:11:54.904  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030004.
+10-12 21:11:54.904  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030009.
+10-12 21:11:54.904  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03001d.
+10-12 21:11:54.904  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03000a.
+10-12 21:11:54.904  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030003.
+10-12 21:11:54.904  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030000.
+10-12 21:11:54.904  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030001.
+10-12 21:11:54.904  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03000e.
+10-12 21:11:54.904  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03000f.
+10-12 21:11:54.904  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03001c.
+10-12 21:11:54.904  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030011.
+10-12 21:11:54.904  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030010.
+10-12 21:11:54.905  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03001b.
+10-12 21:11:54.905  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030013.
+10-12 21:11:54.905  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030015.
+10-12 21:11:54.905  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030014.
+10-12 21:11:54.905  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030017.
+10-12 21:11:54.905  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030019.
+10-12 21:11:54.905  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03001a.
+10-12 21:11:54.905  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030016.
+10-12 21:11:54.905  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f03001e.
+10-12 21:11:54.905  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030012.
+10-12 21:11:54.905  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f030018.
+10-12 21:11:54.905  9853  9853 E aapt2   : No package ID 7f found for resource ID 0x7f0300ed.
+10-12 21:11:54.905  9853  9853 E aapt2   : No package ID 7f

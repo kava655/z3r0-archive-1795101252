@@ -1,0 +1,2941 @@
+د على أسود → غير مرئي.**
+
+**التشخيص:** `ListView` يستخدم `android.R.layout.simple_list_item_1` الذي يأخذ لون النص من `Theme.Material.Light` (أسود)، لكن خلفية `ListView` سوداء (`#0A0A0A`). النتيجة: نص أسود على خلفية سوداء.
+
+**الحل:** استبدال `simple_list_item_1` بتخطيط مخصص، أو تغيير لون النص.
+
+**الأسهل:** استبدال `android.R.layout.simple_list_item_1` في `HistoryActivity.java` بتخطيط مخصص بنص أخضر.
+
+---
+
+### الخطوة 1 — أنشئ `list_item.xml`
+
+```bash
+cat > ~/MyFirstApp/app/src/main/res/layout/list_item.xml << 'XMLEOF'
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12dp"
+    android:textSize="12sp"
+    android:textColor="#00FF88"
+    android:fontFamily="monospace"
+    android:background="#0A0A0A" />
+XMLEOF
+echo "OK"
+```
+
+---
+
+### الخطوة 2 — عدّل `HistoryActivity.java`
+
+```bash
+sed -i 's|android.R.layout.simple_list_item_1|R.layout.list_item|' ~/MyFirstApp/app/src/main/java/com/z3r0/hello/HistoryActivity.java
+grep "list_item" ~/MyFirstApp/app/src/main/java/com/z3r0/hello/HistoryActivity.java
+```
+
+**المتوقع:** سطر واحد فيه `R.layout.list_item`.
+
+---
+
+### الخطوة 3 — ابنِ وثبّت
+
+```bash
+cd ~/MyFirstApp
+gradle assembleDebug 2>&1 | tail -5
+cp ~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk ~/storage/downloads/Z3R0-v18.apk
+ls -lh ~/storage/downloads/Z3R0-v18.apk
+```
+
+**من مدير الملفات:** ثبّت `Z3R0-v18.apk`.
+
+---
+
+### الخطوة 4 — الاختبار
+
+**افتح التطبيق:**
+1. اضغط **السجل**.
+2. **الآن ستظهر الأسماء بالأخضر على خلفية سوداء.**
+3. اضغط على أي ملف.
+4. AlertDialog يعرض المحتوى.
+
+---
+
+**توقّف. نفّذ. أرسل:**
+
+```
+grep "list_item" ~/MyFirstApp/app/src/main/java/com/z3r0/hello/HistoryActivity.java
+ls -lh ~/storage/downloads/Z3R0-v18.apk
+```
+
+**بعد التثبيت، أرسل صورة من شاشة السجل — يجب أن تظهر الأسماء بوضوح.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**شاشة السجل تعمل بالكامل.**
+
+**ما يظهر:**
+- **60 ملفاً في السجل** — كل الفحوصات محفوظة.
+- الأسماء واضحة بالأخضر على خلفية سوداء.
+- الترتيب: الأحدث أولاً (بفضل `Collections.reverseOrder()`).
+- كل ملف يحمل اسم الأداة والتاريخ: `20261007_065251_nmap.txt`، `20261007_063153_hydra.txt`، إلخ.
+
+---
+
+### الخطوة التالية — اختبر فتح ملف
+
+**اضغط على أول ملف** (`20261007_065251_nmap.txt`).
+
+**المتوقع:**
+- `AlertDialog` يفتح.
+- العنوان: `20261007_065251_nmap.txt`.
+- المحتوى: نتيجة nmap كاملة.
+- 3 أزرار: **نسخ** | **حذف** | **إغلاق**.
+
+**اختبر:**
+1. **نسخ** → يُنسخ المحتوى. الصقه في أي مكان للتأكد.
+2. **إغلاق** → يغلق الحوار.
+3. **حذف** → يحذف الملف (يختفي من القائمة).
+
+---
+
+### بعد التأكد
+
+**التطبيق الآن مكتمل وظيفياً:**
+- 9 أدوات تعمل.
+- حفظ تلقائي (150 ملف حد أقصى).
+- سجل مرئي.
+- نسخ/حذف الملفات.
+- إضافة أدوات بلا بناء.
+
+**المتبقي:**
+- **⑨** أدوات جديدة — `dnsrecon`, `whatweb`, `wpscan`.
+- **⑫** لوحة تحكم المطوّر (PIN سري + إحصائيات).
+- **تحسينات صغيرة** — نسخ/مشاركة النتائج مباشرة من الشاشة الرئيسية، ترقيم الأسطر.
+
+---
+
+**توقّف. اختبر فتح ملف + نسخ/حذف. أرسل:**
+
+**1. هل يفتح الملف؟**
+**2. هل يعمل زر النسخ؟**
+**3. هل يعمل زر الحذف؟**
+
+**إن نجح كل شيء، اختر الخطوة التالية:**
+- **أ) ⑨** — إضافة أدوات جديدة.
+- **ب) ⑫** — لوحة تحكم المطوّر.
+- **ج) تحسينات صغيرة** — نسخ/مشاركة سريعة.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+كل شيء يعمل إنتقل للخطوت التي بعده
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+ننتقل إلى **⑨ — إضافة أدوات جديدة**.
+
+**قبل أن نُضيف، نتحقق: ما الأدوات المتوفرة في Termux ولم تُضَف بعد؟**
+
+---
+
+### الأدوات المرشحة
+
+| الأداة | الوظيفة | يحتاج تثبيت؟ | تعمل عبر subprocess؟ |
+|---|---|---|---|
+| **dnsrecon** | استطلاع DNS شامل | pip | ✅ (Python) |
+| **dnsenum** | استطلاع DNS | Perl | ✅ |
+| **whatweb** | بصمة تقنيات المواقع | git clone (Ruby) | ⚠️ (يحتاج Ruby) |
+| **wpscan** | WordPress | git clone (Ruby) | ⚠️ (يحتاج Ruby) |
+| **sslscan** | فحص TLS/SSL | pkg | ✅ |
+| **sslyze** | فحص TLS (Python) | pip | ✅ |
+| **openvas** | فحص ثغرات | لا يعمل على Termux | ❌ |
+| **gobuster** | كشف مسارات | Go | ⚠️ (يحتاج Go) |
+| **ffuf** | fuzzing سريع | Go | ⚠️ (يحتاج Go) |
+| **amass** | رسم خريطة الشبكة | Go | ⚠️ (يحتاج Go) |
+| **subfinder** | نطاقات فرعية | Go | ⚠️ (يحتاج Go) |
+| **assetfinder** | نطاقات فرعية | Go | ⚠️ (يحتاج Go) |
+| **nuclei** | فحص ثغرات | Go | ⚠️ (يحتاج Go) |
+| **theHarvester** | OSINT | Python | ❌ (فشل - pydantic) |
+| **whois-xml** | whois بديل | pip | ✅ |
+
+---
+
+### الترتيب حسب الأولوية
+
+**الأسهل — يعمل مباشرة:**
+
+**① `sslscan`** — فحص شهادات TLS وبروتوكولاتها.
+```bash
+pkg install -y sslscan
+```
+- الوظيفة: يعرض إصدارات TLS المدعومة، الشهادات، الـ ciphers.
+- مثال: `sslscan nmap.org:443`
+- **الاستخدام:** فحص أمان TLS لمواقع HTTPS.
+
+**② `dnsrecon`** — استطلاع DNS (Python، يعمل مباشرة).
+```bash
+pip install dnsrecon
+```
+- الوظيفة: جمع كل سجلات DNS، نقل المنطقة، نطاقات فرعية.
+- مثال: `dnsrecon -d nmap.org`
+- **الاستخدام:** استطلاع شامل قبل أي فحص آخر.
+
+**③ `whois` لـ IP** — موجود بالفعل (`whois` يدعم IP).
+
+**④ `host`** — لا يعمل (سبق أن أُثبت).
+
+---
+
+**المتوسط — يحتاج تثبيت:**
+
+**⑤ `dnsenum`** — Perl، يحتاج تثبيت.
+```bash
+pkg install -y dnsenum
+```
+- الوظيفة: استطلاع DNS متقدم (مثل dnsrecon لكن بـ Perl).
+- مثال: `dnsenum nmap.org`
+
+**⑥ `whatweb`** — Ruby.
+```bash
+pkg install -y ruby
+git clone https://github.com/urbanadventurer/WhatWeb.git
+```
+- الوظيفة: بصمة التقنيات (CMS، سيرفر، لغة، إصدارات).
+- مثال: `ruby whatweb nmap.org`
+- **قد يفشل بسبب مكتبات Ruby.**
+
+**⑦ `wpscan`** — Ruby، WordPress.
+- يحتاج Ruby + مكتبات كثيرة.
+- **مشكوك في نجاحه.**
+
+---
+
+**الأصعب — يحتاج Go:**
+
+**⑧ `gobuster`** — كشف مسارات وملفات مخفية.
+```bash
+pkg install -y golang
+go install github.com/OJ/gobuster/v3@latest
+```
+- الوظيفة: يكشف `/admin/`, `/backup/`, `/config/`, إلخ.
+- **مهم جداً** لفحص المواقع.
+- لكن يحتاج قائمة كلمات (wordlist).
+- **قد ينجح.**
+
+**⑨ `ffuf`** — fuzzing سريع.
+- نفس الحالة.
+- **أسرع من gobuster، لكن نفس التعقيد.**
+
+---
+
+### اقتراحي
+
+**ابدأ بالأدوات التي تعمل مباشرة:**
+
+**الخطوة 1:** `sslscan` — تثبيت سريع، يعمل مباشرة.
+
+**الخطوة 2:** `dnsrecon` — Python، يعمل مباشرة.
+
+**الخطوة 3:** `dnsenum` — Perl، يعمل مباشرة.
+
+**الخطوة 4 (إن نجح):** `whatweb` — Ruby.
+
+**الخطوة 5 (إن نجح):** `gobuster` — Go.
+
+**نبدأ بثلاث أدوات في وقت واحد:** `sslscan` + `dnsrecon` + `dnsenum`.
+
+---
+
+### الأوامر
+
+```bash
+# 1. sslscan
+pkg install -y sslscan
+sslscan --version
+
+# 2. dnsrecon
+pip install dnsrecon
+dnsrecon --version 2>&1 | head -3
+
+# 3. dnsenum
+pkg install -y dnsenum
+dnsenum --help 2>&1 | head -5
+```
+
+**أرسل مخرجات الأوامر الثلاثة.** أخبرني أيها نجح، وأيها فشل. بناءً عليها نُضيف الأدوات الناجحة إلى `tools.json`.
+
+---
+
+**توقّف. نفّذ الأوامر الثلاثة. أرسل:**
+
+```
+sslscan --version
+dnsrecon --version 2>&1 | head -3
+dnsenum --help 2>&1 | head -5
+```
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ pkg install -y sslscan
+Testing the available mirrors:
+[*] (1) https://linux.domainesia.com/applications/termux/termux-main: ok
+[*] (1) https://termux.niranjan.co/termux-main: ok
+[*] (1) https://mirror.bardia.tech/termux/termux-main: bad
+[*] (1) https://mirrors.saswata.cc/termux/termux-main: bad
+[*] (1) https://mirrors.ravidwivedi.in/termux/termux-main: ok
+[*] (1) https://mirror.textcord.xyz/termux/termux-main: ok
+[*] (1) https://mirrors.krnk.org/apt/termux/termux-main: ok
+[*] (1) https://mirror.rinarin.dev/termux/termux-main: ok
+[*] (1) https://mirror.jeonnam.school/termux/termux-main: ok
+[*] (1) https://mirrors.nguyenhoang.cloud/termux/termux-main: ok
+[*] (1) https://mirrors.cbrx.io/apt/termux/termux-main: ok
+[*] (1) https://tmx.xvx.my.id/apt/termux-main: ok
+[*] (1) https://mirror.albony.in/termux/termux-main: ok
+[*] (1) https://mirror.twds.com.tw/termux/termux-main: ok
+[*] (1) https://mirror.nevacloud.com/applications/termux/termux-main: ok
+[*] (1) https://mirror.meowsmp.net/termux/termux-main: bad
+[*] (1) https://mirror.freedif.org/termux/termux-main: ok
+[*] (1) https://mirrors.in.sahilister.net/termux/termux-main/: ok
+Picking mirror: (1) /data/data/com.termux/files/usr/etc/termux/chosen_mirrors/termux.niranjan.co
+Get:1 https://termux.niranjan.co/termux-main stable InRelease [14.0 kB]
+Get:2 https://termux.niranjan.co/termux-root root InRelease [14.2 kB]
+Get:3 https://termux.niranjan.co/termux-main stable/main aarch64 Packages [585 kB]
+Get:4 https://termux.niranjan.co/termux-root root/stable aarch64 Packages [21.4 kB]
+Fetched 635 kB in 4s (164 kB/s)
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+15 packages can be upgraded. Run 'apt list --upgradable' to see them.
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following NEW packages will be installed:
+  sslscan
+0 upgraded, 1 newly installed, 0 to remove and 15 not upgraded.
+Need to get 41.6 kB of archives.
+After this operation, 197 kB of additional disk space will be used.
+Get:1 https://termux.niranjan.co/termux-main stable/main aarch64 sslscan aarch64 2.2.3 [41.6 kB]
+Fetched 41.6 kB in 0s (92.6 kB/s)
+Selecting previously unselected package sslscan.
+(Reading database ... 49807 files and directories currently installed.)
+Preparing to unpack .../sslscan_2.2.3_aarch64.deb ...
+Unpacking sslscan (2.2.3) ...
+Setting up sslscan (2.2.3) ...
+~/MyFirstApp $ pip install dnsrecon
+Collecting dnsrecon
+  Downloading dnsrecon-0.10.1.tar.gz (635 kB)
+     ━━━━━━━━━━━━━━━━ 635.0/635.0 kB 2.2 MB/s  0:00:00
+  Installing build dependencies ... done
+  Getting requirements to build wheel ... done
+  Preparing metadata (pyproject.toml) ... done
+Collecting lxml (from dnsrecon)
+  Using cached lxml-6.1.3.tar.gz (4.2 MB)
+  Installing build dependencies ... done
+  Getting requirements to build wheel ... done
+  Preparing metadata (pyproject.toml) ... done
+Collecting netaddr (from dnsrecon)
+  Using cached netaddr-1.3.0-py3-none-any.whl.metadata (5.0 kB)
+Collecting dnspython (from dnsrecon)
+  Using cached dnspython-2.8.0-py3-none-any.whl.metadata (5.7 kB)
+Using cached dnspython-2.8.0-py3-none-any.whl (331 kB)
+Downloading netaddr-1.3.0-py3-none-any.whl (2.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━ 2.3/2.3 MB 1.8 MB/s  0:00:01
+Building wheels for collected packages: dnsrecon, lxml
+  Building wheel for dnsrecon (pyproject.toml) ... done
+  Created wheel for dnsrecon: filename=dnsrecon-0.10.1-py3-none-any.whl size=642472 sha256=c34d4c605452f0546eff948ee590181806739049455a2d8540b57b41b15510f2
+  Stored in directory: /data/data/com.termux/files/home/.cache/pip/wheels/94/9d/5e/5fefd00f3bf6a1dfca3c33eb98e00532c2ea8d32f4a6b0529b
+  Building wheel for lxml (pyproject.toml) ... |
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**توقف. لا تنتظر `lxml` — سيستغرق 10-20 دقيقة للبناء من المصدر، وقد يفشل.**
+
+**نستخدم أداة `pkg` بدلاً من `pip` لـ dnsrecon — أسرع بكثير.**
+
+**اضغط `Ctrl+C` لإلغاء `pip`.**
+
+**ثم نفّذ:**
+
+```bash
+pkg install -y dnsrecon dnsenum
+```
+
+**هذا سيستخدم حزم Termux الجاهزة — سريع، بلا بناء.**
+
+---
+
+### بعد ذلك — تحقق
+
+```bash
+sslscan --version
+dnsrecon --version 2>&1 | head -3
+dnsenum --version 2>&1 | head -3
+```
+
+**أرسل المخرجات الثلاثة.**
+
+---
+
+### توقّع
+
+- **`sslscan`** — نجح بالفعل (2.2.3).
+- **`dnsrecon`** — سيُثبَّت من `pkg` (بلا lxml).
+- **`dnsenum`** — Perl، سريع.
+
+---
+
+**نفّذ:**
+```bash
+pkg install -y dnsrecon dnsenum
+```
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ pkg install -y sslscan
+Testing the available mirrors:
+[*] (1) https://linux.domainesia.com/applications/termux/termux-main: ok
+[*] (1) https://termux.niranjan.co/termux-main: ok
+[*] (1) https://mirror.bardia.tech/termux/termux-main: bad
+[*] (1) https://mirrors.saswata.cc/termux/termux-main: bad
+[*] (1) https://mirrors.ravidwivedi.in/termux/termux-main: ok
+[*] (1) https://mirror.textcord.xyz/termux/termux-main: ok
+[*] (1) https://mirrors.krnk.org/apt/termux/termux-main: ok
+[*] (1) https://mirror.rinarin.dev/termux/termux-main: ok
+[*] (1) https://mirror.jeonnam.school/termux/termux-main: ok
+[*] (1) https://mirrors.nguyenhoang.cloud/termux/termux-main: ok
+[*] (1) https://mirrors.cbrx.io/apt/termux/termux-main: ok
+[*] (1) https://tmx.xvx.my.id/apt/termux-main: ok
+[*] (1) https://mirror.albony.in/termux/termux-main: ok
+[*] (1) https://mirror.twds.com.tw/termux/termux-main: ok
+[*] (1) https://mirror.nevacloud.com/applications/termux/termux-main: ok
+[*] (1) https://mirror.meowsmp.net/termux/termux-main: bad
+[*] (1) https://mirror.freedif.org/termux/termux-main: ok
+[*] (1) https://mirrors.in.sahilister.net/termux/termux-main/: ok
+Picking mirror: (1) /data/data/com.termux/files/usr/etc/termux/chosen_mirrors/termux.niranjan.co
+Get:1 https://termux.niranjan.co/termux-main stable InRelease [14.0 kB]
+Get:2 https://termux.niranjan.co/termux-root root InRelease [14.2 kB]
+Get:3 https://termux.niranjan.co/termux-main stable/main aarch64 Packages [585 kB]
+Get:4 https://termux.niranjan.co/termux-root root/stable aarch64 Packages [21.4 kB]
+Fetched 635 kB in 4s (164 kB/s)
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+15 packages can be upgraded. Run 'apt list --upgradable' to see them.
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following NEW packages will be installed:
+  sslscan
+0 upgraded, 1 newly installed, 0 to remove and 15 not upgraded.
+Need to get 41.6 kB of archives.
+After this operation, 197 kB of additional disk space will be used.
+Get:1 https://termux.niranjan.co/termux-main stable/main aarch64 sslscan aarch64 2.2.3 [41.6 kB]
+Fetched 41.6 kB in 0s (92.6 kB/s)
+Selecting previously unselected package sslscan.
+(Reading database ... 49807 files and directories currently installed.)
+Preparing to unpack .../sslscan_2.2.3_aarch64.deb ...
+Unpacking sslscan (2.2.3) ...
+Setting up sslscan (2.2.3) ...
+~/MyFirstApp $ pip install dnsrecon
+Collecting dnsrecon
+  Downloading dnsrecon-0.10.1.tar.gz (635 kB)
+     ━━━━━━━━━━━━━━━━ 635.0/635.0 kB 2.2 MB/s  0:00:00
+  Installing build dependencies ... done
+  Getting requirements to build wheel ... done
+  Preparing metadata (pyproject.toml) ... done
+Collecting lxml (from dnsrecon)
+  Using cached lxml-6.1.3.tar.gz (4.2 MB)
+  Installing build dependencies ... done
+  Getting requirements to build wheel ... done
+  Preparing metadata (pyproject.toml) ... done
+Collecting netaddr (from dnsrecon)
+  Using cached netaddr-1.3.0-py3-none-any.whl.metadata (5.0 kB)
+Collecting dnspython (from dnsrecon)
+  Using cached dnspython-2.8.0-py3-none-any.whl.metadata (5.7 kB)
+Using cached dnspython-2.8.0-py3-none-any.whl (331 kB)
+Downloading netaddr-1.3.0-py3-none-any.whl (2.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━ 2.3/2.3 MB 1.8 MB/s  0:00:01
+Building wheels for collected packages: dnsrecon, lxml
+  Building wheel for dnsrecon (pyproject.toml) ... done
+  Created wheel for dnsrecon: filename=dnsrecon-0.10.1-py3-none-any.whl size=642472 sha256=c34d4c605452f0546eff948ee590181806739049455a2d8540b57b41b15510f2
+  Stored in directory: /data/data/com.termux/files/home/.cache/pip/wheels/94/9d/5e/5fefd00f3bf6a1dfca3c33eb98e00532c2ea8d32f4a6b0529b
+  Building wheel for lxml (pyproject.toml) ... |
+لماذا هو متوقف كم يستغرق
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**السبب: `lxml` يُبنى من المصدر (C extension).**
+
+**المدة:** 5-15 دقيقة على هاتف. هذا **طبيعي** — `lxml` يحتاج ترجمة ملفات C كثيرة.
+
+**لا تقاطع العملية.** اتركها تعمل. الشاشة مضاءة، لا تفتح تطبيقات أخرى.
+
+---
+
+### لماذا بطيء؟
+
+`lxml` مكتبة Python مبنية على `libxml2` و `libxslt` (C libraries). Termux لا يوفر wheel جاهز لـ `lxml 6.1.3` على Python 3.14 + Android ARM64. pip يبنيها من المصدر — يعتمد على `clang` و`make`، وعملية البناء تستغرق وقتاً.
+
+**الشاشة التي تراها:** `Building wheel for lxml` مع مؤشر متحرك (`|`، `/`، `-`، `\`). هذه علامة أن البناء يعمل.
+
+---
+
+### المؤشرات
+
+**① مؤشر يتحرك:** البناء يعمل. **انتظر.**
+
+**② توقف المؤشر تماماً لأكثر من 5 دقائق:** قد يكون عالقاً. لكن `lxml` معروف بأوقات بناء طويلة.
+
+**③ خطأ (Error):** سيظهر في الشاشة. أرسله.
+
+---
+
+### بدائل إن فشل
+
+**إن فشل بناء `lxml` بعد 15-20 دقيقة:**
+
+**البديل 1:** تثبيت `dnsrecon` بدون `lxml`:
+```bash
+pip install dnsrecon --no-deps
+pip install dnspython netaddr
+```
+
+**البديل 2:** استخدام `dnsenum` (Perl) بدلاً من `dnsrecon`:
+```bash
+pkg install -y dnsenum
+```
+
+**البديل 3:** استخدام `dig` مع `+short` — لا يعمل من subprocess.
+
+---
+
+**توقّف. انتظر.**
+
+**بعد انتهاء `pip install dnsrecon`، أرسل:**
+
+```
+dnsrecon --version 2>&1 | head -3
+```
+
+**إن انتهى بنجاح:** نُضيف `dnsrecon` إلى `tools.json`.
+**إن فشل:** نتجاوزه وننتقل لـ `dnsenum`.
+
+**لا تقاطع العملية الآن.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ pip install dnsrecon
+Collecting dnsrecon
+  Downloading dnsrecon-0.10.1.tar.gz (635 kB)
+     ━━━━━━━━━━━━━━━━ 635.0/635.0 kB 2.2 MB/s  0:00:00
+  Installing build dependencies ... done
+  Getting requirements to build wheel ... done
+  Preparing metadata (pyproject.toml) ... done
+Collecting lxml (from dnsrecon)
+  Using cached lxml-6.1.3.tar.gz (4.2 MB)
+  Installing build dependencies ... done
+  Getting requirements to build wheel ... done
+  Preparing metadata (pyproject.toml) ... done
+Collecting netaddr (from dnsrecon)
+  Using cached netaddr-1.3.0-py3-none-any.whl.metadata (5.0 kB)
+Collecting dnspython (from dnsrecon)
+  Using cached dnspython-2.8.0-py3-none-any.whl.metadata (5.7 kB)
+Using cached dnspython-2.8.0-py3-none-any.whl (331 kB)
+Downloading netaddr-1.3.0-py3-none-any.whl (2.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━ 2.3/2.3 MB 1.8 MB/s  0:00:01
+Building wheels for collected packages: dnsrecon, lxml
+  Building wheel for dnsrecon (pyproject.toml) ... done
+  Created wheel for dnsrecon: filename=dnsrecon-0.10.1-py3-none-any.whl size=642472 sha256=c34d4c605452f0546eff948ee590181806739049455a2d8540b57b41b15510f2
+  Stored in directory: /data/data/com.termux/files/home/.cache/pip/wheels/94/9d/5e/5fefd00f3bf6a1dfca3c33eb98e00532c2ea8d32f4a6b0529b
+  Building wheel for lxml (pyproject.toml) ... done
+  Created wheel for lxml: filename=lxml-6.1.3-cp314-cp314-android_24_arm64_v8a.whl size=5958102 sha256=5efaaedbb14c76fc1539b565ce5dd602cf5a79e68e43e6c4e1aa49ade984d4ea
+  Stored in directory: /data/data/com.termux/files/home/.cache/pip/wheels/83/bc/c3/f561418d46d1bb351e9bec0b4d842bdebdee6ecf72cd140b6f
+Successfully built dnsrecon lxml
+Installing collected packages: netaddr, lxml, dnspython, dnsrecon
+Successfully installed dnspython-2.8.0 dnsrecon-0.10.1 lxml-6.1.3 netaddr-1.3.0
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**dnsrecon نجح. `lxml` بُني في ~10 دقائق — طبيعي.**
+
+---
+
+### الخطوة 1 — اختبر dnsrecon يدوياً
+
+```bash
+dnsrecon -d nmap.org 2>&1 | head -40
+```
+
+**المتوقع:**
+```
+[*] Performing General Enumeration of Domain: nmap.org
+[-] DNSSEC is not configured for nmap.org
+[*] 	 SOA ns1.linode.com 173.255.199.6
+[*] 	 NS ns1.linode.com ...
+[*] 	 MX ...
+[*] 	 A nmap.org 50.116.1.184
+[*] Enumerating SRV Records
+...
+```
+
+**أرسل المخرجات.** هذا يُخبرنا أن dnsrecon يعمل مباشرة.
+
+---
+
+### الخطوة 2 — ثبّت sslscan تحقق
+
+```bash
+sslscan --version
+```
+
+**المتوقع:** `sslscan version 2.2.3`.
+
+**اختبره يدوياً:**
+
+```bash
+sslscan --no-colour nmap.org:443 2>&1 | head -30
+```
+
+**المتوقع:** يعرض الشهادة، إصدارات TLS المدعومة، الـ ciphers.
+
+---
+
+### الخطوة 3 — ثبّت dnsenum
+
+```bash
+pkg install -y dnsenum
+dnsenum --help 2>&1 | head -5
+```
+
+**المتوقع:** `dnsenum` مثبّت. أو خطأ "not found" إن لم تكن الحزمة متوفرة.
+
+---
+
+### الخطوة 4 — بعد التحقق، نُضيف الأدوات إلى `tools.json`
+
+**بعد تأكيد أن الأدوات تعمل، نُضيفها:**
+
+```json
+{"name": "dnsrecon", "pattern": "dnsrecon -d {target}", "hint": "دومين", "needs_target": true},
+{"name": "sslscan", "pattern": "sslscan --no-colour {target}", "hint": "دومين أو IP (المنفذ 443 افتراضياً)", "needs_target": true},
+{"name": "dnsenum", "pattern": "dnsenum {target}", "hint": "دومين", "needs_target": true}
+```
+
+**لكن قبل الإضافة، نتأكد أن كل واحدة تعمل.**
+
+---
+
+**توقّف. نفّذ الخطوات 1، 2، 3. أرسل:**
+
+```
+dnsrecon -d nmap.org 2>&1 | head -20
+sslscan --version
+sslscan --no-colour nmap.org:443 2>&1 | head -15
+dnsenum --help 2>&1 | head -5
+```
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ dnsrecon -d nmap.org 2>&1 | head -40
+Traceback (most recent call last):
+  File "/data/data/com.termux/files/usr/bin/dnsrecon", line 3, in <module>
+    from dnsrecon.__main__ import main
+  File "/data/data/com.termux/files/usr/lib/python3.14/site-packages/dnsrecon/__main__.py", line 64, in <module>
+    from dnsrecon.lib.bingenum import *
+  File "/data/data/com.termux/files/usr/lib/python3.14/site-packages/dnsrecon/lib/bingenum.py", line 22, in <module>
+    url_opener = urllib.request.FancyURLopener
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'urllib.request' has no attribute 'FancyURLopener'
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**التشخيص: `dnsrecon 0.10.1` يستخدم `urllib.request.FancyURLopener` — وهي دالة أُزيلت من Python 3.14.**
+
+**السبب:** `FancyURLopener` كانت deprecated في Python 3.9، ثم أُزيلت نهائياً في Python 3.14. dnsrecon لم يُحدَّث بعد.
+
+**التفاصيل:** `dnsrecon 0.10.1` صدر في 2023. آخر إصدار يستخدم Python 3.12 كحد أقصى. على Python 3.14، لا يعمل.
+
+---
+
+### الحل
+
+**الخيار 1 — تجاوز المشكلة بتعديل الملف:**
+
+نُعدّل `bingenum.py` ليتجاهل هذه الدالة.
+
+```bash
+sed -i 's|url_opener = urllib.request.FancyURLopener|# patched: url_opener = None|' /data/data/com.termux/files/usr/lib/python3.14/site-packages/dnsrecon/lib/bingenum.py
+```
+
+**لكن** — قد يفشل لاحقاً عند استخدام `url_opener` في الكود. الحل الأنظف:
+
+```bash
+cat > /tmp/patch_dnsrecon.py << 'PYEOF'
+import re
+path = "/data/data/com.termux/files/usr/lib/python3.14/site-packages/dnsrecon/lib/bingenum.py"
+with open(path) as f:
+    content = f.read()
+
+# استبدل السطر المشكل
+content = content.replace(
+    "url_opener = urllib.request.FancyURLopener",
+    "url_opener = urllib.request.build_opener()"
+)
+with open(path, "w") as f:
+    f.write(content)
+print("patched")
+PYEOF
+python3 /tmp/patch_dnsrecon.py
+```
+
+**ثم اختبر:**
+
+```bash
+dnsrecon -d nmap.org 2>&1 | head -20
+```
+
+**إن نجح:** dnsrecon يعمل. **نُضيفه إلى tools.json.**
+**إن فشل:** أخبرني بالخطأ الجديد.
+
+---
+
+### البديل — تجاهل dnsrecon
+
+**dnsrecon مُعقّد لأنه يعتمد على دالة قديمة.** البديل:
+
+**① `dnsenum`** — Perl، يعمل مباشرة (إن كان متوفراً في Termux).
+
+**② `dig` عبر Python socket** — يمكن كتابة دالة DNS lookup في `daemon.py` (لكن هذا مشروع إضافي).
+
+**③ `nslookup`** — لا يعمل عبر subprocess.
+
+**الأسلم: نتخلى عن dnsrecon.** كثير من الأدوات القديمة مكتوبة لـ Python 3.8-3.12، وتفشل على 3.14.
+
+---
+
+### القرار
+
+**اختر:**
+
+**أ) نُجرّب التصحيح (patch).** إن نجح، نُضيف dnsrecon. إن فشل، نتخلى عنه.
+
+**ب) نتخلى عن dnsrecon نهائياً.** ننتقل إلى `sslscan` (يعمل) و`dnsenum` (إن توفر).
+
+**اقتراحي: (أ) — التصحيح قد ينجح في 30 ثانية. إن فشل، نتخلى عنه.**
+
+---
+
+**توقّف. نفّذ التصحيح. أرسل:**
+
+```
+python3 /tmp/patch_dnsrecon.py
+dnsrecon -d nmap.org 2>&1 | head -20
+```
+
+**إن نجح: نُضيف dnsrecon.**
+**إن فشل: نتخلى عنه وننتقل لـ sslscan و dnsenum.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+
+~/MyFirstApp $ sed -i 's|url_opener = urllib.request.FancyURLopener|# patched: url_opener = None|' /data/data/com.termux/files/usr/lib/python3.14/site-packages/dnsrecon/lib/bingenum.py
+~/MyFirstApp $ cat > /tmp/patch_dnsrecon.py << 'PYEOF'
+import re
+path = "/data/data/com.termux/files/usr/lib/python3.14/site-packages/dnsrecon/lib/bingenum.py"
+with open(path) as f:
+    content = f.read()
+
+# استبدل السطر المشكل
+content = content.replace(
+    "url_opener = urllib.request.FancyURLopener",
+    "url_opener = urllib.request.build_opener()"
+)
+with open(path, "w") as f:
+    f.write(content)
+print("patched")
+PYEOF
+python3 /tmp/patch_dnsrecon.py
+bash: /tmp/patch_dnsrecon.py: No such file or directory
+python3: can't open file '/tmp/patch_dnsrecon.py': [Errno 2] No such file or directory
+~/MyFirstApp $ dnsrecon -d nmap.org 2>&1 | head -20
+Traceback (most recent call last):
+  File "/data/data/com.termux/files/usr/bin/dnsrecon", line 3, in <module>
+    from dnsrecon.__main__ import main
+  File "/data/data/com.termux/files/usr/lib/python3.14/site-packages/dnsrecon/__main__.py", line 64, in <module>
+    from dnsrecon.lib.bingenum import *
+  File "/data/data/com.termux/files/usr/lib/python3.14/site-packages/dnsrecon/lib/bingenum.py", line 25, in <module>
+    class AppURLopener(url_opener):
+                       ^^^^^^^^^^
+NameError: name 'url_opener' is not defined
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**السبب: `/tmp/` غير موجود في Termux.** السكربت لم يُنشأ. ثم `dnsrecon` الآن يفشل بخطأ مختلف (لأن السطر الأول عُدّل لكن `url_opener` ما زال مستخدماً).
+
+**الحل: استبدل السطر بسطر صالح، لا بتعليق.**
+
+---
+
+### الأمر — استبدل الملف بالكامل لتصحيحه
+
+```bash
+python3 << 'PYEOF'
+path = "/data/data/com.termux/files/usr/lib/python3.14/site-packages/dnsrecon/lib/bingenum.py"
+
+with open(path) as f:
+    content = f.read()
+
+# استبدل السطرين المشكلين
+content = content.replace(
+    "url_opener = urllib.request.FancyURLopener",
+    "url_opener = urllib.request.build_opener()"
+)
+content = content.replace(
+    "# patched: url_opener = None",
+    "url_opener = urllib.request.build_opener()"
+)
+
+with open(path, "w") as f:
+    f.write(content)
+
+print("patched OK")
+
+# تحقق
+with open(path) as f:
+    for i, line in enumerate(f, 1):
+        if "url_opener" in line and i < 30:
+            print(f"{i}: {line.rstrip()}")
+PYEOF
+```
+
+**ثم اختبر:**
+
+```bash
+dnsrecon -d nmap.org 2>&1 | head -25
+```
+
+---
+
+### إن فشل مرة أخرى
+
+**الأسلم — إزالة dnsrecon نهائياً:**
+
+```bash
+pip uninstall dnsrecon -y
+```
+
+**لأن dnsrecon يعتمد على كود قديم لا يعمل على Python 3.14.** أي تعديل قد يكشف مشاكل جديدة.
+
+**البديل:** `dnsenum` (Perl) — لا يعتمد على Python، أكثر استقراراً على Termux.
+
+---
+
+**توقّف. نفّذ التصحيح. أرسل:**
+
+```
+dnsrecon -d nmap.org 2>&1 | head -20
+```
+
+**إن نجح: نُضيفه.**
+**إن فشل: نتخلى عنه وننتقل إلى dnsenum.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ dnsrecon -d nmap.org 2>&1 | head -20
+Traceback (most recent call last):
+  File "/data/data/com.termux/files/usr/bin/dnsrecon", line 3, in <module>
+    from dnsrecon.__main__ import main
+  File "/data/data/com.termux/files/usr/lib/python3.14/site-packages/dnsrecon/__main__.py", line 64, in <module>
+    from dnsrecon.lib.bingenum import *
+  File "/data/data/com.termux/files/usr/lib/python3.14/site-packages/dnsrecon/lib/bingenum.py", line 25, in <module>
+    class AppURLopener(url_opener):
+        version = "Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)"
+TypeError: OpenerDirector.__init__() takes 1 positional argument but 4 were given
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**التشخيص النهائي: `dnsrecon 0.10.1` غير متوافق مع Python 3.14. لن يعمل — مهما عدّلنا.**
+
+السبب: `FancyURLopener` أُزيلت من Python 3.14. أي بديل سنضعه سينكسر في مكان آخر. **هذا ليس إصلاحاً، بل مطاردة لا تنتهي.**
+
+**القرار: نتخلى عن dnsrecon نهائياً.**
+
+---
+
+### الأوامر — إزالة dnsrecon والانتقال
+
+```bash
+pip uninstall dnsrecon -y
+```
+
+**ثم نتحقق من الأدوات الأخرى:**
+
+**① sslscan:**
+
+```bash
+sslscan --version
+```
+
+**يجب أن يظهر:** `sslscan version 2.2.3`.
+
+**② dnsenum:**
+
+```bash
+pkg install -y dnsenum 2>&1 | tail -5
+which dnsenum
+```
+
+**③ البديل لـ dnsrecon — أداة `dnspython` مباشرة:**
+
+`dnspython` مثبّت (بفضل dnsrecon). يمكن استخدامه عبر سطر Python مباشر:
+
+```bash
+python3 -c "import dns.resolver; a = dns.resolver.resolve('nmap.org', 'A'); print('A:', [r.to_text() for r in a])"
+```
+
+**النتيجة المتوقعة:**
+```
+A: ['50.116.1.184']
+```
+
+**هذا يمكن أن يكون بديلاً لـ `dnsrecon` — أداة Python بسيطة تشغل استعلامات DNS.**
+
+---
+
+### اختبار sslscan
+
+**بعد التحقق من الإصدار:**
+
+```bash
+sslscan --no-colour nmap.org:443 2>&1 | head -25
+```
+
+**المتوقع:**
+```
+Version: 2.2.3
+Connected to 50.116.1.184
+
+Testing SSL server nmap.org on port 443 using SNI name nmap.org
+
+  SSL/TLS Protocols:
+SSLv2     disabled
+SSLv3     disabled
+TLSv1.0   disabled
+TLSv1.1   disabled
+TLSv1.2   enabled
+TLSv1.3   enabled
+
+  TLS Fallback SCSV:
+Server supports TLS Fallback SCSV
+
+  TLS renegotiation:
+Session renegotiation not supported
+
+  TLS Compression:
+Compression disabled
+
+  Heartbleed:
+TLSv1.3 not vulnerable to heartbleed
+...
+```
+
+**أرسل المخرجات.**
+
+---
+
+**توقّف. نفّذ:**
+
+```
+pip uninstall dnsrecon -y
+sslscan --version
+sslscan --no-colour nmap.org:443 2>&1 | head -25
+which dnsenum
+```
+
+**أرسل المخرجات.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ python3 -c "import dns.resolver; a = dns.resolver.resolve('nmap.org', 'A'); print('A:', [r.to_text() for r in a])"
+Traceback (most recent call last):
+  File "/data/data/com.termux/files/usr/lib/python3.14/site-packages/dns/resolver.py", line 1001, in read_resolv_conf
+    cm: contextlib.AbstractContextManager = open(f, encoding="utf-8")
+                                            ~~~~^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/etc/resolv.conf'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import dns.resolver; a = dns.resolver.resolve('nmap.org', 'A'); print('A:', [r.to_text() for r in a])
+                             ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/data/data/com.termux/files/usr/lib/python3.14/site-packages/dns/resolver.py", line 1572, in resolve
+    return get_default_resolver().resolve(
+           ~~~~~~~~~~~~~~~~~~~~^^
+  File "/data/data/com.termux/files/usr/lib/python3.14/site-packages/dns/resolver.py", line 1536, in get_default_resolver
+    reset_default_resolver()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/data/data/com.termux/files/usr/lib/python3.14/site-packages/dns/resolver.py", line 1549, in reset_default_resolver
+    default_resolver = Resolver()
+  File "/data/data/com.termux/files/usr/lib/python3.14/site-packages/dns/resolver.py", line 953, in __init__
+    self.read_resolv_conf(filename)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/data/data/com.termux/files/usr/lib/python3.14/site-packages/dns/resolver.py", line 1004, in read_resolv_conf
+    raise NoResolverConfiguration(f"cannot open {f}")
+dns.resolver.NoResolverConfiguration: cannot open /etc/resolv.conf
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**التشخيص قاطع: `/etc/resolv.conf` غير موجود. كل الأدوات التي تحتاج DNS (dnspython, dig, host, dnsrecon) تفشل.**
+
+هذا **نفس السبب** الذي جعل `dig` و `host` يفشلان في `subprocess`.
+
+---
+
+### الحل — مرّر خادم DNS مباشراً
+
+**dnspython يقبل خادم DNS مباشراً:**
+
+```bash
+python3 -c "
+import dns.resolver
+r = dns.resolver.Resolver(configure=False)
+r.nameservers = ['8.8.8.8', '1.1.1.1']
+a = r.resolve('nmap.org', 'A')
+print('A:', [x.to_text() for x in a])
+"
+```
+
+**المتوقع:**
+```
+A: ['50.116.1.184']
+```
+
+**إن نجح:** يمكنك استخدام dnspython مع `nameservers` صريحة. **لا يحتاج `/etc/resolv.conf`.**
+
+---
+
+### الأداة القوية — سكربت `dnsquery.py`
+
+**بدلاً من dnsrecon، نكتب سكربت Python صغير يستخدم dnspython مع nameservers ثابتة:**
+
+```bash
+cat > ~/z3r0/dnsquery.py << 'PYEOF'
+#!/usr/bin/env python3
+import sys
+import dns.resolver
+
+def query_all(domain):
+    r = dns.resolver.Resolver(configure=False)
+    r.nameservers = ['8.8.8.8', '1.1.1.1']
+    r.timeout = 5
+    r.lifetime = 10
+
+    print(f"; DNS Query for {domain}")
+    print(f"; Nameservers: {r.nameservers}")
+    print("")
+
+    for rtype in ['A', 'AAAA', 'MX', 'NS', 'TXT', 'SOA', 'CNAME']:
+        try:
+            answers = r.resolve(domain, rtype)
+            print(f"{rtype}:")
+            for a in answers:
+                print(f"  {a.to_text()}")
+        except dns.resolver.NoAnswer:
+            pass
+        except dns.resolver.NXDOMAIN:
+            print(f"{rtype}: NXDOMAIN")
+            return
+        except dns.exception.Timeout:
+            print(f"{rtype}: TIMEOUT")
+        except Exception as e:
+            print(f"{rtype}: ERR ({e})")
+    print("")
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("usage: dnsquery.py <domain>")
+        sys.exit(1)
+    query_all(sys.argv[1])
+PYEOF
+chmod +x ~/z3r0/dnsquery.py
+python3 ~/z3r0/dnsquery.py nmap.org
+```
+
+**المتوقع:**
+```
+; DNS Query for nmap.org
+; Nameservers: ['8.8.8.8', '1.1.1.1']
+
+A:
+  50.116.1.184
+AAAA:
+  2600:3c01:e000:3e6::6d4e:7061
+MX:
+  10 mail.nmap.org.
+NS:
+  ns1.linode.com.
+  ...
+TXT:
+  ...
+SOA:
+  ...
+```
+
+**هذا بديل كامل عن `dig` و `dnsrecon` و `nslookup`.** يعمل عبر subprocess لأننا نمرّر nameservers صريحة.
+
+---
+
+### التالي — sslscan
+
+**اختبره:**
+
+```bash
+sslscan --version
+sslscan --no-colour nmap.org:443 2>&1 | head -20
+```
+
+**أرسل المخرجات.**
+
+---
+
+**توقّف. نفّذ:**
+
+```
+python3 ~/z3r0/dnsquery.py nmap.org
+sslscan --version
+sslscan --no-colour nmap.org:443 2>&1 | head -20
+```
+
+**إن نجح dnsquery:** نُضيفه إلى `tools.json` كبديل لـ dig.
+**إن نجح sslscan:** نُضيفه كذلك.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ sslscan --version
+sslscan --no-colour nmap.org:443 2>&1 | head -20
+2.2.3
+OpenSSL 3.6.5 29 Sep 2026
+Version: 2.2.3
+OpenSSL 3.6.5 29 Sep 2026
+
+Connected to 50.116.1.184
+
+Testing SSL server nmap.org on port 443 using SNI name nmap.org
+
+  SSL/TLS Protocols:
+SSLv2     disabled
+SSLv3     disabled
+TLSv1.0   disabled
+TLSv1.1   enabled
+TLSv1.2   enabled
+TLSv1.3   enabled
+
+  TLS Fallback SCSV:
+Server supports TLS Fallback SCSV
+
+  TLS renegotiation:
+Session renegotiation not supported
+~/MyFirstApp $ python3 ~/z3r0/dnsquery.py nmap.org
+sslscan --version
+sslscan --no-colour nmap.org:443 2>&1 | head -20
+; DNS Query for nmap.org
+; Nameservers: ['8.8.8.8', '1.1.1.1']
+
+A:
+  50.116.1.184
+AAAA:
+  2600:3c01:e000:3e6::6d4e:7061
+MX:
+  5 ALT1.ASPMX.L.GOOGLE.COM.
+  5 ALT2.ASPMX.L.GOOGLE.COM.
+  10 ASPMX2.GOOGLEMAIL.COM.
+  1 ASPMX.L.GOOGLE.COM.
+  10 ASPMX3.GOOGLEMAIL.COM.
+NS:
+  ns2.linode.com.
+  ns1.linode.com.
+  ns4.linode.com.
+  ns3.linode.com.
+  ns5.linode.com.
+TXT:
+  "v=spf1 a mx ptr ip4:50.116.1.184 ip6:2600:3c01::f03c:91ff:fe98:ff4e ip6:2600:3c01:e000:3e6::6d4e:7061 include:_spf.google.com ~all"
+  "google-site-verification=SrtYpJGxZzMTcczZG44XtLVK-sEPit9bputDjWc0lF4"
+SOA:
+  ns1.linode.com. hostmaster.nmap.com. 2021000018 14400 14400 1209600 3600
+
+2.2.3
+OpenSSL 3.6.5 29 Sep 2026
+Version: 2.2.3
+OpenSSL 3.6.5 29 Sep 2026
+
+Connected to 50.116.1.184
+
+Testing SSL server nmap.org on port 443 using SNI name nmap.org
+
+  SSL/TLS Protocols:
+SSLv2     disabled
+SSLv3     disabled
+TLSv1.0   disabled
+TLSv1.1   enabled
+TLSv1.2   enabled
+TLSv1.3   enabled
+
+  TLS Fallback SCSV:
+Server supports TLS Fallback SCSV
+
+  TLS renegotiation:
+Session renegotiation not supported
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**كلاهما يعمل. `dnsquery` (بديل dig) و `sslscan` (فحص TLS).**
+
+**`dnsquery` أعاد:**
+- A: 50.116.1.184
+- AAAA: 2600:3c01:e000:3e6::6d4e:7061
+- MX: 5 سجلات Google
+- NS: 5 سيرفرات Linode
+- TXT: SPF + google-site-verification
+- SOA: ns1.linode.com
+
+**`sslscan` أعاد:**
+- TLSv1.1, TLSv1.2, TLSv1.3 مُفعّلة.
+- TLS Fallback SCSV مدعوم.
+- Renegotiation غير مدعوم (جيد).
+
+**هذا استطلاع كامل لـ nmap.org.**
+
+---
+
+### الخطوة — إضافة الأدوات إلى `tools.json`
+
+**الأدوات الجديدة:**
+1. **dnsquery** — استعلام DNS شامل (بديل dig).
+2. **sslscan** — فحص TLS/SSL.
+
+**الأمر:**
+
+```bash
+cat > /sdcard/Z3R0/tools.json << 'JSONEOF'
+[
+  {"name": "nmap", "pattern": "nmap -sV {target} {opts}", "hint": "IP أو دومين", "needs_target": true},
+  {"name": "whois", "pattern": "whois {target}", "hint": "دومين", "needs_target": true},
+  {"name": "dnsquery", "pattern": "python3 /data/data/com.termux/files/home/z3r0/dnsquery.py {target}", "hint": "دومين", "needs_target": true},
+  {"name": "ping", "pattern": "ping -c 4 {target}", "hint": "IP أو دومين", "needs_target": true},
+  {"name": "traceroute", "pattern": "traceroute -m 15 {target}", "hint": "IP أو دومين", "needs_target": true},
+  {"name": "curl-head", "pattern": "curl -sI --max-time 15 {target}", "hint": "URL كامل", "needs_target": true},
+  {"name": "netcat", "pattern": "nc -zv -w 5 {target} 80", "hint": "IP", "needs_target": true},
+  {"name": "sslscan", "pattern": "sslscan --no-colour {target}:443", "hint": "دومين", "needs_target": true},
+  {"name": "hydra", "pattern": "hydra -l {opts} -P /sdcard/Z3R0/wordlist.txt -t 4 -f ssh://{target}", "hint": "هدف + مستخدم في الخيارات", "needs_target": true},
+  {"name": "sqlmap", "pattern": "sqlmap -u \"{target}\" --batch --level=1 --risk=1 --timeout=30 --threads=1 --disable-coloring {opts}", "hint": "URL كامل", "needs_target": true},
+  {"name": "nikto", "pattern": "cd /data/data/com.termux/files/home/nikto && perl program/nikto.pl -h {target} -maxtime 120s -nointeractive", "hint": "دومين أو URL", "needs_target": true}
+]
+JSONEOF
+grep -c "name" /sdcard/Z3R0/tools.json
+```
+
+**النتيجة:** `11` أداة.
+
+---
+
+### الاختبار
+
+**من التطبيق:**
+1. اضغط **↻**.
+2. القائمة ستعرض **11 أداة**.
+3. اختر **dnsquery**.
+4. الهدف: `nmap.org`.
+5. تشغيل.
+6. النتيجة: كل سجلات DNS.
+
+**ثم اختر sslscan:**
+- الهدف: `nmap.org`.
+- تشغيل.
+- النتيجة: تقرير TLS كامل.
+
+---
+
+**توقّف. نفّذ. أرسل:**
+
+```
+grep -c "name" /sdcard/Z3R0/tools.json
+cat /sdcard/Z3R0/tools.json | grep -E "dnsquery|sslscan"
+```
+
+**ثم اختبر من التطبيق. أخبرني:**
+- هل تظهر 11 أداة؟
+- هل dnsquery يعمل؟
+- هل sslscan يعمل؟
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ grep -c "name" /sdcard/Z3R0/tools.json
+cat /sdcard/Z3R0/tools.json | grep -E "dnsquery|sslscan"
+11
+  {"name": "dnsquery", "pattern": "python3 /data/data/com.termux/files/home/z3r0/dnsquery.py {target}", "hint": "دومين", "needs_target": true},
+  {"name": "sslscan", "pattern": "sslscan --no-colour {target}:443", "hint": "دومين", "needs_target": true},
+~/MyFirstApp $
+
+
+
+
+> python3 /data/data/com.termux/files/home/z3r0/dnsquery.py nmap.org
+EXIT=0
+; DNS Query for nmap.org
+; Nameservers: ['8.8.8.8', '1.1.1.1']
+
+A:
+  50.116.1.184
+AAAA:
+  2600:3c01:e000:3e6::6d4e:7061
+MX:
+  1 ASPMX.L.GOOGLE.COM.
+  5 ALT2.ASPMX.L.GOOGLE.COM.
+  10 ASPMX2.GOOGLEMAIL.COM.
+  5 ALT1.ASPMX.L.GOOGLE.COM.
+  10 ASPMX3.GOOGLEMAIL.COM.
+NS:
+  ns1.linode.com.
+  ns2.linode.com.
+  ns4.linode.com.
+  ns3.linode.com.
+  ns5.linode.com.
+TXT:
+  "v=spf1 a mx ptr ip4:50.116.1.184 ip6:2600:3c01::f03c:91ff:fe98:ff4e ip6:2600:3c01:e000:3e6::6d4e:7061 include:_spf.google.com ~all"
+  "google-site-verification=SrtYpJGxZzMTcczZG44XtLVK-sEPit9bputDjWc0lF4"
+SOA:
+  ns1.linode.com. hostmaster.nmap.com. 2021000018 14400 14400 1209600 3600
+
+── انتهى في 4s ──
+
+> sslscan --no-colour nmap.org:443
+EXIT=0
+Version: 2.2.3
+OpenSSL 3.6.5 29 Sep 2026
+
+Connected to 50.116.1.184
+
+Testing SSL server nmap.org on port 443 using SNI name nmap.org
+
+  SSL/TLS Protocols:
+SSLv2     disabled
+SSLv3     disabled
+TLSv1.0   disabled
+TLSv1.1   enabled
+TLSv1.2   enabled
+TLSv1.3   enabled
+
+  TLS Fallback SCSV:
+Server supports TLS Fallback SCSV
+
+  TLS renegotiation:
+Session renegotiation not supported
+
+  TLS Compression:
+Compression disabled
+
+  Heartbleed:
+TLSv1.3 not vulnerable to heartbleed
+TLSv1.2 not vulnerable to heartbleed
+TLSv1.1 not vulnerable to heartbleed
+
+  Supported Server Cipher(s):
+Preferred TLSv1.3  128 bits  TLS_AES_128_GCM_SHA256        Curve 25519 DHE 253
+Accepted  TLSv1.3  256 bits  TLS_CHACHA20_POLY1305_SHA256  Curve 25519 DHE 253
+Accepted  TLSv1.3  256 bits  TLS_AES_256_GCM_SHA384        Curve 25519 DHE 253
+Preferred TLSv1.2  128 bits  ECDHE-RSA-AES128-GCM-SHA256   Curve 25519 DHE 253
+Accepted  TLSv1.2  256 bits  ECDHE-RSA-CHACHA20-POLY1305   Curve 25519 DHE 253
+Accepted  TLSv1.2  256 bits  ECDHE-RSA-AES256-GCM-SHA384   Curve 25519 DHE 253
+Accepted  TLSv1.2  128 bits  ECDHE-RSA-AES128-SHA256       Curve 25519 DHE 253
+Accepted  TLSv1.2  256 bits  ECDHE-RSA-AES256-SHA384       Curve 25519 DHE 253
+Accepted  TLSv1.2  128 bits  AES128-GCM-SHA256            
+Accepted  TLSv1.2  256 bits  AES256-GCM-SHA384            
+Accepted  TLSv1.2  128 bits  AES128-SHA256                
+Accepted  TLSv1.2  256 bits  AES256-SHA                   
+Preferred TLSv1.1  256 bits  AES256-SHA                   
+
+  Server Key Exchange Group(s):
+TLSv1.3  128 bits  secp256r1 (NIST P-256)
+TLSv1.3  192 bits  secp384r1 (NIST P-384)
+TLSv1.3  260 bits  secp521r1 (NIST P-521)
+TLSv1.3  128 bits  x25519
+TLSv1.3  224 bits  x448
+TLSv1.2  128 bits  secp256r1 (NIST P-256)
+TLSv1.2  192 bits  secp384r1 (NIST P-384)
+TLSv1.2  260 bits  secp521r1 (NIST P-521)
+TLSv1.2  128 bits  x25519
+TLSv1.2  224 bits  x448
+
+  SSL Certificate:
+Signature Algorithm: sha256WithRSAEncryption
+RSA Key Strength:    2048
+
+Subject:  insecure.com
+Altnames: DNS:insecure.com, DNS:insecure.org, DNS:issues.nmap.com, DNS:issues.nmap.org, DNS:issues.npcap.com, DNS:issues.npcap.org, DNS:nmap.com, DNS:nmap.net, DNS:nmap.org, DNS:npcap.com, DNS:npcap.org, DNS:seclists.com, DNS:seclists.net, DNS:seclists.org, DNS:sectools.com, DNS:sectools.net, DNS:sectools.org, DNS:secwiki.com, DNS:secwiki.net, DNS:secwiki.org, DNS:svn.nmap.org, DNS:www.nmap.org
+Issuer:   YR1
+
+Not valid before: Jul 20 09:07:57 2026 GMT
+Not valid after:  Oct 18 09:07:56 2026 GMT
+── انتهى في 59s ──
+
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**11 أداة. كلها تعمل. `dnsquery` و `sslscan` انضما للترسانة.**
+
+**النتائج:**
+- **dnsquery**: 6 سجلات (A, AAAA, MX, NS, TXT, SOA) في 4 ثوان.
+- **sslscan**: تقرير TLS كامل — 4 بروتوكولات، 13 cipher، 10 key exchange groups، شهادة SSL كاملة.
+
+**ملاحظة مهمة من sslscan:** الخادم يدعم **TLSv1.1** — وهذا **ضعف أمني** (TLSv1.0 و TLSv1.1 مهمّشان). هذه ثغرة حقيقية في nmap.org.
+
+---
+
+### الترسانة الحالية
+
+| الأداة | الوظيفة | الوقت |
+|---|---|---|
+| nmap | فحص البورتات والخدمات | 45-97s |
+| whois | معلومات النطاق | 2-5s |
+| dnsquery | استعلام DNS شامل | 4s |
+| ping | اختبار الاتصال | 3-5s |
+| traceroute | مسار الحزم | 10-30s |
+| curl-head | ترويسات HTTP | 2-15s |
+| netcat | اتصال TCP | 1-5s |
+| sslscan | فحص TLS/SSL | 20-60s |
+| hydra | كسر كلمات المرور | 16-60s |
+| sqlmap | حقن SQL | 30-91s |
+| nikto | ثغرات الويب | 120-150s |
+
+**11 أداة. تغطية شاملة:**
+- **شبكة:** nmap, ping, traceroute, netcat
+- **نطاق:** whois, dnsquery
+- **ويب:** curl-head, nikto
+- **أمان TLS:** sslscan
+- **اختراق:** hydra, sqlmap
+
+---
+
+### ما المتبقي؟
+
+**⑨ — أدوات إضافية محتملة:**
+
+| الأداة | الوظيفة | ملاحظة |
+|---|---|---|
+| **dnsenum** | استطلاع DNS (Perl) | قد يعمل، لكنه مكرر مع dnsquery |
+| **whatweb** | بصمة تقنيات الموقع | يحتاج Ruby — قد يفشل |
+| **wpscan** | فحص WordPress | يحتاج Ruby — قد يفشل |
+| **gobuster** | كشف مسارات مخفية | يحتاج Go |
+| **ffuf** | fuzzing سريع | يحتاج Go |
+| **nuclei** | فحص ثغرات آلي | يحتاج Go |
+| **subfinder** | نطاقات فرعية | يحتاج Go |
+
+**الأنسب لإضافته:** `gobuster` — أداة كشف مسارات مهمة جداً.
+
+**⑫ — لوحة تحكم المطوّر:**
+- PIN سري.
+- إحصائيات.
+- إعدادات مخفية.
+
+**تحسينات صغيرة:**
+- نسخ/مشاركة النتائج مباشرة من الشاشة الرئيسية.
+- ترقيم الأسطر.
+- بحث في السجل.
+
+---
+
+### اقتراحي
+
+**انتقل إلى ⑫ — لوحة تحكم المطوّر.**
+
+السبب: الترسانة مكتملة. الأنسب الآن إضافة:
+- **PIN سري** لحماية التطبيق.
+- **إعدادات مخفية** (مسار tools.json، مسار history، عدد الملفات القصوى).
+- **إحصائيات** (عدد الفحوصات، آخر فحص، الأدوات الأكثر استخداماً).
+- **فحص صحة النظام** (هل daemon يعمل؟ هل الأدوات مثبتة؟).
+
+**هل نبدأ في ⑫؟**
+
+**أم تريد:**
+- **أ) ⑨** — إضافة `gobuster` (يحتاج Go).
+- **ب) ⑫** — لوحة المطوّر.
+- **ج) تحسينات صغيرة** — نسخ/مشاركة/بحث.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+إبدء بالأنسب
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**القرار: ⑫ — لوحة تحكم المطوّر.**
+
+**السبب:** الترسانة مكتملة (11 أداة). الأنسب الآن حماية التطبيق + إحصائيات + إعدادات.
+
+---
+
+### التصميم
+
+```
+┌──────────────────────────────────────┐
+│  Z3R0 // DEV PANEL                   │
+├──────────────────────────────────────┤
+│  [الإحصائيات]                        │
+│  - عدد الفحوصات: 60                  │
+│  - آخر فحص: 2026-10-07 08:59         │
+│  - المساحة: 245 KB                   │
+│                                      │
+│  [حالة النظام]                       │
+│  ✅ daemon يعمل                      │
+│  ✅ 11 أداة                          │
+│  ✅ tools.json سليم                  │
+│                                      │
+│  [إعدادات]                           │
+│  - حد السجل: [150]                   │
+│  - مسار الأدوات: /sdcard/Z3R0        │
+│  - مسار السجل: .../history           │
+│                                      │
+│  [أدوات]                             │
+│  [مسح كل السجل] [إعادة تشغيل daemon] │
+│  [تصدير الإعدادات]                   │
+└──────────────────────────────────────┘
+```
+
+**البوابة للوصول:** **PIN سري** (يُدخل عند فتح اللوحة).
+
+**PIN الافتراضي:** `0000`. يُخزَّن كـ SHA-256 في الكود.
+
+---
+
+### التنفيذ — 4 ملفات
+
+1. `activity_devpanel.xml` — الواجهة.
+2. `DevPanelActivity.java` — المنطق.
+3. `activity_pin.xml` — شاشة إدخال PIN.
+4. `PinActivity.java` — التحقق من PIN.
+5. تعديل `MainActivity.java` — زر سري لفتح اللوحة (7 نقرات على العنوان).
+6. تعديل `AndroidManifest.xml` — تسجيل الأنشطة.
+
+---
+
+### الخطوة 1 — `activity_pin.xml`
+
+```bash
+cat > ~/MyFirstApp/app/src/main/res/layout/activity_pin.xml << 'XMLEOF'
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Z3R0 // ACCESS"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#00FF00"
+        android:background="#000000"
+        android:padding="10dp"
+        android:layout_marginBottom="24dp" />
+
+    <EditText
+        android:id="@+id/pinInput"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:hint="••••"
+        android:inputType="numberPassword"
+        android:maxLength="8"
+        android:gravity="center"
+        android:textSize="24sp"
+        android:letterSpacing="0.3" />
+
+    <Button
+        android:id="@+id/btnEnter"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="دخول"
+        android:textSize="14sp"
+        android:layout_marginTop="16dp" />
+
+</LinearLayout>
+XMLEOF
+echo "OK"
+```
+
+---
+
+### الخطوة 2 — `PinActivity.java`
+
+```bash
+cat > ~/MyFirstApp/app/src/main/java/com/z3r0/hello/PinActivity.java << 'JAVAEOF'
+package com.z3r0.hello;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import java.security.MessageDigest;
+
+public class PinActivity extends Activity {
+
+    // SHA-256 لـ "0000"
+    private static final String PIN_HASH =
+        "9af15b336e6a9619928537df30b2e6a2376569fcf9d7e773eccdec000d75030e";
+
+    private EditText pinInput;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_pin);
+
+        pinInput = findViewById(R.id.pinInput);
+        Button btnEnter = findViewById(R.id.btnEnter);
+
+        btnEnter.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { checkPin(); }
+        });
+    }
+
+    private void checkPin() {
+        String pin = pinInput.getText().toString().trim();
+        if (pin.isEmpty()) return;
+
+        String hash = sha256(pin);
+        if (hash.equals(PIN_HASH)) {
+            startActivity(new Intent(PinActivity.this, DevPanelActivity.class));
+            finish();
+        } else {
+            Toast.makeText(this, "PIN خطأ", Toast.LENGTH_SHORT).show();
+            pinInput.setText("");
+        }
+    }
+
+    private String sha256(String s) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hash = md.digest(s.getBytes("UTF-8"));
+            StringBuilder hex = new StringBuilder();
+            for (byte b : hash) {
+                hex.append(String.format("%02x", b));
+            }
+            return hex.toString();
+        } catch (Exception e) {
+            return "";
+        }
+    }
+}
+JAVAEOF
+echo "OK"
+```
+
+---
+
+### الخطوة 3 — `activity_devpanel.xml`
+
+```bash
+cat > ~/MyFirstApp/app/src/main/res/layout/activity_devpanel.xml << 'XMLEOF'
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Z3R0 // DEV PANEL"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textColor="#00FF00"
+        android:background="#000000"
+        android:padding="6dp"
+        android:layout_marginBottom="6dp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:text="الإحصائيات"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#00AA00"
+                android:paddingTop="8dp"
+                android:paddingBottom="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/statsView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:textSize="11sp"
+                android:background="#0A0A0A"
+                android:textColor="#00FF88"
+                android:padding="8dp"
+                android:minLines="5" />
+
+            <TextView
+                android:text="حالة النظام"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#00AA00"
+                android:paddingTop="12dp"
+                android:paddingBottom="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/statusView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:textSize="11sp"
+                android:background="#0A0A0A"
+                android:textColor="#00FF88"
+                android:padding="8dp"
+                android:minLines="4" />
+
+            <TextView
+                android:text="أدوات"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#00AA00"
+                android:paddingTop="12dp"
+                android:paddingBottom="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/btnRefresh"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="↻ تحديث الإحصائيات"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btnClearHistory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🗑 مسح كل السجل"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btnTestDaemon"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="⚡ اختبار daemon"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btnShowConfig"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="📋 عرض الإعدادات"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/btnBack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="رجوع"
+        android:textSize="12sp"
+        android:layout_marginTop="6dp" />
+
+</LinearLayout>
+XMLEOF
+echo "OK"
+```
+
+---
+
+### الخطوة 4 — `DevPanelActivity.java`
+
+```bash
+cat > ~/MyFirstApp/app/src/main/java/com/z3r0/hello/DevPanelActivity.java << 'JAVAEOF'
+package com.z3r0.hello;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class DevPanelActivity extends Activity {
+
+    private static final String WATCH_DIR = "/sdcard/Z3R0";
+    private static final String HIST_DIR = WATCH_DIR + "/history";
+    private static final String TOOLS_FILE = WATCH_DIR + "/tools.json";
+    private static final String CMD_FILE = WATCH_DIR + "/command.txt";
+    private static final String RES_FILE = WATCH_DIR + "/result.txt";
+
+    private TextView statsView;
+    private TextView statusView;
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_devpanel);
+
+        statsView = findViewById(R.id.statsView);
+        statusView = findViewById(R.id.statusView);
+
+        findViewById(R.id.btnRefresh).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { refreshStats(); }
+        });
+        findViewById(R.id.btnClearHistory).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { confirmClearHistory(); }
+        });
+        findViewById(R.id.btnTestDaemon).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { testDaemon(); }
+        });
+        findViewById(R.id.btnShowConfig).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { showConfig(); }
+        });
+        findViewById(R.id.btnBack).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { finish(); }
+        });
+
+        refreshStats();
+    }
+
+    private void refreshStats() {
+        StringBuilder sb = new StringBuilder();
+
+        // عدد ملفات السجل
+        File histDir = new File(HIST_DIR);
+        int histCount = 0;
+        long histSize = 0;
+        String lastHist = "—";
+        if (histDir.exists()) {
+            File[] files = histDir.listFiles();
+            if (files != null) {
+                histCount = files.length;
+                for (File f : files) {
+                    histSize += f.length();
+                }
+                // آخر ملف
+                long lastMod = 0;
+                for (File f : files) {
+                    if (f.lastModified() > lastMod) {
+                        lastMod = f.lastModified();
+                        lastHist = f.getName() + " (" +
+                            new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(f.lastModified())) + ")";
+                    }
+                }
+            }
+        }
+
+        sb.append("عدد الفحوصات: ").append(histCount).append("/150\n");
+        sb.append("حجم السجل: ").append(formatSize(histSize)).append("\n");
+        sb.append("آخر فحص: ").append(lastHist).append("\n");
+        sb.append("حجم tools.json: ").append(formatSize(
+            new File(TOOLS_FILE).length())).append("\n");
+
+        statsView.setText(sb.toString());
+
+        // حالة النظام
+        StringBuilder st = new StringBuilder();
+        st.append(checkFile("tools.json", TOOLS_FILE)).append("\n");
+        st.append(checkFile("command.txt", CMD_FILE)).append("\n");
+        st.append(checkFile("result.txt", RES_FILE)).append("\n");
+
+        // عدد الأدوات
+        int toolCount = countTools();
+        st.append("عدد الأدوات: ").append(toolCount).append("\n");
+
+        statusView.setText(st.toString());
+    }
+
+    private String checkFile(String label, String path) {
+        File f = new File(path);
+        if (f.exists()) {
+            return "✅ " + label + " (" + formatSize(f.length()) + ")";
+        } else {
+            return "❌ " + label + " مفقود";
+        }
+    }
+
+    private int countTools() {
+        try {
+            BufferedReader r = new BufferedReader(new FileReader(TOOLS_FILE));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = r.readLine()) != null) sb.append(line);
+            r.close();
+            int count = 0;
+            int idx = 0;
+            while ((idx = sb.indexOf("\"name\"", idx)) != -1) {
+                count++;
+                idx += 6;
+            }
+            return count;
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    private String formatSize(long bytes) {
+        if (bytes < 1024) return bytes + " B";
+        if (bytes < 1024 * 1024) return String.format("%.1f KB", bytes / 1024.0);
+        return String.format("%.1f MB", bytes / 1024.0 / 1024.0);
+    }
+
+    private void confirmClearHistory() {
+        new AlertDialog.Builder(this)
+            .setTitle("مسح كل السجل؟")
+            .setMessage("سيُحذف كل الفحوصات الـ150. لا يمكن التراجع.")
+            .setPositiveButton("مسح", new DialogInterface.OnClickListener() {
+                @Override public void onClick(DialogInterface d, int w) {
+                    clearHistory();
+                }
+            })
+            .setNegativeButton("إلغاء", null)
+            .show();
+    }
+
+    private void clearHistory() {
+        File dir = new File(HIST_DIR);
+        int deleted = 0;
+        if (dir.exists()) {
+            File[] files = dir.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    if (f.isFile() && f.getName().endsWith(".txt")) {
+                        if (f.delete()) deleted++;
+                    }
+                }
+            }
+        }
+        Toast.makeText(this, "حُذف: " + deleted + " ملف", Toast.LENGTH_LONG).show();
+        refreshStats();
+    }
+
+    private void testDaemon() {
+        // اكتب أمراً اختبارياً
+        try {
+            File resFile = new File(RES_FILE);
+            if (resFile.exists()) resFile.delete();
+
+            FileWriter w = new FileWriter(CMD_FILE);
+            w.write("echo Z3R0_DAEMON_TEST");
+            w.close();
+
+            Toast.makeText(this, "اختبار daemon...", Toast.LENGTH_SHORT).show();
+
+            // انتظر النتيجة
+            handler.postDelayed(new Runnable() {
+                @Override public void run() {
+                    try {
+                        File resFile = new File(RES_FILE);
+                        if (resFile.exists()) {
+                            BufferedReader r = new BufferedReader(new FileReader(resFile));
+                            StringBuilder sb = new StringBuilder();
+                            String line;
+                            while ((line = r.readLine()) != null) sb.append(line).append("\n");
+                            r.close();
+                            if (sb.toString().contains("Z3R0_DAEMON_TEST")) {
+                                Toast.makeText(DevPanelActivity.this, "✅ daemon يعمل", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(DevPanelActivity.this, "⚠️ رد غريب: " + sb.toString().substring(0, Math.min(50, sb.length())), Toast.LENGTH_LONG).show();
+                            }
+                        } else {
+                            Toast.makeText(DevPanelActivity.this, "❌ daemon لا يستجيب", Toast.LENGTH_LONG).show();
+                        }
+                    } catch (Exception e) {
+                        Toast.makeText(DevPanelActivity.this, "خطأ: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                }
+            }, 5000);
+
+        } catch (Exception e) {
+            Toast.makeText(this, "خطأ: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void showConfig() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("WATCH_DIR: ").append(WATCH_DIR).append("\n");
+        sb.append("HIST_DIR: ").append(HIST_DIR).append("\n");
+        sb.append("TOOLS_FILE: ").append(TOOLS_FILE).append("\n");
+        sb.append("CMD_FILE: ").append(CMD_FILE).append("\n");
+        sb.append("RES_FILE: ").append(RES_FILE).append("\n\n");
+        sb.append("عدد الأدوات: ").append(countTools()).append("\n");
+        sb.append("حد السجل: 150 ملف\n");
+
+        new AlertDialog.Builder(this)
+            .setTitle("الإعدادات")
+            .setMessage(sb.toString())
+            .setPositiveButton("إغلاق", null)
+            .show();
+    }
+}
+JAVAEOF
+wc -l ~/MyFirstApp/app/src/main/java/com/z3r0/hello/DevPanelActivity.java
+```
+
+---
+
+### الخطوة 5 — أضف زر "7 نقرات" في `MainActivity.java`
+
+**التعديل:**
+
+```bash
+cat > ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java << 'JAVAEOF'
+package com.z3r0.hello;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.ScrollView;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class MainActivity extends Activity {
+
+    private EditText targetInput;
+    private EditText optionsInput;
+    private TextView outputView;
+    private TextView hintView;
+    private TextView statusView;
+    private TextView logoView;
+    private ScrollView scrollView;
+    private Spinner toolSpinner;
+    private Button btnRun;
+    private ProgressBar progressBar;
+
+    private static final String WATCH_DIR = "/sdcard/Z3R0";
+    private static final String CMD_FILE = WATCH_DIR + "/command.txt";
+    private static final String RES_FILE = WATCH_DIR + "/result.txt";
+    private static final String RUN_FILE = WATCH_DIR + "/running.txt";
+    private static final String TOOLS_FILE = WATCH_DIR + "/tools.json";
+
+    private final Handler handler = new Handler(Looper.getMainLooper());
+    private final List<Tool> tools = new ArrayList<>();
+    private volatile boolean busy = false;
+
+    // للتحكم في النقرات السحرية
+    private int logoClicks = 0;
+    private long lastLogoClick = 0;
+    private static final long CLICK_WINDOW = 1500;
+    private static final int REQUIRED_CLICKS = 7;
+
+    public static class Tool {
+        String name;
+        String pattern;
+        String hint;
+        boolean needsTarget;
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        targetInput = findViewById(R.id.targetInput);
+        optionsInput = findViewById(R.id.optionsInput);
+        outputView = findViewById(R.id.outputView);
+        hintView = findViewById(R.id.hintView);
+        statusView = findViewById(R.id.statusView);
+        scrollView = findViewById(R.id.scrollView);
+        toolSpinner = findViewById(R.id.toolSpinner);
+        btnRun = findViewById(R.id.btnRun);
+        progressBar = findViewById(R.id.progressBar);
+        logoView = findViewById(R.id.logo);
+
+        new File(WATCH_DIR).mkdirs();
+
+        loadTools();
+        setupSpinner();
+
+        // ★ بوابة سرية: 7 نقرات على الشعار
+        if (logoView != null) {
+            logoView.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    long now = System.currentTimeMillis();
+                    if (now - lastLogoClick < CLICK_WINDOW) {
+                        logoClicks++;
+                    } else {
+                        logoClicks = 1;
+                    }
+                    lastLogoClick = now;
+                    if (logoClicks >= REQUIRED_CLICKS) {
+                        logoClicks = 0;
+                        startActivity(new Intent(MainActivity.this, PinActivity.class));
+                    }
+                }
+            });
+        }
+
+        btnRun.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                if (busy) {
+                    Toast.makeText(MainActivity.this, "أداة قيد التنفيذ...", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                runSelectedTool();
+            }
+        });
+        findViewById(R.id.btnClear).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { outputView.setText(""); }
+        });
+        findViewById(R.id.btnSave).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { saveOutput(); }
+        });
+        findViewById(R.id.btnHistory).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, HistoryActivity.class));
+            }
+        });
+        findViewById(R.id.btnReload).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                if (busy) {
+                    Toast.makeText(MainActivity.this, "انتظر انتهاء التنفيذ", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                loadTools();
+                setupSpinner();
+                Toast.makeText(MainActivity.this, "أُعيد التحميل: " + tools.size() + " أداة", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void loadTools() {
+        tools.clear();
+        try {
+            File f = new File(TOOLS_FILE);
+            if (!f.exists()) return;
+            BufferedReader r = new BufferedReader(new FileReader(f));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = r.readLine()) != null) sb.append(line);
+            r.close();
+
+            JSONArray arr = new JSONArray(sb.toString());
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject o = arr.getJSONObject(i);
+                Tool t = new Tool();
+                t.name = o.optString("name", "unknown");
+                t.pattern = o.optString("pattern", "");
+                t.hint = o.optString("hint", "");
+                t.needsTarget = o.optBoolean("needs_target", true);
+                tools.add(t);
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "خطأ: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void setupSpinner() {
+        List<String> names = new ArrayList<>();
+        for (Tool t : tools) names.add(t.name);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this, android.R.layout.simple_spinner_item, names);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        toolSpinner.setAdapter(adapter);
+        toolSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override public void onItemSelected(AdapterView<?> p, View v, int pos, long id) {
+                if (pos < tools.size()) hintView.setText(tools.get(pos).hint);
+            }
+            @Override public void onNothingSelected(AdapterView<?> p) {}
+        });
+    }
+
+    private void runSelectedTool() {
+        int idx = toolSpinner.getSelectedItemPosition();
+        if (idx < 0 || idx >= tools.size()) return;
+        Tool t = tools.get(idx);
+
+        String target = targetInput.getText().toString().trim();
+        String opts = optionsInput.getText().toString().trim();
+
+        if (t.needsTarget && target.isEmpty()) {
+            Toast.makeText(this, "أدخل هدفاً", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String command = t.pattern;
+        command = command.replace("{target}", target);
+        command = command.replace("{opts}", opts);
+        command = command.replace("{user}", "root");
+
+        appendOutput("\n> " + command + "\n");
+        sendCommand(command, t.name);
+    }
+
+    private void saveOutput() {
+        String content = outputView.getText().toString();
+        if (content.isEmpty()) return;
+        try {
+            File f = new File("/sdcard/Z3R0_" + System.currentTimeMillis() + ".txt");
+            FileWriter w = new FileWriter(f);
+            w.write(content);
+            w.close();
+            Toast.makeText(this, "حُفظ: " + f.getName(), Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "خطأ: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void setBusy(boolean b, String toolName) {
+        busy = b;
+        btnRun.setEnabled(!b);
+        toolSpinner.setEnabled(!b);
+        if (b) {
+            progressBar.setVisibility(View.VISIBLE);
+            statusView.setVisibility(View.VISIBLE);
+            statusView.setText("جارٍ التنفيذ: " + toolName);
+        } else {
+            progressBar.setVisibility(View.GONE);
+            statusView.setVisibility(View.GONE);
+        }
+    }
+
+    private void sendCommand(final String command, final String toolName) {
+        setBusy(true, toolName);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final long startTime = System.currentTimeMillis();
+                try {
+                    File resFile = new File(RES_FILE);
+                    File runFile = new File(RUN_FILE);
+                    if (resFile.exists()) resFile.delete();
+                    if (runFile.exists()) runFile.delete();
+
+                    Thread.sleep(300);
+
+                    FileWriter w = new FileWriter(CMD_FILE);
+                    w.write(command);
+                    w.close();
+
+                    handler.post(new Runnable() {
+                        @Override public void run() {
+                            if (!busy) return;
+                            long elapsed = (System.currentTimeMillis() - startTime) / 1000;
+                            statusView.setText("جارٍ التنفيذ: " + toolName + "  (" + elapsed + "s)");
+                            handler.postDelayed(this, 1000);
+                        }
+                    });
+
+                    long waitStart = System.currentTimeMillis();
+                    while (System.currentTimeMillis() - waitStart < 5000) {
+                        if (runFile.exists()) break;
+                        Thread.sleep(200);
+                    }
+
+                    long timeout = 180000;
+                    while (System.currentTimeMillis() - startTime < timeout) {
+                        if (resFile.exists() && resFile.length() > 0) {
+                            if (!runFile.exists()) {
+                                Thread.sleep(500);
+                                BufferedReader r = new BufferedReader(new FileReader(resFile));
+                                StringBuilder sb = new StringBuilder();
+                                String line;
+                                while ((line = r.readLine()) != null) sb.append(line).append("\n");
+                                r.close();
+                                long totalTime = (System.currentTimeMillis() - startTime) / 1000;
+                                appendOutput(sb.toString());
+                                appendOutput("── انتهى في " + totalTime + "s ──\n");
+                                handler.post(new Runnable() {
+                                    @Override public void run() { setBusy(false, null); }
+                                });
+                                return;
+                            }
+                        }
+                        Thread.sleep(500);
+                    }
+                    appendOutput("── timeout (180s) ──\n");
+                } catch (Exception e) {
+                    appendOutput("── error: " + e.getMessage() + " ──\n");
+                }
+                handler.post(new Runnable() {
+                    @Override public void run() { setBusy(false, null); }
+                });
+            }
+        }).start();
+    }
+
+    private void appendOutput(final String text) {
+        handler.post(new Runnable() {
+            @Override public void run() {
+                outputView.append(text);
+                scrollView.post(new Runnable() {
+                    @Override public void run() { scrollView.fullScroll(View.FOCUS_DOWN); }
+                });
+            }
+        });
+    }
+}
+JAVAEOF
+wc -l ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java
+```
+
+**ملاحظة:** أضفت `id="@+id/logo"` للعنوان. **يجب تعديل XML لإضافته.**
+
+---
+
+### الخطوة 6 — عدّل `activity_main.xml` (أضف `id` للعنوان)
+
+```bash
+sed -i 's|<TextView\n        android:layout_width="match_parent"\n        android:layout_height="wrap_content"\n        android:text="Z3R0 // TOOLKIT"|<TextView\n        android:id="@+id/logo"\n        android:layout_width="match_parent"\n        android:layout_height="wrap_content"\n        android:text="Z3R0 // TOOLKIT"|' ~/MyFirstApp/app/src/main/res/layout/activity_main.xml
+```
+
+**هذا لن يعمل بشكل موثوق.** نستبدل الملف كاملاً:
+
+```bash
+cat > ~/MyFirstApp/app/src/main/res/layout/activity_main.xml << 'XMLEOF'
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/logo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Z3R0 // TOOLKIT"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textColor="#00FF00"
+        android:background="#000000"
+        android:padding="6dp"
+        android:layout_marginBottom="6dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="الأداة: "
+            android:textSize="12sp"
+            android:paddingTop="10dp" />
+        <Spinner
+            android:id="@+id/toolSpinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+        <Button
+            android:id="@+id/btnReload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="↻"
+            android:textSize="14sp"
+            android:minWidth="40dp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/hintView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="10sp"
+        android:textColor="#666666"
+        android:paddingLeft="4dp" />
+
+    <EditText
+        android:id="@+id/targetInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="الهدف"
+        android:inputType="textUri"
+        android:singleLine="true"
+        android:layout_marginTop="4dp" />
+
+    <EditText
+        android:id="@+id/optionsInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="خيارات إضافية (اختياري)"
+        android:inputType="text"
+        android:singleLine="true" />
+
+    <Button
+        android:id="@+id/btnRun"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="تشغيل"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:layout_marginTop="4dp" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/statusView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="11sp"
+        android:textColor="#00AA00"
+        android:padding="4dp"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/btnClear"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="مسح"
+            android:textSize="11sp" />
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="حفظ"
+            android:textSize="11sp" />
+        <Button
+            android:id="@+id/btnHistory"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="السجل"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="6dp"
+        android:background="#0A0A0A"
+        android:padding="6dp">
+        <TextView
+            android:id="@+id/outputView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:textSize="10sp"
+            android:textColor="#00FF88"
+            android:textIsSelectable="true" />
+    </ScrollView>
+
+</LinearLayout>
+XMLEOF
+grep -c "logo" ~/MyFirstApp/app/src/main/res/layout/activity_main.xml
+```
+
+---
+
+### الخطوة 7 — حدّث `AndroidManifest.xml`
+
+```bash
+cat > ~/MyFirstApp/app/src/main/AndroidManifest.xml << 'XMLEOF'
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.z3r0.hello">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+
+    <application
+        android:label="Z3R0"
+        android:requestLegacyExternalStorage="true"
+        android:theme="@android:style/Theme.Material.Light">
+        <activity android:name
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ sed -i 's|<TextView\n        android:layout_width="match_parent"\n        android:layout_height="wrap_content"\n        android:text="Z3R0 // TOOLKIT"|<TextView\n        android:id="@+id/logo"\n        android:layout_width="match_parent"\n        android:layout_height="wrap_content"\n        android:text="Z3R0 // TOOLKIT"|' ~/MyFirstApp/app/src/main/res/layout/activity_main.xml
+~/MyFirstApp $ cat > ~/MyFirstApp/app/src/main/AndroidManifest.xml << 'XMLEOF'
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.z3r0.hello">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+
+    <application
+        android:label="Z3R0"
+        android:requestLegacyExternalStorage="true"
+        android:theme="@android:style/Theme.Material.Light">
+        <activity android:name
+> ^C
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**الأمر قُطع في المنتصف (`Ctrl+C`). `AndroidManifest.xml` الآن تالف.**
+
+**نُعيده كاملاً.**
+
+---
+
+### الأمر الكامل — نسخ والصق مرة واحدة
+
+```bash
+cat > ~/MyFirstApp/app/src/main/AndroidManifest.xml << 'XMLEOF'
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.z3r0.hello">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+
+    <application
+        android:label="Z3R0"
+        android:requestLegacyExternalStorage="true"
+        android:theme="@android:style/Theme.Material.Light">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".HistoryActivity"
+            android:exported="false"
+            android:label="السجل" />
+        <activity
+            android:name=".PinActivity"
+            android:exported="false"
+            android:label="PIN" />
+        <activity
+            android:name=".DevPanelActivity"
+            android:exported="false"
+            android:label="Dev Panel" />
+    </application>
+
+</manifest>
+XMLEOF
+cat ~/MyFirstApp/app/src/main/AndroidManifest.xml
+```
+
+---
+
+### بعد التأكد من أن الملف كامل
+
+**تحقق:**
+
+```bash
+grep -c "activity" ~/MyFirstApp/app/src/main/AndroidManifest.xml
+```
+
+**المتوقع:** `4` (MainActivity, HistoryActivity, PinActivity, DevPanelActivity).
+
+---
+
+### ابنِ
+
+```bash
+cd ~/MyFirstApp
+gradle assembleDebug 2>&1 | tail -10
+cp ~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk ~/storage/downloads/Z3R0-v18.apk
+ls -lh ~/storage/downloads/Z3R0-v18.apk
+```
+
+---
+
+### الاختبار
+
+**بعد التثبيت:**
+
+**1. 7 نقرات على العنوان:**
+- افتح Z3R0.
+- **اضغط بسرعة 7 مرات على العنوان الأخضر `Z3R0 // TOOLKIT`.**
+- يجب أن تظهر شاشة `Z3R0 // ACCESS`.
+- اكتب PIN: **`0000`**.
+- اضغط دخول.
+- تفتح **لوحة التحكم**.
+
+**2. اللوحة:**
+- الإحصائيات: عدد الفحوصات، حجم السجل، آخر فحص.
+- حالة النظام: ✅ tools.json، ✅ command.txt، ✅ result.txt، عدد الأدوات.
+- أزرار: تحديث، مسح السجل، اختبار daemon، عرض الإعدادات.
+
+**3. اختبار daemon:**
+- اضغط **اختبار daemon**.
+- بعد 5 ثوان: رسالة `✅ daemon يعمل` أو `❌ daemon لا يستجيب`.
+
+---
+
+**توقّف. نفّذ الأمر الأول (كتابة AndroidManifest). أرسل:**
+
+```
+cat ~/MyFirstApp/app/src/main/AndroidManifest.xml
+grep -c "activity" ~/MyFirstApp/app/src/main/AndroidManifest.xml
+```
+
+**ثم ابنِ. أرسل مخرجات البناء.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ grep -c "activity" ~/MyFirstApp/app/src/main/AndroidManifest.xml
+5
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**5 أسطر تحتوي كلمة "activity"** (4 أنشطة + سطر `<application` لا، لكن `activity` في `<activity` أو في كلمة أخرى). الرقم `5` يعني:
+- `<activity` × 4
+- سطر واحد إضافي يحتوي كلمة `activity` (ربما داخل `android:name`).
+
+**هذا متوقع. الملف سليم.**
+
+---
+
+### ابنِ
+
+```bash
+cd ~/MyFirstApp
+gradle assembleDebug 2>&1 | tail -10
+cp ~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk ~/storage/downloads/Z3R0-v18.apk
+ls -lh ~/storage/downloads/Z3R0-v18.apk
+```
+
+**المتوقع:** `BUILD SUCCESSFUL` و APK بحجم ~28 كيلوبايت (أكبر لأن `DevPanelActivity` + `PinActivity` + `HistoryActivity` أُضيفت).
+
+---
+
+**إن نجح البناء:**
+1. ثبّت `Z3R0-v18.apk`.
+2. **7 نقرات** على العنوان `Z3R0 // TOOLKIT`.
+3. أدخل PIN: **`0000`**.
+4. تفتح لوحة التحكم.
+
+**أرسل:**
+```
+ls -lh ~/storage/downloads/Z3R0-v18.apk
+```
+
+**ثم أخبرني:**
+- هل نجح البناء؟
+- هل ثُبّت التطبيق؟
+- هل ظهرت شاشة PIN بعد 7 نقرات؟
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ grep -c "activity" ~/MyFirstApp/app/src/main/AndroidManifest.xml
+5
+~/MyFirstApp $ cd ~/MyFirstApp
+gradle assembleDebug 2>&1 | tail -10
+cp ~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk ~/storage/downloads/Z3R0-v18.apk
+ls -lh ~/storage/downloads/Z3R0-v18.apk
+* What went wrong:
+Execution failed for task ':app:compileDebugJavaWithJavac'.
+> Compilation failed; see the compiler error output for details.
+
+* Try:
+> Run with --info option to get more log output.
+> Run with --scan to get full insights.
+
+BUILD FAILED in 1m 11s
+26 actionable tasks: 9 executed, 17 up-to-date
+-rw-rw----. 1 u0_a0 media_rw 31K Oct  7 09:45 /data/data/com.termux/files/home/storage/downloads/Z3R0-v18.apk
+~/MyFirstApp $ ls -lh ~/storage/downloads/Z3R0-v18.apk-rw-rw----. 1 u0_a0 media_rw 31K Oct  7 09:45 /data/data/com.termux/files/home/storage/downloads/Z3R0-v18.apk
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**BUILD FAILED. خطأ compile في Java. نحتاج التفاصيل.**
+
+```bash
+cd ~/MyFirstApp
+gradle assembleDebug 2>&1 | grep -E "error:|ERROR|\.java:" | head -20
+```
+
+**أرسل المخرجات.** هذا سيُظهر السطر والملف الذي فشل.
+
+---
+
+### الاحتمالات
+
+**① خطأ في `DevPanelActivity.java`:** استخدمت `new File(TOOLS_FILE).length()` بدون التحقق من وجود الملف. أو `countTools()` مرتجع غير متسق.
+
+**② خطأ في `HistoryActivity.java`:** `ClipboardManager` أو `AlertDialog` استدعاء.
+
+**③ خطأ في `PinActivity.java`:** `MessageDigest` أو `String.format`.
+
+**④ خطأ في `MainActivity.java`:** `logoView.setOnClickListener` — `logoView` قد يكون null إن لم يُعرَّف `id=logo` في XML.
+
+---
+
+**نفّذ الأمر. أرسل:**
+
+```
+cd ~/MyFirstApp
+gradle assembleDebug 2>&1 | grep -E "error:|\.java:" | head -20
+```
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ cd ~/MyFirstApp
+gradle assembleDebug 2>&1 | grep -E "error:|ERROR|\.java:" | head -20
+/data/data/com.termux/files/home/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java:81: error: cannot find symbol
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**الخطأ في `MainActivity.java` سطر 81.** لنعرف بالضبط.
+
+```bash
+sed -n '75,90p' ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java
+```
+
+**أرسل المخرجات.**
+
+---
+
+### الاحتمال الأرجح
+
+**السطر 81 هو:**
+```java
+logoView = findViewById(R.id.logo);
+```
+
+**السبب:** `R.id.logo` لم يُعرَّف لأن `sed` الذي حاولت تعديل XML **لم يعمل** (كما قلت سابقاً)، ثم أرسلت ملف XML كامل — لكن يبدو أنه **لم يُطبَّق**.
+
+**تحقق:**
+
+```bash
+grep -n "logo" ~/MyFirstApp/app/src/main/res/layout/activity_main.xml
+```
+
+**إن ظهر فراغ:** `id=logo` مفقود من XML.
+
+**إن ظهر سطر:** موجود.
+
+---
+
+**نفّذ الأمرين. أرسل:**
+
+```
+sed -n '75,90p' ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java
+grep -n "logo" ~/MyFirstApp/app/src/main/res/layout/activity_main.xml
+```
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ sed -n '75,90p' ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java
+        hintView = findViewById(R.id.hintView);
+        statusView = findViewById(R.id.statusView);
+        scrollView = findViewById(R.id.scrollView);
+        toolSpinner = findViewById(R.id.toolSpinner);
+        btnRun = findViewById(R.id.btnRun);
+        progressBar = findViewById(R.id.progressBar);
+        logoView = findViewById(R.id.logo);
+
+        new File(WATCH_DIR).mkdirs();
+
+        loadTools();
+        setupSpinner();
+
+        // ★ بوابة سرية: 7 نقرات على الشعار
+        if (logoView != null) {
+            logoView.setOnClickListener(new View.OnClickListener() {
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**الخطأ مؤكد: `R.id.logo` غير موجود في XML.**
+
+السبب: ملف XML لم يُحدَّث فعلاً. `sed` متعدد الأسطر لم يعمل. ثم الأمر البديل (`cat > activity_main.xml`) لم يُنفَّذ.
+
+---
+
+### الحل — أضف `id=logo` بسطر واحد
+
+```bash
+sed -i 's|<TextView$|<TextView\n        android:id="@+id/logo"|' ~/MyFirstApp/app/src/main/res/layout/activity_main.xml
+```
+
+**هذا sed أيضاً قد لا يعمل بسبب التعقيد.** الحل الأضمن — استخدم Python:
+
+```bash
+python3 << 'PYEOF'
+path = "/data/data/com.termux/files/home/MyFirstApp/app/src/main/res/layout/activity_main.xml"
+
+with open(path) as f:
+    content = f.read()
+
+# استبدل أول TextView ليس له id
+old = """    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Z3R0 // TOOLKIT\""""
+
+new = """    <TextView
+        android:id="@+id/logo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Z3R0 // TOOLKIT\""""
+
+if "android:id=\"@+id/logo\"" not in content:
+    content = content.replace(old, new)
+    with open(path, "w") as f:
+        f.write(content)
+    print("ADDED logo id")
+else:
+    print("ALREADY exists")
+PYEOF
+grep -n "logo" ~/MyFirstApp/app/src/main/res/layout/activity_main.xml
+```
+
+**المتوقع:**
+```
+ADDED logo id
+```
+و:
+```
+5:        android:id="@+id/logo"
+```
+
+---
+
+### ثم أعد البناء
+
+```bash
+cd ~/MyFirstApp
+gradle assembleDebug 2>&1 | tail -5
+cp ~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk ~/storage/downloads/Z3R0-v18.apk
+ls -lh ~/storage/downloads/Z3R0-v18.apk
+```
+
+---
+
+**توقّف. نفّذ. أرسل:**
+
+```
+grep -n "logo" ~/MyFirstApp/app/src/main/res/layout/activity_main.xml
+gradle assembleDebug 2>&1 | tail -5
+ls -lh ~/storage/downloads/Z3R0-v18.apk
+```
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ sed -i 's|<TextView$|<TextView\n        android:id="@+id/logo"|' ~/MyFirstApp/app/src/main/res/layout/activity_main.xml
+~/MyFirstApp $ python3 << 'PYEOF'
+path = "/data/data/com.termux/files/home/MyFirstApp/app/src/main/res/layout/activity_main.xml"
+
+with open(path) as f:
+    content = f.read()
+
+# استبدل أول TextView ليس له id
+old = """    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Z3R0 // TOOLKIT\""""
+
+new = """    <TextView
+        android:id="@+id/logo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Z3R0 // TOOLKIT\""""
+
+if "android:id=\"@+id/logo\"" not in content:
+    content = content.replace(old, new)
+    with open(path, "w") as f:
+        f.write(content)
+    print("ADDED logo id")
+else:
+    print("ALREADY exists")
+PYEOF
+grep -n "logo" ~/MyFirstApp/app/src/main/res/layout/activity_main.xml
+ALREADY exists
+9:        android:id="@+id/logo"
+26:        android:id="@+id/logo"
+49:        android:id="@+id/logo"
+92:        android:id="@+id/logo"
+141:        android:id="@+id/logo"
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**التشخيص: `id=logo` أُضيف **5 مرات** — بسبب `sed` متعدد الأسطر الذي أضاف السطر قبل كل `<TextView`. هذا سيسبب خطأ duplicate id عند البناء.**
+
+---
+
+### الحل — استبدل `activity_main.xml` كاملاً بالنسخة النظيفة
+
+```bash
+cat > ~/MyFirstApp/app/src/main/res/layout/activity_main.xml << 'XMLEOF'
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/logo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Z3R0 // TOOLKIT"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textColor="#00FF00"
+        android:background="#000000"
+        android:padding="6dp"
+        android:layout_marginBottom="6dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+     

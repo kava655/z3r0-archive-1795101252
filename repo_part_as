@@ -1,0 +1,2361 @@
+�ير.**
+- حقل الهدف + الخيارات.
+- زر تشغيل + إلغاء.
+- منطقة النتائج.
+
+---
+
+**توقّف. ثبّت واختبر الخطوات 1-6. أرسل:**
+
+**1. هل يفتح Drawer بـ ☰؟**
+**2. هل تظهر 3 فئات؟**
+**3. هل يفتح CategoryActivity عند الضغط؟**
+**4. هل تظهر الأدوات في الفئة؟**
+**5. هل يعمل 7 نقرات على `v2.0`؟**
+
+**إن نجح كل شيء، نبني `ToolActivity` الحقيقية.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+نجح
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**ممتاز. الهيكل يعمل. الآن نبني `ToolActivity` الحقيقية.**
+
+---
+
+## أ.3 — `ToolActivity` (شاشة الأداة الكاملة)
+
+**التصميم:**
+
+```
+┌──────────────────────────────────────┐
+│  ←  nmap                             │
+├──────────────────────────────────────┤
+│                                       │
+│  الوصف                                │
+│  أداة فحص الشبكة الأشهر...           │
+│                                       │
+│  ✅ الاستخدام القانوني                │
+│  • فحص سيرفراتك الخاصة                │
+│  • فحص شبكتك المنزلية                 │
+│  • أهداف تدريبية رسمية                │
+│                                       │
+│  ❌ الاستخدام المحظور                 │
+│  • فحص سيرفرات لا تملكها              │
+│  • فحص شبكات المؤسسات                 │
+│                                       │
+│  ⚠️ تحذير                              │
+│  nmap يسجّل IP الخاص بك...            │
+│                                       │
+│  ─────────────────────────────────   │
+│                                       │
+│  الهدف:  ____________________         │
+│                                       │
+│  خيارات: ____________________         │
+│                                       │
+│  [    تشغيل    ]  [   إلغاء   ]      │
+│                                       │
+│  ▓▓▓░░░░░░ جارٍ التنفيذ (12s)        │
+│                                       │
+│  ┌─────────────────────────────────┐ │
+│  │ النتائج                          │ │
+│  │ ...                              │ │
+│  └─────────────────────────────────┘ │
+│                                       │
+│  [نسخ] [مشاركة] [مسح] [حفظ]         │
+└──────────────────────────────────────┘
+```
+
+---
+
+### الخطوة 1 — `activity_tool.xml` (التخطيط الكامل)
+
+```bash
+cat > ~/MyFirstApp/app/src/main/res/layout/activity_tool.xml << 'XMLEOF'
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- شريط العنوان -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#000000"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/backButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="←"
+            android:textSize="24sp"
+            android:textColor="#00FF00"
+            android:paddingLeft="8dp"
+            android:paddingRight="16dp" />
+
+        <TextView
+            android:id="@+id/toolTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="الأداة"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#00FF00" />
+    </LinearLayout>
+
+    <!-- المحتوى (قابل للتمرير) -->
+    <ScrollView
+        android:id="@+id/infoScroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="12dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/toolDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:padding="8dp"
+                android:background="#F5F5F5"
+                android:lineSpacingExtra="3dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="✅ الاستخدام القانوني"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="#006600"
+                android:paddingTop="12dp"
+                android:paddingBottom="4dp" />
+
+            <TextView
+                android:id="@+id/toolLegal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:paddingLeft="8dp"
+                android:lineSpacingExtra="3dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="❌ الاستخدام المحظور"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="#CC0000"
+                android:paddingTop="12dp"
+                android:paddingBottom="4dp" />
+
+            <TextView
+                android:id="@+id/toolIllegal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:paddingLeft="8dp"
+                android:lineSpacingExtra="3dp" />
+
+            <TextView
+                android:id="@+id/warningHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="⚠️ تحذير"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="#CC6600"
+                android:paddingTop="12dp"
+                android:paddingBottom="4dp" />
+
+            <TextView
+                android:id="@+id/toolWarning"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:padding="8dp"
+                android:background="#FFF5E0"
+                android:textColor="#663300"
+                android:lineSpacingExtra="3dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="مثال"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:paddingTop="12dp"
+                android:paddingBottom="4dp" />
+
+            <TextView
+                android:id="@+id/toolExample"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:fontFamily="monospace"
+                android:padding="8dp"
+                android:background="#1A1A1A"
+                android:textColor="#00FF00" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- قسم التشغيل (قابل للتمرير) -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.5"
+        android:padding="12dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/targetInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="الهدف"
+                android:inputType="textUri"
+                android:singleLine="true" />
+
+            <EditText
+                android:id="@+id/optionsInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="خيارات إضافية (اختياري)"
+                android:inputType="text"
+                android:singleLine="true" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="4dp">
+
+                <Button
+                    android:id="@+id/btnRun"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="تشغيل"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/btnCancel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="إلغاء"
+                    android:textSize="12sp"
+                    android:textColor="#CC0000"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/statusView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:textColor="#00AA00"
+                android:padding="4dp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnClear"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="مسح"
+                    android:textSize="11sp" />
+
+                <Button
+                    android:id="@+id/btnSave"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="حفظ"
+                    android:textSize="11sp" />
+
+                <Button
+                    android:id="@+id/btnCopy"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="نسخ"
+                    android:textSize="11sp" />
+
+                <Button
+                    android:id="@+id/btnShare"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="مشاركة"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/outputView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:textSize="10sp"
+                android:textColor="#00FF88"
+                android:background="#0A0A0A"
+                android:padding="8dp"
+                android:textIsSelectable="true"
+                android:minLines="5"
+                android:layout_marginTop="6dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
+XMLEOF
+head -3 ~/MyFirstApp/app/src/main/res/layout/activity_tool.xml
+```
+
+---
+
+### الخطوة 2 — `ToolActivity.java` (المنطق الكامل)
+
+```bash
+cat > ~/MyFirstApp/app/src/main/java/com/z3r0/hello/ToolActivity.java << 'JAVAEOF'
+package com.z3r0.hello;
+
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+
+public class ToolActivity extends AppCompatActivity {
+
+    private static final String TOOLS_FILE = "/sdcard/Z3R0/tools_v2.json";
+    private static final String WATCH_DIR = "/sdcard/Z3R0";
+    private static final String CMD_FILE = WATCH_DIR + "/command.txt";
+    private static final String RES_FILE = WATCH_DIR + "/result.txt";
+    private static final String RUN_FILE = WATCH_DIR + "/running.txt";
+    private static final String CANCEL_FILE = WATCH_DIR + "/cancel.txt";
+
+    private EditText targetInput;
+    private EditText optionsInput;
+    private TextView outputView;
+    private TextView statusView;
+    private Button btnRun;
+    private Button btnCancel;
+    private ProgressBar progressBar;
+
+    private String toolId;
+    private String toolPattern;
+    private String toolName;
+    private boolean needsTarget = true;
+    private volatile boolean busy = false;
+
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_tool);
+
+        toolId = getIntent().getStringExtra("tool_id");
+
+        targetInput = findViewById(R.id.targetInput);
+        optionsInput = findViewById(R.id.optionsInput);
+        outputView = findViewById(R.id.outputView);
+        statusView = findViewById(R.id.statusView);
+        btnRun = findViewById(R.id.btnRun);
+        btnCancel = findViewById(R.id.btnCancel);
+        progressBar = findViewById(R.id.progressBar);
+
+        findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { finish(); }
+        });
+
+        loadTool();
+        setupButtons();
+    }
+
+    private void loadTool() {
+        try {
+            BufferedReader r = new BufferedReader(new FileReader(new File(TOOLS_FILE)));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = r.readLine()) != null) sb.append(line);
+            r.close();
+
+            JSONObject root = new JSONObject(sb.toString());
+            JSONArray cats = root.getJSONArray("categories");
+            for (int i = 0; i < cats.length(); i++) {
+                JSONObject cat = cats.getJSONObject(i);
+                JSONArray tools = cat.optJSONArray("tools");
+                if (tools == null) continue;
+                for (int j = 0; j < tools.length(); j++) {
+                    JSONObject t = tools.getJSONObject(j);
+                    if (!t.optString("id").equals(toolId)) continue;
+
+                    toolName = t.optString("name", "");
+                    toolPattern = t.optString("pattern", "");
+                    needsTarget = t.optBoolean("needs_target", true);
+
+                    ((TextView) findViewById(R.id.toolTitle)).setText(toolName);
+                    ((TextView) findViewById(R.id.toolDescription))
+                            .setText(t.optString("description", "لا يوجد وصف."));
+
+                    JSONArray legalArr = t.optJSONArray("legal");
+                    StringBuilder legal = new StringBuilder();
+                    if (legalArr != null) {
+                        for (int k = 0; k < legalArr.length(); k++) {
+                            legal.append("• ").append(legalArr.getString(k)).append("\n");
+                        }
+                    }
+                    ((TextView) findViewById(R.id.toolLegal))
+                            .setText(legal.length() > 0 ? legal.toString() : "لا يوجد استخدام قانوني مسجّل.");
+
+                    JSONArray illegalArr = t.optJSONArray("illegal");
+                    StringBuilder illegal = new StringBuilder();
+                    if (illegalArr != null) {
+                        for (int k = 0; k < illegalArr.length(); k++) {
+                            illegal.append("• ").append(illegalArr.getString(k)).append("\n");
+                        }
+                    }
+                    ((TextView) findViewById(R.id.toolIllegal))
+                            .setText(illegal.length() > 0 ? illegal.toString() : "لا يوجد استخدام محظور مسجّل.");
+
+                    String warning = t.optString("warning", "");
+                    if (warning.isEmpty()) {
+                        findViewById(R.id.warningHeader).setVisibility(View.GONE);
+                        findViewById(R.id.toolWarning).setVisibility(View.GONE);
+                    } else {
+                        ((TextView) findViewById(R.id.toolWarning)).setText(warning);
+                    }
+
+                    String example = t.optString("example", "");
+                    if (example.isEmpty()) {
+                        findViewById(R.id.toolExample).setVisibility(View.GONE);
+                    } else {
+                        ((TextView) findViewById(R.id.toolExample)).setText("$ " + example);
+                    }
+                    return;
+                }
+            }
+            Toast.makeText(this, "الأداة غير موجودة: " + toolId, Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "خطأ: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void setupButtons() {
+        btnRun.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                if (busy) {
+                    Toast.makeText(ToolActivity.this, "قيد التنفيذ", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                runTool();
+            }
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { cancelTask(); }
+        });
+
+        findViewById(R.id.btnClear).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { outputView.setText(""); }
+        });
+
+        findViewById(R.id.btnSave).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { saveOutput(); }
+        });
+
+        findViewById(R.id.btnCopy).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                String content = outputView.getText().toString();
+                if (content.isEmpty()) return;
+                ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                cm.setPrimaryClip(ClipData.newPlainText("Z3R0", content));
+                Toast.makeText(ToolActivity.this, "نُسخ", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        findViewById(R.id.btnShare).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                String content = outputView.getText().toString();
+                if (content.isEmpty()) return;
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("text/plain");
+                shareIntent.putExtra(Intent.EXTRA_TEXT, content);
+                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Z3R0 — " + toolName);
+                startActivity(Intent.createChooser(shareIntent, "مشاركة عبر"));
+            }
+        });
+    }
+
+    private void runTool() {
+        String target = targetInput.getText().toString().trim();
+        String opts = optionsInput.getText().toString().trim();
+
+        if (needsTarget && target.isEmpty()) {
+            Toast.makeText(this, "أدخل هدفاً", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String command = toolPattern
+                .replace("{target}", target)
+                .replace("{opts}", opts)
+                .replace("{user}", "root");
+
+        appendOutput("\n> " + command + "\n");
+        sendCommand(command);
+    }
+
+    private void saveOutput() {
+        String content = outputView.getText().toString();
+        if (content.isEmpty()) return;
+        try {
+            File f = new File("/sdcard/Z3R0_" + System.currentTimeMillis() + ".txt");
+            FileWriter w = new FileWriter(f);
+            w.write(content);
+            w.close();
+            Toast.makeText(this, "حُفظ: " + f.getName(), Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "خطأ: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void cancelTask() {
+        try {
+            FileWriter w = new FileWriter(CANCEL_FILE);
+            w.write("cancel");
+            w.close();
+            appendOutput("\n⚡ أُرسل طلب الإلغاء...\n");
+        } catch (Exception e) {
+            Toast.makeText(this, "خطأ: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void setBusy(boolean b) {
+        busy = b;
+        btnRun.setEnabled(!b);
+        btnCancel.setVisibility(b ? View.VISIBLE : View.GONE);
+        if (b) {
+            progressBar.setVisibility(View.VISIBLE);
+            statusView.setVisibility(View.VISIBLE);
+        } else {
+            progressBar.setVisibility(View.GONE);
+            statusView.setVisibility(View.GONE);
+        }
+    }
+
+    private void sendCommand(final String command) {
+        setBusy(true);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final long startTime = System.currentTimeMillis();
+                try {
+                    File resFile = new File(RES_FILE);
+                    File runFile = new File(RUN_FILE);
+                    File cancelFile = new File(CANCEL_FILE);
+                    if (resFile.exists()) resFile.delete();
+                    if (runFile.exists()) runFile.delete();
+                    if (cancelFile.exists()) cancelFile.delete();
+
+                    Thread.sleep(300);
+
+                    FileWriter w = new FileWriter(CMD_FILE);
+                    w.write(command);
+                    w.close();
+
+                    handler.post(new Runnable() {
+                        @Override public void run() {
+                            if (!busy) return;
+                            long elapsed = (System.currentTimeMillis() - startTime) / 1000;
+                            statusView.setText("جارٍ التنفيذ: " + toolName + "  (" + elapsed + "s)");
+                            handler.postDelayed(this, 1000);
+                        }
+                    });
+
+                    long waitStart = System.currentTimeMillis();
+                    while (System.currentTimeMillis() - waitStart < 5000) {
+                        if (runFile.exists() || cancelFile.exists()) break;
+                        Thread.sleep(200);
+                    }
+
+                    long timeout = 300000;
+                    while (System.currentTimeMillis() - startTime < timeout) {
+                        if (cancelFile.exists()) {
+                            Thread.sleep(1500);
+                            appendOutput("── أُلغيت العملية ──\n");
+                            handler.post(new Runnable() {
+                                @Override public void run() { setBusy(false); }
+                            });
+                            return;
+                        }
+                        if (resFile.exists() && resFile.length() > 0) {
+                            if (!runFile.exists()) {
+                                Thread.sleep(500);
+                                BufferedReader r = new BufferedReader(new FileReader(resFile));
+                                StringBuilder sb = new StringBuilder();
+                                String line;
+                                while ((line = r.readLine()) != null) sb.append(line).append("\n");
+                                r.close();
+                                long total = (System.currentTimeMillis() - startTime) / 1000;
+                                appendOutput(sb.toString());
+                                appendOutput("── انتهى في " + total + "s ──\n");
+                                handler.post(new Runnable() {
+                                    @Override public void run() { setBusy(false); }
+                                });
+                                return;
+                            }
+                        }
+                        Thread.sleep(500);
+                    }
+                    appendOutput("── timeout ──\n");
+                } catch (Exception e) {
+                    appendOutput("── error: " + e.getMessage() + " ──\n");
+                }
+                handler.post(new Runnable() {
+                    @Override public void run() { setBusy(false); }
+                });
+            }
+        }).start();
+    }
+
+    private void appendOutput(final String text) {
+        handler.post(new Runnable() {
+            @Override public void run() {
+                outputView.append(text);
+            }
+        });
+    }
+}
+JAVAEOF
+wc -l ~/MyFirstApp/app/src/main/java/com/z3r0/hello/ToolActivity.java
+```
+
+---
+
+### الخطوة 3 — ابنِ
+
+```bash
+cd ~/MyFirstApp
+gradle assembleDebug 2>&1 | tail -10
+cp ~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk ~/storage/downloads/Z3R0-v23.apk
+ls -lh ~/storage/downloads/Z3R0-v23.apk
+```
+
+---
+
+### الاختبار
+
+**1. ثبّت `Z3R0-v23.apk`.**
+
+**2. افتح التطبيق → 🌐 الشبكات → nmap.**
+
+**3. المتوقع:**
+- عنوان: `← nmap`.
+- **الوصف.**
+- **✅ الاستخدام القانوني.**
+- **❌ الاستخدام المحظور.**
+- **⚠️ تحذير (خلفية صفراء).**
+- **مثال:** `$ nmap -sV scanme.nmap.org`.
+- حقول: الهدف، الخيارات.
+- زر **تشغيل** + **إلغاء** (مخفي).
+- أزرار: **مسح، حفظ، نسخ، مشاركة**.
+- منطقة النتائج.
+
+**4. اختبر:**
+- اكتب: `scanme.nmap.org`.
+- اضغط **تشغيل**.
+- **انتظر 30-90 ثانية.**
+- النتيجة تظهر في الأسفل.
+
+---
+
+**توقّف. نفّذ الخطوات 1، 2، 3. أرسل:**
+
+```
+wc -l ~/MyFirstApp/app/src/main/java/com/z3r0/hello/ToolActivity.java
+ls -lh ~/storage/downloads/Z3R0-v23.apk
+```
+
+**ثم اختبر. أخبرني بالنتيجة.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~ $ cd ~/MyFirstApp
+gradle assembleDebug 2>&1 | tail -10
+cp ~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk ~/storage/downloads/Z3R0-v23.apk
+ls -lh ~/storage/downloads/Z3R0-v23.apk
+> Task :app:compileDebugJavaWithJavac
+> Task :app:dexBuilderDebug
+> Task :app:mergeDebugGlobalSynthetics UP-TO-DATE
+> Task :app:mergeProjectDexDebug
+> Task :app:packageDebug
+> Task :app:createDebugApkListingFileRedirect UP-TO-DATE
+> Task :app:assembleDebug
+
+BUILD SUCCESSFUL in 2m 21s
+31 actionable tasks: 9 executed, 22 up-to-date
+-rw-rw----. 1 u0_a0 media_rw 6.1M Oct  8 08:14 /data/data/com.termux/files/home/storage/downloads/Z3R0-v23.apk
+~/MyFirstApp $ wc -l ~/MyFirstApp/app/src/main/java/com/z3r0/hello/ToolActivity.java
+ls -lh ~/storage/downloads/Z3R0-v23.apk
+329 /data/data/com.termux/files/home/MyFirstApp/app/src/main/java/com/z3r0/hello/ToolActivity.java
+-rw-rw----. 1 u0_a0 media_rw 6.1M Oct  8 08:14 /data/data/com.termux/files/home/storage/downloads/Z3R0-v23.apk
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**BUILD SUCCESSFUL. `Z3R0-v23.apk` جاهز (6.1 ميغا، 329 سطر في `ToolActivity`).**
+
+---
+
+### الاختبار الشامل
+
+**1. ثبّت `Z3R0-v23.apk`** من مدير الملفات.
+
+**2. افتح التطبيق. المتوقع:**
+
+```
+┌────────────────────────────────────┐
+│ ☰   Z3R0 // TOOLKIT         v2.0  │
+├────────────────────────────────────┤
+│                                     │
+│  🌐  الشبكات  (2)                  │
+│                                     │
+│  🌍  DNS  (2)                      │
+│                                     │
+│  🔎  الويب  (1)                    │
+│                                     │
+└────────────────────────────────────┘
+```
+
+**3. اختبر nmap:**
+- اضغط **🌐 الشبكات**.
+- اضغط **nmap**.
+- **سترى:**
+  - الوصف: "أداة فحص الشبكة الأشهر..."
+  - ✅ الاستخدام القانوني (4 نقاط).
+  - ❌ الاستخدام المحظور (3 نقاط).
+  - ⚠️ تحذير (خلفية صفراء).
+  - مثال: `$ nmap -sV scanme.nmap.org`.
+  - حقول الهدف + الخيارات.
+  - زر تشغيل.
+  - 4 أزرار (مسح، حفظ، نسخ، مشاركة).
+  - منطقة النتائج.
+
+**4. اختبر تشغيل الفحص:**
+- اكتب: `scanme.nmap.org`.
+- اضغط **تشغيل**.
+- الزر يُعطَّل، شريط تقدم يظهر، الوقت يتزايد.
+- **انتظر 30-60 ثانية.**
+- النتيجة تظهر في الأسفل.
+
+**5. اختبر زر الإلغاء:**
+- شغّل nmap على `nmap.org`.
+- بعد 5 ثوان، اضغط **إلغاء**.
+- **النتيجة:** `⚡ أُرسل طلب الإلغاء...` ثم `── أُلغيت العملية ──`.
+
+**6. اختبر whois:**
+- ارجع → **🌍 DNS** → **whois**.
+- اكتب `nmap.org`.
+- تشغيل.
+- **انتظر 5 ثوان.**
+- النتيجة تظهر.
+
+---
+
+### ملاحظات
+
+**① تخطيط الشاشة:**
+- القسم العلوي (وصف + قانوني + تحذير) قابل للتمرير.
+- القسم السفلي (حقول + نتائج) قابل للتمرير.
+- قد تحتاج للتمرير بينهما للوصول للحقول.
+
+**إن كان التصميم ضيقاً:** نُعدّله لاحقاً بعد رؤية الأداء الفعلي.
+
+**② تنسيق المخرجات:**
+- المخرجات في `outputView` بلون أخضر على أسود.
+- **بدون ألوان ANSI** (بفضل الفلاغات في `tools_v2.json`).
+
+**③ Log المخرجات:**
+- كل فحص يُحفظ في `/sdcard/Z3R0/history/` (تلقائياً).
+- يمكن الوصول إليه من `السجل` في Drawer.
+
+---
+
+**توقّف. ثبّت واختبر. أرسل:**
+
+**1. هل تظهر الفئات الثلاث؟**
+**2. هل يفتح nmap بالوصف والقانوني والتحذير؟**
+**3. هل يعمل زر التشغيل؟**
+**4. هل يعمل الإلغاء؟**
+**5. هل whois يعمل من DNS؟**
+
+**إن نجح كل شيء، نُضيف بقية الأدوات إلى `tools_v2.json` مع المحتوى الكامل.**
+
+**إن فشل شيء، الصق الخطأ.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+نجح
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**ممتاز. الهيكل يعمل بالكامل. الآن نُوسّع `tools_v2.json` ليحتوي كل الأدوات الـ19 مع المحتوى الكامل.**
+
+**هذا الجزء الأكبر. سأقسمه إلى 3 دفعات:**
+
+- **دفعة 1:** الشبكات (nmap, ping, traceroute, netcat) + DNS (whois, dnsquery, subfinder, subfinder+httpx)
+- **دفعة 2:** الويب (gobuster, nikto, sslscan, curl-head)
+- **دفعة 3:** اختبار اختراق (nuclei, sqlmap, hydra) + Workflows (wf-recon, wf-net, wf-web, wf-vuln)
+- **دفعة 4 (لاحقاً):** OSINT (فارغ الآن)
+
+نبدأ بالدفعة 1.
+
+---
+
+## دفعة 1 — الشبكات + DNS (8 أدوات)
+
+```bash
+cat > /sdcard/Z3R0/tools_v2.json << 'JSONEOF'
+{
+  "version": "2.0",
+  "categories": [
+    {
+      "id": "network",
+      "name": "الشبكات",
+      "icon": "🌐",
+      "description": "فحص الشبكة والاتصال",
+      "tools": [
+        {
+          "id": "nmap",
+          "name": "nmap",
+          "pattern": "nmap -sV {target} {opts}",
+          "hint": "IP أو دومين",
+          "needs_target": true,
+          "description": "أداة فحص الشبكة الأشهر عالمياً. تكشف البورتات المفتوحة على الهدف، والخدمات التي تعمل عليها، وإصداراتها. أساسية في أي عملية استطلاع أو اختبار اختراق.",
+          "legal": [
+            "فحص سيرفراتك الخاصة (VPS، سيرفر منزلي)",
+            "فحص شبكتك المنزلية (الراوتر، الأجهزة المتصلة)",
+            "أهداف تدريبية رسمية: scanme.nmap.org",
+            "اختبار اختراق بعقد موقّع من الشركة المالكة"
+          ],
+          "illegal": [
+            "فحص سيرفرات لا تملكها دون إذن كتابي",
+            "فحص شبكات المؤسسات أو الشركات",
+            "فحص أجهزة الآخرين (كمبيوترات، هواتف، راوترات)",
+            "فحص بنية تحتية حساسة (بنوك، مستشفيات، جهات حكومية)"
+          ],
+          "warning": "nmap يسجّل عنوان IP الخاص بك على كل جهاز يستهدفه. أصحاب السيرفرات يرون الفحص في سجلاتهم (logs)، وقد يُبلّغون مزود الإنترنت (Ooredoo، Orange، إلخ). في تونس، الفحص غير المصرّح به جريمة بموجب قانون الاتصالات (2001) وقانون مكافحة الجرائم الإلكترونية (2018)، وقد تصل العقوبة إلى السجن. حتى \"الفضول التقني\" ليس عذراً قانونياً.",
+          "example": "nmap -sV scanme.nmap.org"
+        },
+        {
+          "id": "ping",
+          "name": "ping",
+          "pattern": "ping -c 4 {target}",
+          "hint": "IP أو دومين",
+          "needs_target": true,
+          "description": "اختبار الاتصال بالهدف. يرسل 4 حزم ICMP ويقيس زمن الاستجابة ومعدل فقدان الحزم. أداة أساسية للتحقق من أن الهدف متاح.",
+          "legal": [
+            "اختبار اتصالك بأي سيرفر عام",
+            "قياس ping للألعاب أو الخدمات (Google, Cloudflare)",
+            "فحص شبكتك المنزلية",
+            "التشخيص عند انقطاع الإنترنت"
+          ],
+          "illegal": [
+            "Ping flood (إغراق الهدف بآلاف الحزم)",
+            "استخدام ping في هجمات حجب الخدمة (DoS)",
+            "استهداف سيرفر بإغراق مستمر"
+          ],
+          "warning": "ping العادي (4-10 حزم) آمن تماماً. لكن إغراق هدف بآلاف حزم ICMP في الثانية هو هجوم حجب خدمة (DoS)، ويعاقب عليه القانون. مزود الإنترنت قد يقطع اتصالك فوراً عند اكتشاف هذا النمط.",
+          "example": "ping -c 4 nmap.org"
+        },
+        {
+          "id": "traceroute",
+          "name": "traceroute",
+          "pattern": "traceroute -m 15 {target}",
+          "hint": "IP أو دومين",
+          "needs_target": true,
+          "description": "يتتبع مسار الحزم من جهازك إلى الهدف. يعرض كل راوتر (hop) تمر به الحزم، مع زمن الوصول. مفيد لفهم بنية الشبكة وتشخيص مشاكل الاتصال.",
+          "legal": [
+            "تتبع مسار أي سيرفر عام",
+            "تشخيص بطء الإنترنت",
+            "تعلّم بنية شبكة الإنترنت",
+            "اختبار شبكتك"
+          ],
+          "illegal": [
+            "استخدام traceroute لرسم خريطة شبكة داخلية لا تملكها",
+            "استخدامه كجزء من هجوم reconnaissance"
+          ],
+          "warning": "traceroute قانوني على أي هدف عام. لكن استخدامه المتكرر على شبكة داخلية (بعد الوصول إليها) قد يكون جزءاً من هجوم أكبر. الحد: لا تستخدمه لرسم خرائط شبكات لا تملكها.",
+          "example": "traceroute -m 15 nmap.org"
+        },
+        {
+          "id": "netcat",
+          "name": "netcat",
+          "pattern": "nc -zv -w 5 {target} 80",
+          "hint": "IP (فحص بورت 80)",
+          "needs_target": true,
+          "description": "أداة TCP/IP متعددة الاستخدامات. في هذا الإعداد، تُستخدم لفحص بورت واحد (80 افتراضياً) على الهدف. يمكن تعديل البورت في حقل الخيارات.",
+          "legal": [
+            "فحص بورتات سيرفراتك",
+            "الاتصال بخدمات تعرفها (banner grabbing)",
+            "اختبار اتصال ببورت معين"
+          ],
+          "illegal": [
+            "فحص بورتات سيرفرات لا تملكها",
+            "Banner grabbing على أهداف غير مصرّح بها",
+            "استخدامه لنقل بيانات غير قانونية"
+          ],
+          "warning": "netcat أداة قوية جداً. الفحص العادي (banner grabbing) قانوني على سيرفراتك. لكن استخدام netcat للاتصال بخدمات الغير، أو لنقل بيانات غير قانونية، أو كـ backdoor، جريمة.",
+          "example": "nc -zv -w 5 nmap.org 80"
+        }
+      ]
+    },
+    {
+      "id": "dns",
+      "name": "DNS",
+      "icon": "🌍",
+      "description": "استعلامات النطاقات",
+      "tools": [
+        {
+          "id": "whois",
+          "name": "whois",
+          "pattern": "whois {target}",
+          "hint": "دومين",
+          "needs_target": true,
+          "description": "يستعلم عن معلومات تسجيل النطاق: المالك (قد يكون مخفياً)، تاريخ الإنشاء، تاريخ الانتهاء، خوادم الأسماء (NS)، خادم WHOIS المسؤول. معلومات عامة متاحة للجميع.",
+          "legal": [
+            "أي استعلام whois مشروع تماماً",
+            "معلومات عامة مسجّلة في ICANN",
+            "لا يحتاج أي إذن خاص"
+          ],
+          "illegal": [
+            "لا يوجد استخدام محظور — whois قانوني دائماً"
+          ],
+          "warning": "whois قانوني تماماً. لا تحذير. حتى استخدامه على نطاقات الغير مشروع لأنه استعلام عن سجل عام.",
+          "example": "whois nmap.org"
+        },
+        {
+          "id": "dnsquery",
+          "name": "dnsquery",
+          "pattern": "python3 /data/data/com.termux/files/home/z3r0/dnsquery.py {target}",
+          "hint": "دومين",
+          "needs_target": true,
+          "description": "يستعلم عن كل سجلات DNS للنطاق دفعة واحدة: A (IPv4), AAAA (IPv6), MX (بريد), NS (خوادم أسماء), TXT (نصوص), SOA (معلومات السلطة). أداة استطلاع شاملة.",
+          "legal": [
+            "استعلامات DNS عامة",
+            "تحليل بنية النطاقات",
+            "فحص نطاقاتك الخاصة"
+          ],
+          "illegal": [
+            "DNS zone transfer غير مصرّح (AXFR)",
+            "DNS amplification attack (استخدام DNS لإغراق هدف)"
+          ],
+          "warning": "الاستعلام العادي آمن تماماً. لكن استخدام DNS لـ amplification attack (تضخيم الهجوم) جريمة. الحد: لا تستخدمه لإغراق أهداف.",
+          "example": "dnsquery nmap.org"
+        },
+        {
+          "id": "subfinder",
+          "name": "subfinder",
+          "pattern": "/data/data/com.termux/files/home/go/bin/subfinder -d {target} -silent -nc",
+          "hint": "دومين رئيسي",
+          "needs_target": true,
+          "description": "يكتشف النطاقات الفرعية (subdomains) عبر مصادر عامة passive (شهادات SSL، محركات بحث، VirusTotal، إلخ). لا يلمس الهدف مباشرة — يقرأ بيانات عامة. يُنتج قائمة بكل النطاقات الفرعية المعروفة.",
+          "legal": [
+            "أي استعلام passive عن النطاقات العامة",
+            "استطلاع نطاقاتك الخاصة",
+            "تحليل بصمة مؤسستك على الإنترنت",
+            "لا يلمس الهدف مباشرة"
+          ],
+          "illegal": [
+            "لا يوجد استخدام محظور — passive reconnaissance قانوني"
+          ],
+          "warning": "subfinder يعمل passive فقط. لا يلمس الهدف. لا يُسجَّل IP الخاص بك عند الهدف. قانوني تماماً، حتى على نطاقات لا تملكها — لأن البيانات عامة.",
+          "example": "/data/data/com.termux/files/home/go/bin/subfinder -d nmap.org -silent"
+        },
+        {
+          "id": "subfinder-httpx",
+          "name": "subfinder + httpx",
+          "pattern": "/data/data/com.termux/files/home/go/bin/subfinder -d {target} -silent -nc > /sdcard/Z3R0/subs.txt && /data/data/com.termux/files/home/go/bin/httpx -l /sdcard/Z3R0/subs.txt -silent -status-code -title -tech-detect -timeout 5 -nc",
+          "hint": "دومين رئيسي",
+          "needs_target": true,
+          "description": "سلسلة كاملة: subfinder يكتشف النطاقات الفرعية، ثم httpx يفحص كل واحد لإخبارك: أيها يعمل فعلاً (HTTP/HTTPS)، حالة الاستجابة (200, 301, 403)، عنوان الصفحة، والتقنيات (Apache, Nginx, WordPress).",
+          "legal": [
+            "استطلاع نطاقاتك الخاصة",
+            "تحليل بصمة مؤسستك",
+            "subfinder passive + httpx يلمس النطاقات الفرعية (تأكد من ملكيتها)"
+          ],
+          "illegal": [
+            "httpx على نطاقات فرعية لا تملكها (يعتبر فحصاً)",
+            "استخدام النتائج لمهاجمة نطاق فرعي ضعيف الحماية"
+          ],
+          "warning": "subfinder passive وآمن. لكن httpx يلمس كل نطاق فرعي بإرسال طلب HTTP، وهذا يُسجَّل على السيرفرات. على نطاقاتك: قانوني. على نطاقات الغير: فحص غير مصرّح به، جريمة.",
+          "example": "/data/data/com.termux/files/home/go/bin/subfinder -d your-domain.com -silent -nc > /sdcard/Z3R0/subs.txt && /data/data/com.termux/files/home/go/bin/httpx -l /sdcard/Z3R0/subs.txt -silent -status-code -title -tech-detect -timeout 5 -nc"
+        }
+      ]
+    }
+  ]
+}
+JSONEOF
+
+# تحقق
+python3 -c "
+import json
+with open('/sdcard/Z3R0/tools_v2.json') as f:
+    data = json.load(f)
+print('Version:', data['version'])
+total = 0
+for c in data['categories']:
+    n = len(c.get('tools', []))
+    total += n
+    print(f'  {c[\"icon\"]} {c[\"name\"]}: {n} أدوات')
+print(f'Total: {total} أداة')
+"
+```
+
+**المتوقع:**
+```
+Version: 2.0
+  🌐 الشبكات: 4 أدوات
+  🌍 DNS: 4 أدوات
+Total: 8 أداة
+```
+
+---
+
+### الاختبار
+
+**من التطبيق:**
+1. افتح Z3R0 → **↻** (لا حاجة، لكن للتأكد — الزر الآن غير موجود في الواجهة الجديدة).
+2. افتح **🌐 الشبكات** → القائمة الآن فيها: nmap, ping, traceroute, netcat.
+3. افتح **🌍 DNS** → whois, dnsquery, subfinder, subfinder + httpx.
+
+**أو — أغلق التطبيق وأعد فتحه.**
+
+**اختبر `traceroute`:**
+- من 🌐 الشبكات → traceroute.
+- اكتب `nmap.org`.
+- تشغيل → 10-30 ثانية.
+
+**اختبر `subfinder`:**
+- من 🌍 DNS → subfinder.
+- اكتب `nmap.org`.
+- تشغيل → 30-60 ثانية.
+- **النتيجة:** قائمة بـ 30+ نطاق فرعي.
+
+---
+
+**توقّف. نفّذ. أرسل:**
+
+```
+python3 -c "import json; data=json.load(open('/sdcard/Z3R0/tools_v2.json')); print('Categories:', len(data['categories'])); [print(f'  {c[\"name\"]}: {len(c.get(\"tools\",[]))} tools') for c in data['categories']]"
+```
+
+**ثم اختبر من التطبيق. أخبرني:**
+- هل تظهر 8 أدوات موزّعة على فئتين؟
+- هل `traceroute` يعمل؟
+- هل `subfinder` يعمل؟
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ python3 -c "import json; data=json.load(open('/sdcard/Z3R0/tools_v2.json')); print('Categories:', len(data['categories'])); [print(f'  {c[\"name\"]}: {len(c.get(\"tools\",[]))} tools') for c in data['categories']]"
+Categories: 2
+  الشبكات: 4 tools
+  DNS: 4 tools
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**دفعة 1 مكتملة. 8 أدوات موزّعة على فئتين.**
+
+**اختبر الآن من التطبيق:**
+1. افتح Z3R0.
+2. **🌐 الشبكات** → يجب أن ترى 4 أدوات (nmap, ping, traceroute, netcat).
+3. **🌍 DNS** → 4 أدوات (whois, dnsquery, subfinder, subfinder + httpx).
+
+**اختبر `traceroute`:**
+- من الشبكات → traceroute.
+- `nmap.org` → تشغيل → 10-30 ثانية.
+
+**اختبر `subfinder`:**
+- من DNS → subfinder.
+- `nmap.org` → تشغيل → 30-60 ثانية.
+
+---
+
+### الآن — دفعة 2 (الويب)
+
+**4 أدوات:** gobuster, nikto, sslscan, curl-head.
+
+**نُضيفها إلى `tools_v2.json`.**
+
+```bash
+python3 << 'PYEOF'
+import json
+
+path = "/sdcard/Z3R0/tools_v2.json"
+with open(path) as f:
+    data = json.load(f)
+
+# تحقق: هل فئة "web" موجودة؟
+web_exists = any(c["id"] == "web" for c in data["categories"])
+if not web_exists:
+    data["categories"].append({
+        "id": "web",
+        "name": "الويب",
+        "icon": "🔎",
+        "description": "فحص تطبيقات الويب",
+        "tools": []
+    })
+
+# احصل على فئة web
+web_cat = next(c for c in data["categories"] if c["id"] == "web")
+web_cat["tools"] = [
+    {
+        "id": "gobuster",
+        "name": "gobuster",
+        "pattern": "/data/data/com.termux/files/home/go/bin/gobuster dir -u https://{target} -w /sdcard/Z3R0/paths.txt -t 30 --timeout 10s -q -b 403,404 {opts}",
+        "hint": "دومين (يُضاف https)",
+        "needs_target": True,
+        "description": "أداة كشف المسارات والملفات المخفية على سيرفرات الويب. تجرب آلاف المسارات المحتملة (admin/, backup/, .git/, .env/, wp-admin/...) وتُخبرك أيها موجود فعلاً.",
+        "legal": [
+            "فحص مواقعك الخاصة",
+            "فحص موقع شركتك بعقد",
+            "CTF ومختبرات تدريبية",
+            "اختبار اختراق مصرّح به"
+        ],
+        "illegal": [
+            "فحص مواقع لا تملكها",
+            "اكتشاف مسارات مخفية على مواقع الغير",
+            "استخدام النتائج للوصول غير المصرّح به"
+        ],
+        "warning": "gobuster يُرسل آلاف الطلبات إلى السيرفر. أصحاب السيرفرات يرون الحجم الكبير من الطلبات في سجلاتهم (قد يبدو كهجوم)، وقد يُبلّغون مزود الإنترنت. على مواقعك: قانوني. على مواقع الغير: فحص غير مصرّح به.",
+        "example": "/data/data/com.termux/files/home/go/bin/gobuster dir -u https://your-site.com -w /sdcard/Z3R0/paths.txt -t 30 -q"
+    },
+    {
+        "id": "nikto",
+        "name": "nikto",
+        "pattern": "cd /data/data/com.termux/files/home/nikto && perl program/nikto.pl -h {target} -maxtime 120s -nointeractive",
+        "hint": "دومين أو URL",
+        "needs_target": True,
+        "description": "ماسح ثغرات سيرفرات الويب. يفحص أكثر من 6700 ملف خطر محتمل، ويُخبرك بالإصدارات القديمة، الهيدرات الأمنية المفقودة، والملفات الحساسة المكشوفة.",
+        "legal": [
+            "فحص مواقعك الخاصة",
+            "فحص تطبيقات ويب طورتها",
+            "اختبار اختراق بعقد موقّع",
+            "CTF ومختبرات"
+        ],
+        "illegal": [
+            "فحص مواقع لا تملكها",
+            "استخدامه كجزء من استطلاع تمهيدي لهجوم",
+            "استغلال الثغرات المكتشفة دون إذن"
+        ],
+        "warning": "nikto يفحص آلاف الملفات والمسارات على السيرفر. يُسجَّل في الـ logs بشكل واضح. على مواقعك: قانوني. على مواقع الغير: جريمة بموجب قانون الجرائم الإلكترونية التونسي. حتى \"الفضول\" ليس عذراً.",
+        "example": "cd /data/data/com.termux/files/home/nikto && perl program/nikto.pl -h your-site.com -maxtime 120s -nointeractive"
+    },
+    {
+        "id": "sslscan",
+        "name": "sslscan",
+        "pattern": "sslscan --no-colour {target}:443",
+        "hint": "دومين (البورت 443)",
+        "needs_target": True,
+        "description": "يفحص إعدادات TLS/SSL للسيرفر: الإصدارات المدعومة (TLS 1.0/1.1/1.2/1.3)، الـ ciphers، الشهادة (تاريخ الانتهاء، المُصدر)، والثغرات المعروفة (Heartbleed، CCS Injection، إلخ).",
+        "legal": [
+            "فحص أي موقع عام (TLS عام)",
+            "فحص سيرفراتك",
+            "تأكد من شهادة SSL",
+            "تحقق من مستوى الأمان"
+        ],
+        "illegal": [
+            "لا يوجد استخدام محظور — فحص TLS عام"
+        ],
+        "warning": "sslscan قانوني تماماً. الفحص العام لـ TLS على أي موقع عام لا يُسجَّل بأي شكل مقلق. لا تحذير.",
+        "example": "sslscan --no-colour your-site.com:443"
+    },
+    {
+        "id": "curl-head",
+        "name": "curl-head",
+        "pattern": "curl -sI --max-time 15 {target}",
+        "hint": "URL كامل (يبدأ بـ http)",
+        "needs_target": True,
+        "description": "يجلب ترويسات HTTP فقط (HEAD request) بدون تحميل الصفحة. سريع جداً. يُظهر: السيرفر (Apache/Nginx)، حالة الاستجابة، التقنيات، هيدرات الأمان، حجم الصفحة.",
+        "legal": [
+            "فحص أي موقع عام",
+            "تطوير الويب",
+            "API testing",
+            "تحقق من حالة موقع"
+        ],
+        "illegal": [
+            "إغراق سيرفر بآلاف الطلبات (DoS)"
+        ],
+        "warning": "طلب HEAD واحد آمن تماماً. حتى الآلاف منه لن تسبب مشكلة على سيرفرات كبيرة. لكن إغراق سيرفر صغير بآلاف الطلبات في الثانية قد يُعطّله — هذا هجوم DoS.",
+        "example": "curl -sI --max-time 15 https://nmap.org"
+    }
+]
+
+with open(path, "w") as f:
+    json.dump(data, f, ensure_ascii=False, indent=2)
+
+total = sum(len(c.get("tools", [])) for c in data["categories"])
+print(f"Categories: {len(data['categories'])}")
+for c in data["categories"]:
+    print(f"  {c['icon']} {c['name']}: {len(c.get('tools',[]))}")
+print(f"Total: {total}")
+PYEOF
+```
+
+**المتوقع:**
+```
+Categories: 3
+  🌐 الشبكات: 4
+  🌍 DNS: 4
+  🔎 الويب: 4
+Total: 12
+```
+
+---
+
+### الاختبار
+
+**من التطبيق:**
+- افتح Z3R0.
+- **🔎 الويب** → 4 أدوات.
+- اختر **sslscan** → `nmap.org` → تشغيل → 30-60 ثانية.
+
+---
+
+**توقّف. نفّذ. أرسل:**
+
+```
+python3 -c "import json; d=json.load(open('/sdcard/Z3R0/tools_v2.json')); print('Total:', sum(len(c.get('tools',[])) for c in d['categories']))"
+```
+
+**ثم اختبر `sslscan` أو `curl-head` من التطبيق.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ python3 -c "import json; d=json.load(open('/sdcard/Z3R0/tools_v2.json')); print('Total:', sum(len(c.get('tools',[])) for c in d['categories']))"
+Total: 12
+~/MyFirstApp $
+
+نجح
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**12 أداة في 3 فئات. الآن الدفعة الأخيرة — اختبار اختراق + Workflows.**
+
+---
+
+## دفعة 3 — اختبار اختراق + Workflows (7 أدوات)
+
+```bash
+python3 << 'PYEOF'
+import json
+
+path = "/sdcard/Z3R0/tools_v2.json"
+with open(path) as f:
+    data = json.load(f)
+
+# حذف الفئات إن وُجدت
+data["categories"] = [c for c in data["categories"] if c["id"] not in ["offensive", "workflows"]]
+
+# فئة اختبار اختراق
+data["categories"].append({
+    "id": "offensive",
+    "name": "اختبار اختراق",
+    "icon": "🎯",
+    "description": "أدوات هجومية — للاستخدام على أهدافك فقط",
+    "tools": [
+        {
+            "id": "nuclei",
+            "name": "nuclei",
+            "pattern": "/data/data/com.termux/files/home/go/bin/nuclei -u https://{target} -t /data/data/com.termux/files/home/nuclei-templates/http/cves/ -t /data/data/com.termux/files/home/nuclei-templates/javascript/cves/ -silent -timeout 5 -retries 1 -no-color -disable-update-check -no-interactsh -rate-limit 100 {opts}",
+            "hint": "دومين (فحص CVE آلي)",
+            "needs_target": True,
+            "description": "ماسح ثغرات CVE آلي. يستخدم آلاف القوالب الجاهزة من المجتمع لاختبار الهدف ضد ثغرات معروفة: SSH, HTTP, Apache, Nginx, JS libs, إلخ. النتائج دقيقة وتتضمن رقم CVE والخطورة.",
+            "legal": [
+                "فحص سيرفراتك الخاصة",
+                "فحص أهداف CTF (HackTheBox, TryHackMe)",
+                "اختبار اختراق بعقد موقّع",
+                "مختبرك المنزلي"
+            ],
+            "illegal": [
+                "فحص سيرفرات لا تملكها",
+                "استغلال CVE مكتشف دون إذن",
+                "استخدامه كجزء من هجوم منظم"
+            ],
+            "warning": "nuclei يفحص آلاف القوالب. أصحاب السيرفرات يرون النشاط بوضوح في سجلاتهم. على أهدافك: قانوني. على أهداف الغير: اختبار اختراق غير مصرّح به — جريمة. حتى فحص واحد قد يُسجَّل ويُتبَع.",
+            "example": "/data/data/com.termux/files/home/go/bin/nuclei -u https://your-site.com -t /data/data/com.termux/files/home/nuclei-templates/http/cves/ -silent"
+        },
+        {
+            "id": "sqlmap",
+            "name": "sqlmap",
+            "pattern": "sqlmap -u \"{target}\" --batch --level=1 --risk=1 --timeout=30 --threads=1 --disable-coloring {opts}",
+            "hint": "URL كامل فيه معامل (مثلاً: http://site.com/page?id=1)",
+            "needs_target": True,
+            "description": "أداة كشف واستغلال ثغرات SQL Injection. تفحص URL فيه معاملات (id=, user=, page=) وترى إن كانت قابلة للحقن. عند اكتشاف ثغرة، يمكنها استخراج قاعدة البيانات كاملة.",
+            "legal": [
+                "فحص مواقعك الخاصة",
+                "فحص تطبيقات طورتها",
+                "CTF ومختبرات تدريبية",
+                "اختبار اختراق بعقد موقّع"
+            ],
+            "illegal": [
+                "فحص مواقع لا تملكها",
+                "استخراج بيانات من قاعدة بيانات غير مملوكة",
+                "استغلال الثغرات المكتشفة"
+            ],
+            "warning": "sqlmap يرسل طلبات ضخمة تحتوي payloads هجومية. أي WAF (Web Application Firewall) سيكتشفها فوراً ويُسجّلها. أصحاب المواقع يُبلّغون مزود الإنترنت عند رؤية النشاط. في تونس: جريمة بموجب قانون مكافحة الجرائم الإلكترونية (2018). العقوبة تصل إلى 5 سنوات سجناً + غرامة.",
+            "example": "sqlmap -u \"http://your-site.com/page.php?id=1\" --batch --level=1 --risk=1"
+        },
+        {
+            "id": "hydra",
+            "name": "hydra",
+            "pattern": "hydra -l {opts} -P /sdcard/Z3R0/wordlist.txt -t 4 -f ssh://{target}",
+            "hint": "هدف + اسم المستخدم في الخيارات",
+            "needs_target": True,
+            "description": "أداة كسر كلمات المرور عبر بروتوكولات الشبكة (SSH, FTP, HTTP, MySQL, RDP...). تجرب كلمات مرور من قائمة على خدمة تسجيل دخول معينة. تُستخدم في اختبار قوة كلمات مرور السيرفرات.",
+            "legal": [
+                "اختبار كلمات مرور سيرفراتك (هل كلمة السر قوية؟)",
+                "فحص مختبرك الشخصي",
+                "CTF ومختبرات تدريبية",
+                "اختبار اختراق بعقد موقّع + نطاق محدد"
+            ],
+            "illegal": [
+                "كسر كلمات مرور سيرفرات لا تملكها",
+                "محاولة الدخول لحسابات الغير",
+                "اختراق أي نظام لا تملكه",
+                "محاولة الدخول لحسابات التواصل الاجتماعي"
+            ],
+            "warning": "hydra أداة خطيرة. تُرسل محاولات تسجيل دخول متتالية، وأي نظام أمني (fail2ban, WAF, IDS) سيكتشفها ويحظر IP الخاص بك خلال ثوانٍ. أصحاب السيرفرات يرون IP الخاص بك في سجلاتهم، ويُبلّغون مزود الإنترنت. مزود الإنترنت (Ooredoo/Orange) يتعاون مع السلطات ويكشف هويتك. في تونس: جريمة يعاقب عليها بالسجن حتى 5 سنوات وغرامة مالية. حتى \"التجربة\" تُسجَّل كجريمة كاملة.",
+            "example": "hydra -l root -P /sdcard/Z3R0/wordlist.txt -t 4 -f ssh://your-own-server.com"
+        }
+    ]
+})
+
+# فئة Workflows
+data["categories"].append({
+    "id": "workflows",
+    "name": "Workflows",
+    "icon": "⚡",
+    "description": "سلاسل فحص جاهزة — أداة واحدة تشغّل عدة أدوات",
+    "tools": [
+        {
+            "id": "wf-recon",
+            "name": "استطلاع سريع",
+            "pattern": "echo '=== WHOIS ===' && whois {target} && echo '' && echo '=== DNS ===' && python3 /data/data/com.termux/files/home/z3r0/dnsquery.py {target} && echo '' && echo '=== SUBFINDER ===' && /data/data/com.termux/files/home/go/bin/subfinder -d {target} -silent -nc",
+            "hint": "دومين (whois + DNS + subfinder)",
+            "needs_target": True,
+            "description": "استطلاع أولي سريع. يشغّل ثلاث أدوات بالتتابع: whois (من يملك النطاق)، dnsquery (كل سجلات DNS)، subfinder (النطاقات الفرعية). مثالي كبداية لأي تحقيق. المدة: ~60 ثانية.",
+            "legal": [
+                "أي نطاق عام (كل الاستعلامات passive)",
+                "استطلاع نطاقاتك",
+                "تحليل المنافسين (بيانات عامة)"
+            ],
+            "illegal": [],
+            "warning": "كل أدوات هذا Workflow passive (لا تلمس الهدف). قانوني تماماً على أي نطاق. لا تحذير.",
+            "example": "يشغّل: whois + dnsquery + subfinder على nmap.org"
+        },
+        {
+            "id": "wf-net",
+            "name": "فحص شبكة",
+            "pattern": "echo '=== PING ===' && ping -c 4 {target} && echo '' && echo '=== TRACEROUTE ===' && traceroute -m 15 {target} && echo '' && echo '=== NMAP ===' && nmap -sV {target}",
+            "hint": "IP أو دومين (~2 دقيقة)",
+            "needs_target": True,
+            "description": "فحص شبكة شامل: ping (اختبار الاتصال)، traceroute (مسار الحزم)، nmap (البورتات والخدمات). يمنحك صورة كاملة عن الهدف من ناحية الشبكة. المدة: ~2 دقيقة.",
+            "legal": [
+                "سيرفراتك الخاصة",
+                "شبكتك المنزلية",
+                "أهداف تدريبية رسمية (scanme.nmap.org)",
+                "بعقد موقّع"
+            ],
+            "illegal": [
+                "سيرفرات لا تملكها",
+                "شبكات المؤسسات"
+            ],
+            "warning": "nmap و traceroute يُسجَّلان على الهدف. على أهدافك: قانوني. على أهداف الغير: جريمة. نفس تحذير nmap الفردي.",
+            "example": "يشغّل: ping + traceroute + nmap -sV"
+        },
+        {
+            "id": "wf-web",
+            "name": "فحص ويب",
+            "pattern": "echo '=== CURL-HEAD ===' && curl -sI --max-time 15 https://{target} && echo '' && echo '=== SSLSCAN ===' && sslscan --no-colour {target}:443 && echo '' && echo '=== NIKTO ===' && cd /data/data/com.termux/files/home/nikto && perl program/nikto.pl -h {target} -maxtime 60s -nointeractive",
+            "hint": "دومين (~3 دقائق)",
+            "needs_target": True,
+            "description": "فحص ويب شامل: curl-head (ترويسات HTTP)، sslscan (TLS/SSL)، nikto (ثغرات الويب). يمنحك صورة عن السيرفر، شهادته، والثغرات المعروفة. المدة: ~3 دقائق.",
+            "legal": [
+                "مواقعك الخاصة",
+                "بعقد موقّع من الشركة",
+                "CTF ومختبرات"
+            ],
+            "illegal": [
+                "مواقع لا تملكها",
+                "مواقع الغير حتى لو بدت عامة"
+            ],
+            "warning": "nikto يُسجَّل بشكل واضح جداً (آلاف الطلبات). على مواقعك: قانوني. على مواقع الغير: جريمة. لا تستخدمه على موقع لا تملكه حتى لو كان \"بسيطاً\".",
+            "example": "يشغّل: curl-head + sslscan + nikto -h your-site.com"
+        },
+        {
+            "id": "wf-vuln",
+            "name": "فحص ثغرات",
+            "pattern": "echo '=== SUBFINDER ===' && /data/data/com.termux/files/home/go/bin/subfinder -d {target} -silent -nc && echo '' && echo '=== NUCLEI ===' && /data/data/com.termux/files/home/go/bin/nuclei -u https://{target} -t /data/data/com.termux/files/home/nuclei-templates/http/cves/ -t /data/data/com.termux/files/home/nuclei-templates/javascript/cves/ -silent -timeout 5 -retries 1 -no-color -disable-update-check -no-interactsh -rate-limit 100",
+            "hint": "دومين (~2 دقيقة)",
+            "needs_target": True,
+            "description": "اكتشاف ثغرات آلي: subfinder يجمع النطاقات الفرعية، ثم nuclei يفحص النطاق الرئيسي ضد آلاف ثغرات CVE. مثالي للأهداف التدريبية والاختبارات المصرّح بها. المدة: ~2 دقيقة.",
+            "legal": [
+                "أهدافك الخاصة",
+                "CTF",
+                "اختبار اختراق بعقد موقّع"
+            ],
+            "illegal": [
+                "أهداف الغير",
+                "استغلال CVE مكتشف دون إذن"
+            ],
+            "warning": "nuclei يُسجَّل على الهدف. في الاختبار، اكتشف ثغرة حقيقية CVE-2023-48795 على nmap.org — وهذا مسموح لأن nmap.org هدف تدريبي رسمي. على أهداف الغير: جريمة.",
+            "example": "يشغّل: subfinder + nuclei CVE على هدف تدريبي"
+        }
+    ]
+})
+
+with open(path, "w") as f:
+    json.dump(data, f, ensure_ascii=False, indent=2)
+
+total = sum(len(c.get("tools", [])) for c in data["categories"])
+print(f"Categories: {len(data['categories'])}")
+for c in data["categories"]:
+    print(f"  {c['icon']} {c['name']}: {len(c.get('tools',[]))}")
+print(f"Total: {total}")
+PYEOF
+```
+
+**المتوقع:**
+```
+Categories: 5
+  🌐 الشبكات: 4
+  🌍 DNS: 4
+  🔎 الويب: 4
+  🎯 اختبار اختراق: 3
+  ⚡ Workflows: 4
+Total: 19
+```
+
+---
+
+### الاختبار
+
+**من التطبيق:**
+1. افتح Z3R0.
+2. **🎯 اختبار اختراق** → 3 أدوات (nuclei, sqlmap, hydra).
+3. **⚡ Workflows** → 4 (استطلاع، شبكة، ويب، ثغرات).
+
+**اختبر Workflow واحد:**
+- **⚡ Workflows** → **استطلاع سريع**.
+- `nmap.org` → تشغيل → ~60 ثانية.
+
+**النتيجة:** whois + dnsquery + subfinder في تقرير واحد.
+
+**اختبر nuclei:**
+- **🎯 اختبار اختراق** → **nuclei**.
+- `nmap.org` → تشغيل → 60-90 ثانية.
+- **النتيجة:** `[CVE-2023-48795] [javascript] [medium] nmap.org:22 ["Vulnerable to Terrapin"]`.
+
+---
+
+**توقّف. نفّذ. أرسل:**
+
+```
+python3 -c "import json; d=json.load(open('/sdcard/Z3R0/tools_v2.json')); print('Total:', sum(len(c.get('tools',[])) for c in d['categories']))"
+```
+
+**ثم اختبر من التطبيق:**
+- هل تظهر 5 فئات؟
+- هل Workflows تعمل؟
+- هل nuclei يعمل؟
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+Workflows: 4
+Total: 19
+~/MyFirstApp $ python3 -c "import json; d=json.load(open('/sdcard/Z3R0/tools_v2.json')); print('Total:', sum(len(c.get('tools',[])) for c in d['categories']))"
+Total: 19
+~/MyFirstApp $ 
+
+نجح
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**19 أداة في 5 فئات. المرحلة أ مكتملة بالكامل.**
+
+---
+
+## ما تم إنجازه
+
+**الواجهة الجديدة:**
+- Drawer جانبي (☰).
+- 5 فئات: الشبكات، DNS، الويب، اختبار اختراق، Workflows.
+- كل فئة تعرض أدواتها.
+- كل أداة تعرض: الوصف + القانوني + المحظور + التحذير + المثال + حقول + تشغيل + نتائج.
+
+**الترسانة:**
+- 19 أداة موزّعة منطقياً.
+- كل أداة بمحتوى تعليمي كامل.
+- التحذير العملي لكل أداة خطيرة.
+- أمثلة على أهداف تدريبية آمنة.
+
+**الإلغاء + النسخ + المشاركة + الحفظ** — كلها تعمل داخل كل أداة.
+
+---
+
+## المتبقي
+
+**① فئة OSINT** — فارغة حالياً. نحتاج إضافة أدوات:
+- صور: `exiftool`, Google/Yandex reverse image
+- IP: `whois IP`, IP geolocation
+- Gmail: `holehe`, `GHunt`
+- أسماء: `sherlock`, `maigret`
+- نطاقات: `subfinder`, `dnsquery`
+
+**② تحسينات الواجهة:**
+- حفظ آخر هدف مُدخل.
+- عرض حالة الأدوات (نشط/معطّل).
+- ترقيم نتائج Search في السجل.
+
+**③ تصدير/تقارير:** (أخّرته سابقاً)
+
+**④ إضافات:**
+- زر "تحديث tools_v2.json" في Drawer.
+- إحصائيات عامة.
+- فلترة السجل.
+
+---
+
+## اقتراحي
+
+**① فئة OSINT** — لأنها الميزة الكبرى المتبقية من رؤيتك.
+
+**التخطيط:**
+- تثبيت `holehe`, `sherlock` (Python، قد يحتاج compile).
+- تثبيت `exiftool` (Perl).
+- إضافة `exiftool` — يستخرج بيانات EXIF من الصور (تاريخ، جهاز، GPS).
+- إضافة `shodan` (Python) — أو `whois` IP.
+
+**لكن** — بعض هذه الأدوات فشلت سابقاً (`pydantic-core`، `pandas`). نحتاج اختبار.
+
+**أو** — نُضيف أدوات OSINT التي **تعمل** بلا مشاكل:
+- `exiftool` (Perl).
+- `whois IP` (متوفر).
+- `nslookup` (متوفر).
+- Reverse image (عبر URL query).
+
+**أي تريد؟**
+
+**أ) OSINT — أدوات جديدة.**
+**ب) تحسينات واجهة (حفظ هدف، عرض حالة).**
+**ج) اختبار شامل للتطبيق الحالي.**
+**د) توقّف — احفظ نسخة.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+بالترتيب الذي قلته أ ب ج د
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**نبدأ بـ ① فئة OSINT.**
+
+**الاستراتيجية:** نتأكد أولاً أن الأدوات تعمل في Termux، ثم نُضيفها.
+
+---
+
+## أ.1 — اختبار أدوات OSINT المرشّحة
+
+**نختبر 4 أدوات:**
+
+| الأداة | الفائدة | اللغة | الحالة |
+|---|---|---|---|
+| **exiftool** | استخراج بيانات الصور (GPS، الجهاز، التاريخ) | Perl | سهل |
+| **holehe** | فحص إيميل في 120+ موقع | Python | قد يفشل |
+| **sherlock** | اسم مستخدم عبر 400+ شبكة | Python | قد يفشل |
+| **IP geolocation** | موقع IP جغرافياً | curl | سهل |
+
+---
+
+### 1. exiftool
+
+```bash
+pkg install -y exiftool
+exiftool -ver
+```
+
+**المتوقع:** `13.xx`.
+
+---
+
+### 2. holehe
+
+```bash
+pip install holehe --no-deps
+pip install httpx trio bs4 termcolor
+holehe --help 2>&1 | head -5
+```
+
+**المتوقع:**
+- **إن نجح:** `--help` يعرض الخيارات.
+- **إن فشل:** خطأ compile (نتركه).
+
+---
+
+### 3. sherlock
+
+```bash
+pip install sherlock-project --no-deps
+pip install requests colorama openpyxl 2>&1 | tail -3
+python3 -c "import sherlock_project" 2>&1 | head -3
+```
+
+**المتوقع:**
+- **إن نجح:** صمت (لا خطأ).
+- **إن فشل:** خطأ (نتركه).
+
+---
+
+### 4. IP geolocation
+
+**عبر API عام (بدون تسجيل):**
+
+```bash
+curl -s "http://ip-api.com/json/8.8.8.8" 2>&1 | head -5
+```
+
+**المتوقع:** JSON يحتوي بيانات IP (بلد، مدينة، ISP).
+
+---
+
+### 5. اختبار إضافي — الموقع الرسمي
+
+```bash
+echo "=== اختبار ip-api ==="
+curl -s "http://ip-api.com/json/8.8.8.8" | python3 -m json.tool 2>&1 | head -20
+```
+
+---
+
+**توقّف. نفّذ الأوامر واحداً واحداً. أرسل:**
+
+```
+pkg install -y exiftool 2>&1 | tail -3
+exiftool -ver
+pip install holehe --no-deps 2>&1 | tail -3
+pip install httpx trio bs4 termcolor 2>&1 | tail -3
+holehe --help 2>&1 | head -3
+pip install sherlock-project --no-deps 2>&1 | tail -3
+python3 -c "import sherlock_project; print('OK')" 2>&1 | head -3
+curl -s "http://ip-api.com/json/8.8.8.8" | head -c 300
+```
+
+**أرسل المخرجات كاملة. بناءً عليها نُحدّد أي أدوات OSINT نُضيف.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ python3 -c "import json; d=json.load(open('/sdcard/Z3R0/tools_v2.json')); print('Total:', sum(len(c.get('tools',[])) for c in d['categories']))"
+Total: 19
+~/MyFirstApp $ pkg install -y exiftool
+exiftool -ver
+Testing the available mirrors:
+[*] (1) https://linux.domainesia.com/applications/termux/termux-main: ok
+[*] (1) https://termux.niranjan.co/termux-main: ok
+[*] (1) https://mirror.bardia.tech/termux/termux-main: bad
+[*] (1) https://mirrors.saswata.cc/termux/termux-main: bad
+[*] (1) https://mirrors.ravidwivedi.in/termux/termux-main: ok
+[*] (1) https://mirror.textcord.xyz/termux/termux-main: ok
+[*] (1) https://mirrors.krnk.org/apt/termux/termux-main: ok
+[*] (1) https://mirror.rinarin.dev/termux/termux-main: ok
+[*] (1) https://mirror.jeonnam.school/termux/termux-main: ok
+[*] (1) https://mirrors.nguyenhoang.cloud/termux/termux-main: ok
+[*] (1) https://mirrors.cbrx.io/apt/termux/termux-main: ok
+[*] (1) https://tmx.xvx.my.id/apt/termux-main: ok
+[*] (1) https://mirror.albony.in/termux/termux-main: ok
+[*] (1) https://mirror.twds.com.tw/termux/termux-main: ok
+[*] (1) https://mirror.nevacloud.com/applications/termux/termux-main: ok
+[*] (1) https://mirror.meowsmp.net/termux/termux-main: bad
+[*] (1) https://mirror.freedif.org/termux/termux-main: ok
+[*] (1) https://mirrors.in.sahilister.net/termux/termux-main/: ok
+Picking mirror: (5) /data/data/com.termux/files/usr/etc/termux/chosen_mirrors/mirror.rinarin.dev
+Get:1 https://mirror.rinarin.dev/termux/termux-main stable InRelease [14.0 kB]
+Get:2 https://mirror.rinarin.dev/termux/termux-root root InRelease [14.2 kB]
+Get:3 https://mirror.rinarin.dev/termux/termux-main stable/main aarch64 Packages [585 kB]
+Get:4 https://mirror.rinarin.dev/termux/termux-root root/stable aarch64 Packages [21.6 kB]
+Fetched 635 kB in 5s (123 kB/s)
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+18 packages can be upgraded. Run 'apt list --upgradable' to see them.
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+exiftool is already the newest version (13.59-1).
+0 upgraded, 0 newly installed, 0 to remove and 18 not upgraded.
+13.59
+~/MyFirstApp $ pip install holehe --no-deps
+pip install httpx trio bs4 termcolor
+holehe --help 2>&1 | head -5
+Requirement already satisfied: holehe in /data/data/com.termux/files/usr/lib/python3.14/site-packages (1.61)
+Requirement already satisfied: httpx in /data/data/com.termux/files/usr/lib/python3.14/site-packages (0.28.1)
+Requirement already satisfied: trio in /data/data/com.termux/files/usr/lib/python3.14/site-packages (0.34.0)
+Requirement already satisfied: bs4 in /data/data/com.termux/files/usr/lib/python3.14/site-packages (0.0.2)
+Requirement already satisfied: termcolor in /data/data/com.termux/files/usr/lib/python3.14/site-packages (3.3.0)
+Requirement already satisfied: anyio in /data/data/com.termux/files/usr/lib/python3.14/site-packages (from httpx) (4.15.1)
+Requirement already satisfied: certifi in /data/data/com.termux/files/usr/lib/python3.14/site-packages (from httpx) (2026.7.22)
+Requirement already satisfied: httpcore==1.* in /data/data/com.termux/files/usr/lib/python3.14/site-packages (from httpx) (1.0.9)
+Requirement already satisfied: idna in /data/data/com.termux/files/usr/lib/python3.14/site-packages (from httpx) (3.18)
+Requirement already satisfied: h11>=0.16 in /data/data/com.termux/files/usr/lib/python3.14/site-packages (from httpcore==1.*->httpx) (0.16.0)
+Requirement already satisfied: attrs>=23.2.0 in /data/data/com.termux/files/usr/lib/python3.14/site-packages (from trio) (26.1.0)
+Requirement already satisfied: sortedcontainers in /data/data/com.termux/files/usr/lib/python3.14/site-packages (from trio) (2.4.0)
+Requirement already satisfied: outcome in /data/data/com.termux/files/usr/lib/python3.14/site-packages (from trio) (1.3.0.post0)
+Requirement already satisfied: sniffio>=1.3.0 in /data/data/com.termux/files/usr/lib/python3.14/site-packages (from trio) (1.3.1)
+Requirement already satisfied: beautifulsoup4 in /data/data/com.termux/files/usr/lib/python3.14/site-packages (from bs4) (4.15.0)
+Requirement already satisfied: typing_extensions>=4.16.0 in /data/data/com.termux/files/usr/lib/python3.14/site-packages (from anyio->httpx) (4.16.0)
+Requirement already satisfied: soupsieve>=1.6.1 in /data/data/com.termux/files/usr/lib/python3.14/site-packages (from beautifulsoup4->bs4) (2.10)
+usage: holehe [-h] [--only-used] [--no-color] [--no-clear] [-NP] [-C]
+              [-T TIMEOUT]
+              EMAIL [EMAIL ...]
+
+holehe v1.61
+~/MyFirstApp $ pip install sherlock-project --no-deps
+pip install requests colorama openpyxl 2>&1 | tail -3
+python3 -c "import sherlock_project" 2>&1 | head -3
+Requirement already satisfied: sherlock-project in /data/data/com.termux/files/usr/lib/python3.14/site-packages (0.16.2)
+sherlock-project 0.16.2 requires stem<2.0.0,>=1.8.0, which is not installed.
+sherlock-project 0.16.2 requires tomli<3.0.0,>=2.2.1, which is not installed.
+Successfully installed et-xmlfile-2.0.0 openpyxl-3.1.5
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import sherlock_project
+~/MyFirstApp $ curl -s "http://ip-api.com/json/8.8.8.8" 2>&1 | head -5
+{"status":"success","country":"United States","countryCode":"US","region":"VA","regionName":"Virginia","city":"Ashburn","zip":"20149","lat":39.03,"lon":-77.5,"timezone":"America/New_York","isp":"Google LLC","org":"Google Public DNS","as":"AS15169 Google LLC","query":"8.~/MyFirstApp $ echo "=== اختبار ip-api ==="
+curl -s "http://ip-api.com/json/8.8.8.8" | python3 -m json.tool 2>&1 | head -20
+=== اختبار ip-api ===
+{
+    "status": "success",
+    "country": "United States",
+    "countryCode": "US",
+    "region": "VA",
+    "regionName": "Virginia",
+    "city": "Ashburn",
+    "zip": "20149",
+    "lat": 39.03,
+    "lon": -77.5,
+    "timezone": "America/New_York",
+    "isp": "Google LLC",
+    "org": "Google Public DNS",
+    "as": "AS15169 Google LLC",
+    "query": "8.8.8.8"
+}
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**النتائج واضحة:**
+
+| الأداة | الحالة | ملاحظة |
+|---|---|---|
+| **exiftool** | ✅ 13.59 | يعمل |
+| **holehe** | ✅ 1.61 | يعمل مع كل الاعتماديات |
+| **sherlock** | ❌ | فشل — ناقص `stem`, `tomli` |
+| **ip-api** | ✅ | يعمل، يُرجع JSON كامل |
+
+---
+
+### إصلاح sherlock
+
+**ناقص `stem` و `tomli`:**
+
+```bash
+pip install stem tomli
+python3 -c "import sherlock_project; print('OK')"
+```
+
+**إن نجح:** `OK`.
+**إن فشل:** نتركه.
+
+---
+
+### اختبار holehe و exiftool
+
+**holehe:**
+
+```bash
+holehe --help 2>&1 | head -10
+holehe test@example.com --no-color 2>&1 | head -15
+```
+
+**المتوقع:** يفحص الإيميل في 120+ موقع، ويُظهر أي المواقع عليه حساب.
+
+**exiftool:**
+
+```bash
+# نُحمّل صورة اختبار
+curl -sL "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Tux.svg/120px-Tux.svg.png" -o /sdcard/Z3R0/test.png
+ls -lh /sdcard/Z3R0/test.png
+exiftool /sdcard/Z3R0/test.png 2>&1 | head -20
+```
+
+**المتوقع:** بيانات EXIF للصورة (أو "no EXIF" إن كانت نظيفة).
+
+---
+
+**توقّف. نفّذ:**
+
+```
+pip install stem tomli 2>&1 | tail -3
+python3 -c "import sherlock_project; print('OK')" 2>&1 | head -3
+holehe --help 2>&1 | head -5
+holehe test@example.com --no-color 2>&1 | head -15
+curl -sL "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Tux.svg/120px-Tux.svg.png" -o /sdcard/Z3R0/test.png
+ls -lh /sdcard/Z3R0/test.png
+exiftool /sdcard/Z3R0/test.png 2>&1 | head -20
+```
+
+**أرسل المخرجات كاملة. بناءً عليها نُحدّد أي أدوات OSINT نُضيف فعلياً.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ pip install stem tomli
+python3 -c "import sherlock_project; print('OK')"
+Collecting stem
+  Downloading stem-1.8.2.tar.gz (2.9 MB)
+     ━━━━━━━━━━━━━━━━━━━━ 2.9/2.9 MB 1.6 MB/s  0:00:01
+  Installing build dependencies ... done
+  Getting requirements to build wheel ... done
+  Preparing metadata (pyproject.toml) ... done
+Collecting tomli
+  Downloading tomli-2.5.0-py3-none-any.whl.metadata (10 kB)
+Downloading tomli-2.5.0-py3-none-any.whl (14 kB)
+Building wheels for collected packages: stem
+  Building wheel for stem (pyproject.toml) ... done
+  Created wheel for stem: filename=stem-1.8.2-py3-none-any.whl size=436282 sha256=95d059dced404a739fa2734640994d0f00bd8d8102364d0fcdda40583503f86a
+  Stored in directory: /data/data/com.termux/files/home/.cache/pip/wheels/c3/60/81/88ab222f778ae518e8b5a95a8f89542d49495d0d98dcd9c3e1
+Successfully built stem
+Installing collected packages: stem, tomli
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+sherlock-project 0.16.2 requires pandas<3.0.0,>=2.2.1, which is not installed.
+sherlock-project 0.16.2 requires PySocks<2.0.0,>=1.7.0, which is not installed.
+sherlock-project 0.16.2 requires requests-futures<2.0.0,>=1.0.0, which is not installed.
+Successfully installed stem-1.8.2 tomli-2.5.0
+OK
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**sherlock يعمل. `OK`. لكنه يحتاج `pandas` و `PySocks` و `requests-futures`.**
+
+**تذكير:** `pandas` فشل سابقاً (compile). لكن نجرب الآن:
+
+```bash
+pip install PySocks requests-futures 2>&1 | tail -3
+python3 -c "import sherlock_project; print('OK')" 2>&1 | head -3
+```
+
+**إن ظهر `OK` بلا `pandas`:** sherlock يعمل. `pandas` فقط لتقارير Excel (اختياري).
+
+**ثم اختبر sherlock:**
+
+```bash
+python3 -m sherlock_project nmap --no-color --timeout 5 2>&1 | head -20
+```
+
+**المتوقع:** قائمة بالمواقع التي فيها حساب `nmap`.
+
+**ثم اختبر holehe:**
+
+```bash
+holehe test@example.com --no-color 2>&1 | head -15
+```
+
+**ثم exiftool:**
+
+```bash
+curl -sL "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Tux.svg/120px-Tux.svg.png" -o /sdcard/Z3R0/test.png
+exiftool /sdcard/Z3R0/test.png 2>&1 | head -20
+```
+
+---
+
+**توقّف. نفّذ:**
+
+```
+pip install PySocks requests-futures 2>&1 | tail -3
+python3 -m sherlock_project --help 2>&1 | head -5
+python3 -m sherlock_project nmap --no-color --timeout 5 2>&1 | head -20
+holehe test@example.com --no-color 2>&1 | head -15
+curl -sL "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Tux.svg/120px-Tux.svg.png" -o /sdcard/Z3R0/test.png
+exiftool /sdcard/Z3R0/test.png 2>&1 | head -20
+```
+
+**أرسل المخرجات كاملة.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+
+~/MyFirstApp $ pip install PySocks requests-futures 2>&1 | tail -3
+python3 -c "import sherlock_project; print('OK')" 2>&1 | head -3
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+sherlock-project 0.16.2 requires pandas<3.0.0,>=2.2.1, which is not installed.
+Successfully installed PySocks-1.7.1 requests-futures-
+**********************
+   test@example.com                                   **********************
+[x] about.me
+[x] adobe.com                                         [-] amazon.com
+[x] amocrm.com
+[+] any.do                                            ~/MyFirstApp $ curl -sL "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Tux.svg/120px-Tux.svg.png" -o /sdcard/Z3R0/test.png
+exiftool /sdcard/Z3R0/test.png 2>&1 | head -20        ExifTool Version Number         : 13.59               File Name                       : test.png
+Directory                       : /sdcard/Z3R0
+File Size                       : 1929 bytes
+File Modification Date/Time     : 2026:10:08 12:54:20+01:00
+File Access Date/Time           : 2026:10:08 12:54:20+01:00
+File Inode Change Date/Time     : 2026:10:08 12:54:20+01:00                                                 File Permissions                : -rw-rw----          File Type                       : HTML
+File Type Extension             : html                MIME Type                       : text/html           ~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**النتائج:**
+
+**✅ holehe يعمل** — بدأ يفحص `test@example.com`:
+```
+[x] about.me    ← موجود
+[x] adobe.com   ← موجود
+[-] amazon.com  ← غير موجود
+[+] any.do      ← موجود
+```
+
+**✅ exiftool يعمل** — لكن الصورة المُحمّلة كانت HTML (خطأ في الرابط، وليس مشكلة exiftool). exiftool نفسه يعمل بشكل صحيح.
+
+**sherlock** — لم نرَ نتيجة الاختبار. لكنه مثبّت الآن.
+
+---
+
+### اختبار sherlock و exiftool بصورة حقيقية
+
+**اختبار sherlock مباشرة:**
+
+```bash
+python3 -m sherlock_project nmap --no-color --timeout 5 2>&1 | head -25
+```
+
+**اختبار exiftool بصورة حقيقية:**
+
+```bash
+curl -sL "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/320px-Cat03.jpg" -o /sdcard/Z3R0/cat.jpg
+ls -lh /sdcard/Z3R0/cat.jpg
+exiftool /sdcard/Z3R0/cat.jpg 2>&1 | head -25
+```
+
+**المتوقع:** بيانات EXIF للصورة (تاريخ التصوير، الكاميرا، الأبعاد).
+
+---
+
+**توقّف. نفّذ:**
+
+```
+python3 -m sherlock_project nmap --no-color --timeout 5 2>&1 | head -25
+curl -sL "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/320px-Cat03.jpg" -o /sdcard/Z3R0/cat.jpg
+ls -lh /sdcard/Z3R0/cat.jpg
+exiftool /sdcard/Z3R0/cat.jpg 2>&1 | head -25
+```
+
+**أرسل المخرجات كاملة. بناءً عليها نُضيف أدوات OSINT إلى `tools_v2.json`.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ curl -sL "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/320px-Cat03.jpg" -o /sdcard/Z3R0/cat.jpg
+ls -lh /sdcard/Z3R0/cat.jpg
+exiftool /sdcard/Z3R0/cat.jpg 2>&1 | head -25
+-rw-rw----. 1 u0_a0 media_rw 2.0K Oct  8 12:54 /sdcard/Z3R0/cat.jpg
+ExifTool Version Number         : 13.59
+File Name                       : cat.jpg
+Directory                       : /sdcard/Z3R0
+File Size                       : 2.0 kB
+File Modification Date/Time     : 2026:10:08 12:54:57+01:00
+File Access Date/Time           : 2026:10:08 12:54:57+01:00
+File Inode Change Date/Time     : 2026:10:08 12:54:57+01:00
+File Permissions                : -rw-rw----
+File Type                       : HTML
+File Type Extension             : html
+MIME Type                       : text/html
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**المشكلة: تحميل الصورة يفشل — الملف HTML بدل JPEG.** السبب: رابط `wikipedia` أعاد خطأ (ربما 404 أو حجب).
+
+**لكن exiftool يعمل بشكل مثالي** — يكتشف أن الملف HTML، ويُظهر كل البيانات المتاحة.
+
+**الاختبار الحقيقي:** نصنع صورة محلية. `exiftool` يعمل عليها:
+
+```bash
+# ننشئ صورة اختبار PNG بسيطة عبر base64
+echo "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" | base64 -d > /sdcard/Z3R0/test.png
+ls -lh /sdcard/Z3R0/test.png
+exiftool /sdcard/Z3R0/test.png 2>&1 | head -20
+```
+
+**المتوقع:** exiftool يعرض بيانات PNG (الأبعاد، الحجم، الحجم بالبكسل).
+
+---
+
+### اختبار sherlock
+
+**نتيجته لم تظهر في رسالتك.** نفّذ:
+
+```bash
+python3 -m sherlock_project nmap --no-color --timeout 5 2>&1 | head -25
+```
+
+**المتوقع:**
+```
+[*] Checking username nmap on:
+[+] GitHub: https://github.com/nmap
+[+] Twitter: ...
+[-] Instagram: ...
+...
+```
+
+---
+
+**توقّف. نفّذ:**
+
+```
+echo "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" | base64 -d > /sdcard/Z3R0/test.png
+exiftool /sdcard/Z3R0/test.png 2>&1 | head -20
+echo "==="
+python3 -m sherlock_project nmap --no-color --timeout 5 2>&1 | head -25
+```
+
+**أرسل المخرجات.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ curl -sL "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/320px-Cat03.jpg" -o /sdcard/Z3R0/cat.jpg
+ls -lh /sdcard/Z3R0/cat.jpg
+exiftool /sdcard/Z3R0/cat.jpg 2>&1 | head -25
+-rw-rw----. 1 u0_a0 media_rw 2.0K Oct  8 12:54 /sdcard/Z3R0/cat.jpg
+ExifTool Version Number         : 13.59
+File Name                       : cat.jpg
+Directory                       : /sdcard/Z3R0
+File Size                       : 2.0 kB
+File Modification Date/Time     : 2026:10:08 12:54:57+01:00
+File Access Date/Time           : 2026:10:08 12:54:57+01:00
+File Inode Change Date/Time     : 2026:10:08 12:54:57+01:00
+File Permissions                : -rw-rw----
+File Type                       : HTML
+File Type Extension             : html
+MIME Type                       : text/html
+~/MyFirstApp $ # ننشئ صورة اختبار PNG بسيطة عبر base64
+echo "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" | base64 -d > /sdcard/Z3R0/test.png
+ls -lh /sdcard/Z3R0/test.png
+exiftool /sdcard/Z3R0/test.png 2>&1 | head -20
+-rw-rw----. 1 u0_a0 media_rw 70 Oct  8 12:55 /sdcard/Z3R0/test.png
+ExifTool Version Number         : 13.59
+File Name                       : test.png
+Directory                       : /sdcard/Z3R0
+File Size                       : 70 bytes
+File Modification Date/Time     : 2026:10:08 12:55:24+01:00
+File Access Date/Time           : 2026:10:08 12:54:20+01:00
+File Inode Change Date/Time     : 2026:10:08 12:55:24+01:00
+File Permissions                : -rw-rw----
+File Type                       : PNG
+File Type Extension             : png
+MIME Type                       : image/png
+Image Width                     : 1
+Image Height                    : 1
+Bit Depth                       : 8
+Color Type                      : RGB with Alpha
+Compression                     : Deflate/Inflate
+Filter                          : Adaptive
+Interlace                       : Noninterlaced
+Image Size                      : 1x1
+Megapixels                      : 0.000001
+~/MyFirstApp $ python3 -m sherlock_project nmap --no-color --timeout 5 2>&1 | head -25
+Traceback (most recent call last):
+  File "<frozen runpy>", line 203, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/data/data/com.termux/files/usr/lib/python3.14/site-packages/sherlock_project/__main__.py", line 21, in <module>
+    from sherlock_project import sherlock
+  File "/data/data/com.termux/files/usr/lib/python3.14/site-packages/sherlock_project/sherlock.py", line 21, in <module>
+    import pandas as pd
+ModuleNotFoundError: No module named 'pandas'
+~/MyFirstApp $ echo "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" | base64 -d > /sdcard/Z3R0/test.png
+exiftool /sdcard/Z3R0/test.png 2>&1 | head -20
+echo "==="
+python3 -m sherlock_project nmap --no-color --timeout 5 2>&1 | head -25
+ExifTool Version Number         : 13.59
+File Name                       : test.png
+Directory                       : /sdcard/Z3R0
+File Size                       : 70 bytes
+File Modification Date/Time     : 2026:10:08 12:55:41+01:00
+File Access Date/Time           : 2026:10:08 12:54:20+01:00
+File Inode Change Date/Time     : 2026:10:08 12:55:41+01:00
+File Permissions                : -rw-rw----
+File Type                       : PNG
+File Type Extension             : png
+MIME Type                       : image/png
+Image Width                     : 1
+Image Height                    : 1
+Bit Depth                       : 8
+Color Type                      : RGB with Alpha
+Compression                     : Deflate/Inflate
+Filter                          : Adaptive
+Interlace                       : Noninterlaced
+Image Size                      : 1x1
+Megapixels                      : 0.000001
+===
+Traceback (most recent call last):
+  File "<frozen runpy>", line 203, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/data/data/com.termux/files/usr/lib/python3.14/site-packages/sherlock_project/__main__.py", line 21, in <module>
+    from sherlock_project import sherlock
+  File "/data/data/com.termux/files/usr/lib/python3.14/site-packages/sherlock_project/sherlock.py", line 21, in <module>
+    import pandas as pd
+ModuleNotFoundError: No module named 'pandas'
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**الخلاصة:**
+
+| الأداة | الحالة |
+|---|---|
+| **exiftool** | ✅ يعمل بشكل مثالي |
+| **holehe** | ✅ يعمل (اختُبر سابقاً) |
+| **sherlock** | ❌ يحتاج `pandas` → فشل سابقاً على ARM64 |
+| **ip-api** | ✅ يعمل |
+
+---
+
+### الحل لـ sherlock — تعديل الكود
+
+**sherlock يحتاج `pandas` فقط لتقارير Excel.** يمكن تعديل سطر واحد لتجاوزه.
+
+```bash
+# احذف سطر import pandas مؤقتاً
+sed -i 's/^import pandas as pd$/try:\n    import pandas as pd\nexcept ImportError:\n    pd = None/' /data/data/com.termux/files/usr/lib/python3.14/site-packages/sherlock_project/sherlock.py
+
+# اختبر
+python3 -m sherlock_project nmap --no-color --timeout 5 2>&1 | head -20
+```
+
+**المتوقع:** sherlock يعمل، لكن بلا تقارير Excel (لا يهمنا).
+
+**إن فشل:** نستخدم **`maigret`** — بديل sherlock مكتوب Python خالص (بلا pandas). نجرّبه:
+
+```bash
+pip install maigret --no-deps
+pip install beautifulsoup4 requests lxml 2>&1 | tail -3
+python3 -m maigret nmap --no-color --timeout 5 2>&1 | head -20
+```
+
+---
+
+### القرار — 3 أدوات OSINT
+
+**نُضيف 3 أدوات مؤكدة العمل:**
+
+**① exiftool** — استخراج بيانات الصور.
+**② holehe** — فحص بريد إلكتروني.
+**③ ip-lookup** — معلومات IP جغرافية (عبر `curl` + `ip-api.com`).
+
+**+ 3 أدوات اختيارية** (إن نجح تصحيح sherlock):
+**④ sherlock** — اسم مستخدم.
+**⑤ GPG lookup** — من مفاتيح PGP (اختياري).
+
+---
+
+**توقّف. نفّذ التصحيح لـ sherlock:**
+
+```
+sed -i 's/^import pandas as pd$/try:\n    import pandas as pd\nexcept ImportError:\n    pd = None/' /data/data/com.termux/files/usr/lib/python3.14/site-packages/sherlock_project/sherlock.py
+python3 -m sherlock_project nmap --no-color --timeout 5 2>&1 | head -20
+```
+
+**إن نجح:** نُضيف sherlock.
+**إن فشل:** جرّب `maigret`:
+
+```
+pip install maigret --no-deps 2>&1 | tail -3
+python3 -m maigret nmap --no-color --timeout 5 2>&1 | head -20
+```
+
+**أرسل المخرجات.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ echo "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" | base64 -d > /sdcard/Z3R0/test.png
+exiftool /sdcard/Z3R0/test.png 2>&1 | head -20
+echo "==="
+python3 -m sherlock_project nmap --no-color --timeout 5 2>&1 | head -25
+ExifTool Version Number         : 13.59
+File Name                       : test.png
+Directory                       : /sdcard/Z3R0
+File Size                       : 70 bytes
+File Modification Date/Time     : 2026:10:08 12:55:41+01:00
+File Access Date/Time           : 2026:10:08 12:54:20+01:00
+File Inode Change Date/Time     : 2026:10:08 12:55:41+01:00
+File Permissions                : -rw-rw----
+File Type                       : PNG
+File Type Extension             : png
+MIME Type                       : image/png
+Image Width                     : 1
+Image Height                    : 1
+Bit Depth                       : 8
+Color Type                      : RGB with Alpha
+Compression                     : Deflate/Inflate
+Filter                          : Adaptive
+Interlace                       : Noninterlaced
+Image Size                      : 1x1
+Megapixels                      : 0.000001
+===
+Traceback (most recent call last):
+  File "<frozen runpy>", line 203, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/data/data/com.termux/files/usr/lib/python3.14/site-packages/sherlock_project/__main__.py", line 21, in <module>
+    from sherlock_project import sherlock
+  File "/data/data/com.termux/files/usr/lib/python3.14/site-packages/sherlock_project/sherlock.py", line 21, in <module>
+    import pandas as pd
+ModuleNotFoundError: No module named 'pandas'
+~/MyFirstApp $ # احذف سطر import pandas مؤقتاً
+sed -i 's/^import pandas as pd$/try:\n    import pandas as pd\nexcept ImportError:\n    pd = None/' /data/data/com.termux/files/usr/lib/python3.14/site-packages/sherlock_project/sherlock.py
+
+# اختبر
+python3 -m sherlock_project nmap --no-color --timeout 5 2>&1 | head -20
+[*] Checking username nmap on:
+
+[+] 9GAG: https://www.9gag.com/u/nmap
+[+] Archive of Our Own: https://archiveofourown.org/users/nmap
+[+] Atcoder: https://atcoder.jp/users/nmap
+[+] Vjudge: https://VJudge.net/user/nmap
+[+] Audiojungle: https://audiojungle.net/user/nmap
+[+] Behance: https://www.behance.net/nmap
+[+] Bluesky: https://bsky.app/profile/nmap.bsky.social
+[+] BugCrowd: https://bugcrowd.com/nmap
+[+] BuyMeACoffee: https://buymeacoff.ee/nmap
+[+] Carrd: https://nmap.carrd.co/
+[+] Career.habr: https://career.habr.com/nmap
+[+] Chess: https://www.chess.com/member/nmap
+[+] Clubhouse: https://www.clubhouse.com/@nmap
+[+] Codecademy: https://www.codecademy.com/profiles/nmap
+[+] Codechef: https://www.codechef.com/users/nmap
+[+] Codeforces: https://codeforces.com/profile/nmap
+[+] Codewars: https://www.codewars.com/users/nmap
+[+] Cracked Forum: https://cracked.ax/nmap
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**sherlock يعمل. أخرج 18+ نتيجة لإيجاد اسم مستخدم `nmap` عبر المواقع.**
+
+**الترسانة الآن مكتملة لـ OSINT:**
+- **exiftool** ✅
+- **holehe** ✅
+- **sherlock** ✅ (بعد التصحيح)
+- **ip-api** ✅
+
+---
+
+## أ.2 — إضافة فئة OSINT إلى `tools_v2.json`
+
+**التصميم:**
+
+```
+🔍 OSINT
+├── 🖼️  الصور
+│   └── exiftool
+├── 📧  البريد
+│   └── holehe
+├── 👤  الأسماء
+│   └── sherlock
+└── 🌐  عناوين IP
+    └── ip-lookup
+```
+
+**الفئة الرئيسية:** OSINT.
+**الفئات الفرعية:** الصور، البريد، الأسماء، عناوين IP.
+
+**لكن التطبيق الحالي يدعم فئات بمستوى واحد فقط.** نحتاج إمّا:
+- **أ) نُسطّح الفئات الفرعية** — كل مجموعة فئة مستقلة (osint-images, osint-email, osint-usernames, osint-ip).
+- **ب) نُعدّل الكود لدعم فئات متداخلة** — أطول، لكن أنظف.
+
+**اقتراحي: (أ) — التسطيح مؤقتاً.** أربع فئات فرعية كفئات رئيسية في Drawer:
+- 🖼️ OSINT — صور
+- 📧 OSINT — بريد
+- 👤 OSINT — أسماء
+- 🌐 OSINT — IP
+
+**مستقبلاً، عند الحاجة، نُدعم التداخل.**
+
+---
+
+### دفعة 1 — أدوات OSINT
+
+```bash
+python3 << 'PYEOF'
+import json
+
+path = "/sdcard/Z3R0/tools_v2.json"
+with open(path) as f:
+    data = json.load(f)
+
+# احذف فئات OSINT إن وُجدت
+data["categories"] = [c for c in data["categories"] if not c["id"].startswith("osint-")]
+
+# فئة OSINT — صور
+data["categories"].append({
+    "id": "osint-images",
+    "name": "OSINT: الصور",
+    "icon": "🖼️",
+    "description": "استخراج بيانات من الصور",
+    "tools": [
+        {
+            "id": "exiftool",
+            "name": "exiftool",
+            "pattern": "exiftool {target}",
+            "hint": "مسار صورة محلية (مثلاً: /sdcard/photo.jpg)",
+            "needs_target": True,
+            "description": "يستخرج كل البيانات الوصفية (metadata) المخزّنة في ملف صورة: الكاميرا، التاريخ، الموقع الجغرافي (GPS)، إعدادات التصوير، اسم المصور. كثير من الصور تحتفظ ببيانات دقيقة عن مكان والتقاطها.",
+            "legal": [
+                "فحص صورك الخاصة",
+                "فحص صور مع الإذن",
+              

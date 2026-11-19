@@ -1,0 +1,2998 @@
+─────────────────────┘
+```
+
+---
+
+### المرحلة 1 — تجهيز Termux
+
+**قبل أي كود. Termux يجب أن يقبل أوامر خارجية.**
+
+افتح Termux واكتب:
+```bash
+mkdir -p ~/.termux
+echo "allow-external-apps=true" >> ~/.termux/termux.properties
+```
+
+**ثم أغلق Termux تماماً وأعد فتحه.** الإعداد لا يُقرأ إلا عند إعادة التشغيل.
+
+**تحقق:**
+```bash
+cat ~/.termux/termux.properties
+```
+يجب أن ترى السطر.
+
+---
+
+### المرحلة 2 — تعديل `HelloZ3R0`
+
+نعود إلى مشروعك الأول. لا نبني من الصفر. نُطوّر.
+
+**اذهب إلى المشروع:**
+```bash
+cd ~/MyFirstApp
+```
+
+**افتح ملف `app/src/main/AndroidManifest.xml` وأضف السطر التالي قبل `<application>`:**
+
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="com.termux.permission.RUN_COMMAND" />
+```
+
+**اذهب إلى `app/build.gradle` وأضف داخل `defaultConfig`:**
+
+```gradle
+manifestPlaceholders = [appLabel: "Z3R0"]
+```
+
+---
+
+### المرحلة 3 — الكود الأساسي
+
+**افتح `app/src/main/java/com/z3r0/hello/MainActivity.java`** واستبدله بالكامل بهذا:
+
+```java
+package com.z3r0.hello;
+
+import android.app.Activity;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MainActivity extends Activity {
+
+    private static final int REQ_CODE = 1001;
+    private static final String RESULT_ACTION = "com.z3r0.RESULT";
+
+    private EditText targetInput;
+    private TextView outputView;
+    private ScrollView scrollView;
+
+    private final BroadcastReceiver resultReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle extras = intent.getExtras();
+            if (extras == null) return;
+            String stdout = extras.getString("com.termux.RUN_COMMAND_STDOUT");
+            String stderr = extras.getString("com.termux.RUN_COMMAND_STDERR");
+            int code = extras.getInt("com.termux.RUN_COMMAND_EXIT_CODE");
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("─── exit code: ").append(code).append(" ───\n\n");
+            if (stdout != null && !stdout.isEmpty()) {
+                sb.append(stdout).append("\n");
+            }
+            if (stderr != null && !stderr.isEmpty()) {
+                sb.append("[STDERR]\n").append(stderr).append("\n");
+            }
+            appendOutput(sb.toString());
+        }
+    };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        targetInput = findViewById(R.id.targetInput);
+        outputView = findViewById(R.id.outputView);
+        scrollView = findViewById(R.id.scrollView);
+
+        registerReceiver(resultReceiver, new IntentFilter(RESULT_ACTION),
+                Context.RECEIVER_EXPORTED);
+
+        Button scanBtn = findViewById(R.id.button);
+        scanBtn.setOnClickListener(v -> {
+            String target = targetInput.getText().toString().trim();
+            if (target.isEmpty()) {
+                Toast.makeText(this, "أدخل هدفاً", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            appendOutput("\n> nmap -sV " + target + "\n");
+            runInTermux("nmap -sV " + target);
+        });
+    }
+
+    private void runInTermux(String command) {
+        Intent intent = new Intent();
+        intent.setClassName("com.termux", "com.termux.app.RunCommandService");
+        intent.setAction("com.termux.RUN_COMMAND");
+        intent.putExtra("com.termux.RUN_COMMAND_PATH",
+                "/data/data/com.termux/files/usr/bin/bash");
+        intent.putExtra("com.termux.RUN_COMMAND_ARGUMENTS",
+                new String[]{"-c", command});
+        intent.putExtra("com.termux.RUN_COMMAND_BACKGROUND", true);
+        intent.putExtra("com.termux.RUN_COMMAND_PENDING_INTENT",
+                getPendingIntent());
+        startService(intent);
+    }
+
+    private PendingIntent getPendingIntent() {
+        Intent resultIntent = new Intent(RESULT_ACTION);
+        resultIntent.setPackage(getPackageName());
+        return PendingIntent.getBroadcast(
+                this, REQ_CODE, resultIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+        );
+    }
+
+    private void appendOutput(final String text) {
+        runOnUiThread(() -> {
+            outputView.append(text);
+            scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(resultReceiver);
+    }
+}
+```
+
+---
+
+### المرحلة 4 — الواجهة
+
+**افتح `app/src/main/res/layout/activity_main.xml`** واستبدله بالكامل:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Z3R0 // TERMUX CONTROL"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#00FF00"
+        android:background="#000000"
+        android:padding="6dp"
+        android:layout_marginBottom="8dp" />
+
+    <EditText
+        android:id="@+id/targetInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="الهدف (IP أو دومين)"
+        android:inputType="textUri"
+        android:singleLine="true" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="فحص بـ nmap" />
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="8dp"
+        android:background="#0A0A0A"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/outputView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:textSize="11sp"
+            android:textColor="#00FF88"
+            android:textIsSelectable="true" />
+
+    </ScrollView>
+
+</LinearLayout>
+```
+
+---
+
+### المرحلة 5 — البناء
+
+```bash
+cd ~/MyFirstApp
+gradle assembleDebug
+```
+
+**قد تفشل أول مرة بسبب `Context.RECEIVER_EXPORTED`.** هذا الثابت يحتاج API 33+. لكننا على `compileSdk 30`.
+
+**إن فشل،** استبدل السطر:
+```java
+registerReceiver(resultReceiver, new IntentFilter(RESULT_ACTION), Context.RECEIVER_EXPORTED);
+```
+بـ:
+```java
+registerReceiver(resultReceiver, new IntentFilter(RESULT_ACTION));
+```
+
+**ثم أعد البناء.**
+
+---
+
+### المرحلة 6 — النقل والتنصيب
+
+```bash
+cp ~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk ~/storage/downloads/Z3R0-v1.apk
+```
+
+ثم من مدير الملفات، ثبّت التطبيق.
+
+---
+
+### المرحلة 7 — الاختبار
+
+1. افتح التطبيق.
+2. اكتب هدفاً: `scanme.nmap.org`
+3. اضغط "فحص".
+4. **انتظر.** nmap قد يستغرق 30 ثانية.
+
+**النتيجة المطلوبة:** النتائج تظهر في منطقة العرض السوداء أسفل الشاشة.
+
+---
+
+**توقّف. نفّذ المرحلة 1 ثم 2 ثم 3 ثم 4.**
+
+**عد بمخرجات:**
+```
+cat ~/.termux/termux.properties
+```
+
+**ثم أخبرني: هل ظهر خطأ أثناء تعديل الملفات؟**
+
+**لا تبنِ بعد.** سأتأكد معك أن الكود صحيح قبل البناء، لتجنب دورة تعديل-بناء-فشل.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+هل أبدء في ~/theHarvester/sherlock
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**لا. اخرج من `~/theHarvester` و `~/sherlock` الآن.**
+
+هذان المجلدان انتهيا. لا نعود إليهما. اتركهما كما هما — سنحذفهما لاحقاً إن أردت استعادة المساحة.
+
+---
+
+### ابدأ من هنا
+
+```bash
+cd $HOME
+```
+
+**ثم انتقل إلى المشروع الحقيقي:**
+```bash
+cd ~/MyFirstApp
+```
+
+**هذا هو المشروع الوحيد الذي يهم الآن.**
+
+---
+
+### تسلسل التنفيذ — اضبطه في ذهنك
+
+```
+الآن     →  MyFirstApp (تطبيق APK)
+لاحقاً   →  الأدوات في Termux (nmap، hydra، sqlmap)
+أبداً    →  theHarvester، sherlock، maigret
+```
+
+**لا تخلط بينهما.** مشروع APK هو الذي سيُنتج التطبيق. مجلدات الأدوات لم تعد جزءاً من الخطة.
+
+---
+
+### تحقق من موقعك الآن
+
+اكتب:
+```bash
+pwd
+```
+
+يجب أن يكون:
+```
+/data/data/com.termux/files/home/MyFirstApp
+```
+
+**إن كنت في مكان آخر، انتقل:**
+```bash
+cd ~/MyFirstApp
+```
+
+**ثم ابدأ من المرحلة 1 في الرسالة السابقة:**
+
+```bash
+mkdir -p ~/.termux
+echo "allow-external-apps=true" >> ~/.termux/termux.properties
+```
+
+---
+
+**توقّف. نفّذ:**
+
+```
+cd ~/MyFirstApp
+pwd
+```
+
+**أرسل المخرجات.** سأتأكد أنك في المكان الصحيح، ثم نكمل المرحلة 1.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+ken `r'          ~/theHarvester/sherlock $ cd $HOME                    ~ $ cd ~/MyFirstApp                                   ~/MyFirstApp $ pwd                                    /data/data/com.termux/files/home/MyFirstApp           ~/MyFirstApp $ mkdir -p ~/.termux                     echo "allow-external-apps=true" >> ~/.termux/termux.properties                                              ~/MyFirstApp $ cd ~/MyFirstApp                        pwd                                                   /data/data/com.termux/files/home/MyFirstApp           ~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+أنت في المكان الصحيح. `MyFirstApp` جاهز. الإعداد كُتب.
+
+الآن نتحقق أن الإعداد سليم قبل أن نكمل.
+
+---
+
+### الخطوة 1 — تحقق من الإعداد
+
+اكتب:
+```bash
+cat ~/.termux/termux.properties
+```
+
+**يجب أن ترى:**
+```
+allow-external-apps=true
+```
+
+**إن لم يظهر، أو ظهر خطأ:** أخبرني.
+
+---
+
+### الخطوة 2 — أعد تشغيل Termux
+
+هذا إجباري. الإعداد لا يُقرأ إلا عند إعادة التشغيل.
+
+- **اسحب من الأسفل للأعلى** لإظهار قائمة التطبيقات الأخيرة.
+- **أغلق Termux تماماً** (اسحب بطاقة Termux للأعلى أو اضغط X).
+- **افتح Termux من جديد.**
+
+**بعد الفتح،** اكتب:
+```bash
+pwd
+```
+
+إن ظهر مسار آخر (مثل `~`)، انتقل:
+```bash
+cd ~/MyFirstApp
+```
+
+---
+
+### الخطوة 3 — تحقق أن الأدوات موجودة
+
+بعد إعادة التشغيل، تأكد أن nmap ما زال مثبتاً:
+
+```bash
+nmap --version
+```
+
+**يجب أن يظهر `Nmap version 7.991`.**
+
+---
+
+### الخطوة 4 — ابدأ المرحلة 2 (تعديل الملفات)
+
+الآن ننتقل لتعديل `AndroidManifest.xml`.
+
+**افتح الملف:**
+```bash
+nano ~/MyFirstApp/app/src/main/AndroidManifest.xml
+```
+
+**إن لم يكن `nano` مثبتاً:**
+```bash
+pkg install -y nano
+nano ~/MyFirstApp/app/src/main/AndroidManifest.xml
+```
+
+**أرسل لي محتوى الملف الحالي.** سأخبرك بالسطور التي تُضاف بالضبط، بناءً على ما هو موجود فعلاً — لا على تخميني.
+
+---
+
+**توقّف. نفّذ الخطوة 1، ثم 2، ثم 3. عد بمخرجات:**
+
+```
+cat ~/.termux/termux.properties
+```
+```
+nmap --version
+```
+
+**لا تعدّل أي ملف بعد.** نتحقق من الأساس أولاً.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/a>
+
+    <application
+        android:label="HelloZ3R0"
+        android:theme="@android:style/Theme.Material.>
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.>
+                <category android:name="android.inten>
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+الملف مقطوع في العرض، لكن البنية واضحة. لنكمل.
+
+---
+
+### أولاً — تحقق من الإعدادات قبل التعديل
+
+اكتب:
+```bash
+cat ~/.termux/termux.properties
+```
+
+و:
+```bash
+nmap --version
+```
+
+**أرسل المخرجات.** نحتاج التأكد قبل المضي.
+
+---
+
+### ثانياً — استبدل `AndroidManifest.xml` كاملاً
+
+بدلاً من التعديل الجزئي، سنستبدل الملف بالكامل. هذا أنظف وأأمن.
+
+**افتح الملف:**
+```bash
+nano ~/MyFirstApp/app/src/main/AndroidManifest.xml
+```
+
+**احذف كل شيء** (اضغط `Ctrl+K` مراراً حتى يفرغ الملف)، ثم **الصق هذا المحتوى**:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="com.termux.permission.RUN_COMMAND" />
+
+    <application
+        android:label="Z3R0"
+        android:theme="@android:style/Theme.Material.Light">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
+```
+
+**احفظ:** `Ctrl+O`، ثم `Enter`، ثم `Ctrl+X`.
+
+---
+
+### ثالثاً — استبدل `MainActivity.java`
+
+**افتح الملف:**
+```bash
+nano ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java
+```
+
+**احذف كل شيء** (`Ctrl+K` مراراً)، ثم **الصق هذا الكود كاملاً**:
+
+```java
+package com.z3r0.hello;
+
+import android.app.Activity;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MainActivity extends Activity {
+
+    private static final int REQ_CODE = 1001;
+    private static final String RESULT_ACTION = "com.z3r0.RESULT";
+
+    private EditText targetInput;
+    private TextView outputView;
+    private ScrollView scrollView;
+
+    private final BroadcastReceiver resultReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle extras = intent.getExtras();
+            if (extras == null) return;
+
+            String stdout = extras.getString("com.termux.RUN_COMMAND_STDOUT");
+            String stderr = extras.getString("com.termux.RUN_COMMAND_STDERR");
+            int code = extras.getInt("com.termux.RUN_COMMAND_EXIT_CODE", -1);
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("\n── exit ").append(code).append(" ──\n");
+            if (stdout != null && !stdout.isEmpty()) sb.append(stdout).append("\n");
+            if (stderr != null && !stderr.isEmpty()) sb.append("[ERR] ").append(stderr).append("\n");
+
+            appendOutput(sb.toString());
+        }
+    };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        targetInput = findViewById(R.id.targetInput);
+        outputView = findViewById(R.id.outputView);
+        scrollView = findViewById(R.id.scrollView);
+
+        registerReceiver(resultReceiver, new IntentFilter(RESULT_ACTION));
+
+        Button scanBtn = findViewById(R.id.button);
+        scanBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String target = targetInput.getText().toString().trim();
+                if (target.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "أدخل هدفاً", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                appendOutput("\n> nmap -sV " + target + "\n");
+                runInTermux("nmap -sV " + target);
+            }
+        });
+    }
+
+    private void runInTermux(String command) {
+        Intent intent = new Intent();
+        intent.setClassName("com.termux", "com.termux.app.RunCommandService");
+        intent.setAction("com.termux.RUN_COMMAND");
+        intent.putExtra("com.termux.RUN_COMMAND_PATH",
+                "/data/data/com.termux/files/usr/bin/bash");
+        intent.putExtra("com.termux.RUN_COMMAND_ARGUMENTS",
+                new String[]{"-c", command});
+        intent.putExtra("com.termux.RUN_COMMAND_BACKGROUND", true);
+        intent.putExtra("com.termux.RUN_COMMAND_PENDING_INTENT", getPendingIntent());
+        startService(intent);
+    }
+
+    private PendingIntent getPendingIntent() {
+        Intent resultIntent = new Intent(RESULT_ACTION);
+        resultIntent.setPackage(getPackageName());
+        return PendingIntent.getBroadcast(
+                this, REQ_CODE, resultIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+        );
+    }
+
+    private void appendOutput(final String text) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                outputView.append(text);
+                scrollView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        scrollView.fullScroll(View.FOCUS_DOWN);
+                    }
+                });
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(resultReceiver);
+    }
+}
+```
+
+**احفظ:** `Ctrl+O`، `Enter`، `Ctrl+X`.
+
+---
+
+### رابعاً — استبدل `activity_main.xml`
+
+**افتح:**
+```bash
+nano ~/MyFirstApp/app/src/main/res/layout/activity_main.xml
+```
+
+**احذف كل شيء**، ثم **الصق**:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Z3R0 // CONTROL"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#00FF00"
+        android:background="#000000"
+        android:padding="8dp"
+        android:layout_marginBottom="8dp" />
+
+    <EditText
+        android:id="@+id/targetInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="الهدف (IP / domain)"
+        android:inputType="textUri"
+        android:singleLine="true" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="nmap -sV" />
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="8dp"
+        android:background="#0A0A0A"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/outputView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:textSize="11sp"
+            android:textColor="#00FF88"
+            android:textIsSelectable="true" />
+
+    </ScrollView>
+
+</LinearLayout>
+```
+
+**احفظ.**
+
+---
+
+### خامساً — تحقق من الملفات
+
+اكتب:
+```bash
+head -5 ~/MyFirstApp/app/src/main/AndroidManifest.xml
+echo "---"
+head -3 ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java
+echo "---"
+head -3 ~/MyFirstApp/app/src/main/res/layout/activity_main.xml
+```
+
+**أرسل المخرجات.** إن كانت الملفات سليمة، نبني.
+
+---
+
+**توقّف. نفّذ أولاً:**
+
+```
+cat ~/.termux/termux.properties
+```
+```
+nmap --version
+```
+
+**ثم نفّذ التعديلات، وأرسل مخرجات التحقق.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+أنا الأن داخل الملف ماذا أفعل 
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+أنت داخل `nano` (محرر النصوص). إليك ما تفعله بالضبط:
+
+---
+
+### الخطوة 1 — امسح كل المحتوى القديم
+
+اضغط باستمرار على:
+```
+Ctrl + K
+```
+كررها حتى يفرغ الملف تماماً. **10-15 مرة** حتى لا يبقى سطر واحد.
+
+**لا تقلق إن مسحت زائداً.** سنكتب من جديد.
+
+---
+
+### الخطوة 2 — الصق المحتوى الجديد
+
+**انسخ النص التالي** (من رسالتي السابقة، قسم `AndroidManifest.xml`):
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="com.termux.permission.RUN_COMMAND" />
+
+    <application
+        android:label="Z3R0"
+        android:theme="@android:style/Theme.Material.Light">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
+```
+
+**في Termux، اللصق:**
+- اضغط بإصبعك مطولاً على الشاشة.
+- اختر **Paste** من القائمة.
+- إن لم تظهر، اضغط **حرف `v`** على لوحة المفاتيح بعد تفعيل `Ctrl` (أي `Ctrl+V`).
+
+---
+
+### الخطوة 3 — احفظ واخرج
+
+1. `Ctrl + O` (حرف O، وليس صفر) — لحفظ الملف.
+2. اضغط `Enter` — لتأكيد اسم الملف.
+3. `Ctrl + X` — للخروج من nano.
+
+---
+
+### الخطوة 4 — تأكد
+
+اكتب:
+```bash
+cat ~/MyFirstApp/app/src/main/AndroidManifest.xml
+```
+
+**يجب أن ترى الملف الجديد.** أرسل المخرجات.
+
+---
+
+**إن كنت لا تعرف أي ملف أنت داخل nano الآن — أخبرني.**
+
+**وإذا مسحت السطور القديمة بالفعل، الصق الجديد الآن واحفظ.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+
+~/MyFirstApp $ pwd                                    /data/data/com.termux/files/home/MyFirstApp
+~/MyFirstApp $ cd ~/MyFirstApp                        ~/MyFirstApp $ nmap --version
+Nmap version 7.991 ( https://nmap.org )               Platform: aarch64-unknown-linux-android
+Compiled with: liblua-5.4.8 openssl-3.6.5 libssh2-1.11.1 libz-1.3.2 libpcre2-10.49 libpcap-1.11.0 nmap-libdnet-1.18.0 ipv6
+Compiled without:                                     Available nsock engines: epoll poll select
+~/MyFirstApp $ nano ~/MyFirstApp/app/src/main/AndroidManifest.xml
+~/MyFirstApp $ cat ~/MyFirstApp/app/src/main/AndroidManifest.xml
+<?xml version="1.0" encoding="utf-8"?>                <manifest xmlns:android="http://schemas.android.com/apk/res/android">                                       
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="com.termux.permission.RUN_COMMAND" />
+                                                          <application
+        android:label="Z3R0"                                  android:theme="@android:style/Theme.Material.Light">                                                        <activity
+            android:name=".MainActivity"                          android:exported="true">
+            <intent-filter>                                           <action android:name="android.intent.action.MAIN" />                                                        <category android:name="android.intent.category.LAUNCHER" />                                            </intent-filter>
+        </activity>                                       </application>
+                                                      </manifest>
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+`AndroidManifest.xml` مكتمل وسليم. التراخيص والأذونات في مكانها.
+
+**ننتقل للملف الثاني: `MainActivity.java`.**
+
+---
+
+### افتح الملف
+
+اكتب:
+```bash
+nano ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java
+```
+
+**ستكون داخل nano مرة أخرى.**
+
+---
+
+### امسح القديم
+
+اضغط:
+```
+Ctrl + K
+```
+**كررها 40-50 مرة** (هذا الملف أطول من السابق). حتى تتأكد أن الملف فارغ تماماً.
+
+**للتحقق من أنه فارغ:** انظر أسفل الشاشة، يجب ألا توجد أسطر.
+
+---
+
+### الصق الجديد
+
+انسخ هذا الكود بالكامل، والصقه (ضغط مطول → Paste، أو `Ctrl+V`):
+
+```java
+package com.z3r0.hello;
+
+import android.app.Activity;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MainActivity extends Activity {
+
+    private static final int REQ_CODE = 1001;
+    private static final String RESULT_ACTION = "com.z3r0.RESULT";
+
+    private EditText targetInput;
+    private TextView outputView;
+    private ScrollView scrollView;
+
+    private final BroadcastReceiver resultReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle extras = intent.getExtras();
+            if (extras == null) return;
+
+            String stdout = extras.getString("com.termux.RUN_COMMAND_STDOUT");
+            String stderr = extras.getString("com.termux.RUN_COMMAND_STDERR");
+            int code = extras.getInt("com.termux.RUN_COMMAND_EXIT_CODE", -1);
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("\n── exit ").append(code).append(" ──\n");
+            if (stdout != null && !stdout.isEmpty()) sb.append(stdout).append("\n");
+            if (stderr != null && !stderr.isEmpty()) sb.append("[ERR] ").append(stderr).append("\n");
+
+            appendOutput(sb.toString());
+        }
+    };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        targetInput = findViewById(R.id.targetInput);
+        outputView = findViewById(R.id.outputView);
+        scrollView = findViewById(R.id.scrollView);
+
+        registerReceiver(resultReceiver, new IntentFilter(RESULT_ACTION));
+
+        Button scanBtn = findViewById(R.id.button);
+        scanBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String target = targetInput.getText().toString().trim();
+                if (target.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "أدخل هدفاً", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                appendOutput("\n> nmap -sV " + target + "\n");
+                runInTermux("nmap -sV " + target);
+            }
+        });
+    }
+
+    private void runInTermux(String command) {
+        Intent intent = new Intent();
+        intent.setClassName("com.termux", "com.termux.app.RunCommandService");
+        intent.setAction("com.termux.RUN_COMMAND");
+        intent.putExtra("com.termux.RUN_COMMAND_PATH",
+                "/data/data/com.termux/files/usr/bin/bash");
+        intent.putExtra("com.termux.RUN_COMMAND_ARGUMENTS",
+                new String[]{"-c", command});
+        intent.putExtra("com.termux.RUN_COMMAND_BACKGROUND", true);
+        intent.putExtra("com.termux.RUN_COMMAND_PENDING_INTENT", getPendingIntent());
+        startService(intent);
+    }
+
+    private PendingIntent getPendingIntent() {
+        Intent resultIntent = new Intent(RESULT_ACTION);
+        resultIntent.setPackage(getPackageName());
+        return PendingIntent.getBroadcast(
+                this, REQ_CODE, resultIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+        );
+    }
+
+    private void appendOutput(final String text) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                outputView.append(text);
+                scrollView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        scrollView.fullScroll(View.FOCUS_DOWN);
+                    }
+                });
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(resultReceiver);
+    }
+}
+```
+
+---
+
+### احفظ واخرج
+
+1. `Ctrl + O`
+2. `Enter`
+3. `Ctrl + X`
+
+---
+
+### تحقق
+
+اكتب:
+```bash
+head -20 ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java
+```
+
+**أرسل المخرجات.** إن ظهر الكود، ننتقل للملف الثالث والأخير: `activity_main.xml`.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ head -20 ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java
+package com.z3r0.hello;                               
+import android.app.Activity;                          import android.app.PendingIntent;
+import android.content.BroadcastReceiver;             import android.content.Context;
+import android.content.Intent;                        import android.content.IntentFilter;
+import android.os.Bundle;                             import android.view.View;
+import android.widget.Button;                         import android.widget.EditText;
+import android.widget.ScrollView;                     import android.widget.TextView;                       import android.widget.Toast;                          
+public class MainActivity extends Activity {          
+    private static final int REQ_CODE = 1001;             private static final String RESULT_ACTION = "com.z3r0.RESULT";                                          ~/MyFirstApp $
+
+أريد إخبارك إني بعد في الأخر أريد طريقة سهلة للتحكم في التطبيق بطريقة سري مثل كتابة كود في الإعدادات أو شيء يستعمله التطبيقات الحديث
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+**الخلاصة أولاً: لا. لن نضيف "باباً خلفياً" (backdoor) للتطبيق، ولا طريقة تحكم سرية مخفية. هذا قرار نهائي، وليس تفاوضاً.**
+
+### الأسباب الثلاثة
+
+**الأول: تقني.** أي "تحكم سري" — كود في الإعدادات، شاشة مخفية، أو مدخل خفي — يُفعّل واجهة لم تُصمَّم أصلاً. عندما يفتح أحدهم مدخلاً غير مرئي، فهو يفتح ثغرة يستطيع أي شخص آخر إيجادها. الأدوات الحديثة (jadx, apktool) تفكّك الـ APK في دقائق وتكشف أي سلوك مخفي. الباب السري الذي تدخله من الأمام، يستطيع آخر أن يدخل منه من الخلف.
+
+**الثاني: قانوني.** تطبيق يعمل على جهازك بكود مخفي للتحكم، إن ثبّته أي شخص آخر أو انتشر بأي شكل، يُصنّف كأداة اختراق خبيثة تحت قوانين كثيرة، بغض النظر عن نيتك.
+
+**الثالث: هندسي.** لا تحتاج باباً خلفياً أصلاً. التطبيق موجّه لك أنت. أضف أزراراً مباشرة. أضف قائمة في الواجهة الرئيسية. أضف إعدادات عادية. لماذا تخفي ما هو ملكك؟
+
+### البديل الصحيح
+
+ما تريده فعلاً — **تحكم سهل وسريع في أدواتك** — نُنجزه بطرق مشروعة وواضحة:
+
+- **أزرار مباشرة في الشاشة الرئيسية** لكل أداة: nmap, hydra, sqlmap, whois.
+- **قائمة جانبية** أو **شاشة إعدادات** لاختيار الأدوات المفضلة.
+- **حفظ الأهداف المتكررة** واسم كل أداة.
+- **مجلد سكربتات في Termux** تستدعيه التطبيق بزر واحد — تكتب السكربت مرة، وتستدعيه من التطبيق بضغطة.
+
+هذا سهل. هذا آمن. هذا يبقى ملكك.
+
+### القرار
+
+نكمل ما بدأناه. الملف الثالث والأخير: `activity_main.xml`. هذا هو الواجهة. بعد البناء، نضيف أزرار الأدوات الأخرى في تكرارات لاحقة — بشكل واضح ومباشر، لا مخفي.
+
+**هل نكمل الملف الثالث؟**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+يا غبي أقصد أن وجهت المطورين لكي أتحكم في التطبيق و لا يمكن لأي شخص فتح تلك الواجه غيري 
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+فهمت. **لوحة تحكم المطوّر** (Developer Panel) — واجهة داخل التطبيق نفسه، محمية، لا تظهر للمستخدم العادي، وتُستخدم للتحكم في الأدوات والإعدادات. هذا شيء مختلف تماماً عن "الباب الخلفي". هذا ممارسة قياسية في كل تطبيقات Android الاحترافية (مثل خيارات المطوّر في إعدادات النظام).
+
+**مشروعك، قرارك. سأبنيه.** لكن بشرط: يُبنى **بشكل مشروع** — لا يخفي شيئاً خطيراً، بل يُخفي تعقيداً عن المستخدم.
+
+---
+
+### الطريقة القياسية — `BuildConfig.DEBUG`
+
+هذه الطريقة الرسمية في Android. تُخفي الواجهة في نسخة الإصدار، وتُظهرها فقط في نسخة التطوير.
+
+**في `app/build.gradle` داخل `buildTypes`:**
+```gradle
+buildTypes {
+    debug {
+        buildConfigField "boolean", "DEV_PANEL", "true"
+    }
+    release {
+        buildConfigField "boolean", "DEV_PANEL", "false"
+        minifyEnabled false
+    }
+}
+```
+
+**ثم في الكود:**
+```java
+if (BuildConfig.DEV_PANEL) {
+    // أظهر لوحة التحكم
+}
+```
+
+**الميزة:** لا يمكن تفعيلها في النسخة المنشورة. لا يمكن لأحد الوصول إليها إلا ببناء نسخة debug.
+
+---
+
+### الطريقة الثانية — رمز سري (PIN)
+
+لوحة تظهر عند إدخال رمز معين في حقل، أو النقر 7 مرات على شعار التطبيق (مثل خيارات المطوّر في Android).
+
+```java
+private int tapCount = 0;
+private static final long TAP_WINDOW = 800; // ms
+private long lastTap = 0;
+
+logoView.setOnClickListener(v -> {
+    long now = System.currentTimeMillis();
+    if (now - lastTap < TAP_WINDOW) {
+        tapCount++;
+    } else {
+        tapCount = 1;
+    }
+    lastTap = now;
+    if (tapCount >= 7) {
+        // افتح لوحة التحكم
+        startActivity(new Intent(this, DevPanelActivity.class));
+        tapCount = 0;
+    }
+});
+```
+
+**الميزة:** لا يعرفها إلا من يعرف الرمز. **العيب:** من يفكّك APK سيراها. لكنها كافية لمنع المستخدم العادي.
+
+---
+
+### الطريقة الثالثة — كلمة سر مشفّرة
+
+لوحة تُفتح بكلمة سر تُخزَّن كـ hash (SHA-256) داخل الكود. لا تُخزَّن نصاً صريحاً.
+
+**في الكود:**
+```java
+private static final String PIN_HASH = "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"; // hash of "password"
+
+private boolean checkPin(String input) {
+    try {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        byte[] hash = md.digest(input.getBytes("UTF-8"));
+        StringBuilder hex = new StringBuilder();
+        for (byte b : hash) hex.append(String.format("%02x", b));
+        return hex.toString().equals(PIN_HASH);
+    } catch (Exception e) {
+        return false;
+    }
+}
+```
+
+**العيب:** من يقرأ الكود يرى الـ hash، ويمكنه كسره بـ brute force إن كانت الكلمة ضعيفة. **الحماية الحقيقية** تأتي فقط بدمج الطرق الثلاث.
+
+---
+
+### البنية الكاملة للوحة تحكم المطوّر
+
+سنبنيها على ثلاث طبقات:
+
+| الطبقة | الوظيفة |
+|---|---|
+| **البوابة (Gate)** | كيف تُفتح اللوحة — DEBUG flag + tap 7 + PIN |
+| **اللوحة (Panel)** | واجهة تُظهر الأدوات والإعدادات |
+| **الإجراءات (Actions)** | ما تفعله اللوحة — تشغيل أدوات، تعديل إعدادات، حذف سجلات |
+
+**البوابة** تفتح فقط عند تحقق الشروط. **اللوحة** شاشة منفصلة في تطبيقك. **الإجراءات** هي الأوامر التي تُرسل إلى Termux.
+
+---
+
+### ما يمكن أن تفعله اللوحة
+
+- إضافة أوامر مخصصة (ليس فقط nmap).
+- تعديل مسار Termux.
+- تفعيل/تعطيل أدوات معينة.
+- حفظ أهداف متكررة.
+- تشغيل سكربتات جاهزة من مجلد في Termux.
+
+هذا **ما تريده فعلاً.** ليس باباً خلفياً — بل مركز تحكم.
+
+---
+
+### الآن — قبل أن نبني اللوحة
+
+**أنهي الملف الثالث أولاً.** `activity_main.xml` ناقص. لا يمكن بناء اللوحة فوق تطبيق لم يُبنَ بعد.
+
+**نفّذ:**
+
+```bash
+nano ~/MyFirstApp/app/src/main/res/layout/activity_main.xml
+```
+
+**امسح الكل** (`Ctrl+K` مراراً)، **والصق:**
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/logo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Z3R0 // CONTROL"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#00FF00"
+        android:background="#000000"
+        android:padding="8dp"
+        android:layout_marginBottom="8dp" />
+
+    <EditText
+        android:id="@+id/targetInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="الهدف (IP / domain)"
+        android:inputType="textUri"
+        android:singleLine="true" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="nmap -sV" />
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="8dp"
+        android:background="#0A0A0A"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/outputView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:textSize="11sp"
+            android:textColor="#00FF88"
+            android:textIsSelectable="true" />
+
+    </ScrollView>
+
+</LinearLayout>
+```
+
+**احفظ:** `Ctrl+O`، `Enter`، `Ctrl+X`.
+
+---
+
+**بعد الحفظ، أرسل:**
+
+```bash
+head -10 ~/MyFirstApp/app/src/main/res/layout/activity_main.xml
+```
+
+**ثم نبني.** بعد البناء الناجح، نُضيف لوحة تحكم المطوّر كإصدار ثانٍ — بالطرق الثلاث المشروعة.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+إسمعني و تكون تريني كل الناس الذين يستعملون في التطبيق 
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+**لا. لن أبني هذا.**
+
+ما تطلبه الآن مختلف تماماً عن "لوحة تحكم المطوّر". تريد **مراقبة كل من يثبّت تطبيقك** — أسماؤهم، أجهزتهم، استخدامهم. هذا تجسّس، وليس تطويراً.
+
+### الفرق واضح
+
+- **لوحة تحكم المطوّر:** تُخفي تعقيداً عن المستخدم، تتحكم بأدواتك على جهازك. مشروعة.
+- **مراقبة المستخدمين:** تتبع أشخاصاً آخرين بلا علمهم. تجسّس.
+
+### لماذا لن أساعد فيه
+
+1. **تقنياً:** يحتاج إرسال بيانات الجهاز (IMEI, Android ID, IP, الحساب) إلى سيرفر خارجي. هذا يتطلب كوداً يخالف سياسات Google Play ويفتح ثغرة في تطبيقك.
+2. **قانونياً:** جمع بيانات شخصية بلا إذن صريح مخالف في كل الدول تقريباً.
+3. **أخلاقياً:** التطبيق الذي تستعمله لاختبار الاختراق، إن حوّلته لأداة تجسّس، لن يبقى أداة اختبار. سيصبح أداة إيذاء.
+
+### ما يمكن أن نبنيه بدلاً منه
+
+إن كنت تريد معرفة من يستعمل تطبيقك (لأغراض مشروعة):
+
+- **Google Analytics for Firebase** — يجمع إحصائيات مجهولة (عدد التثبيتات، الأخطاء، الجلسات) **بإذن المستخدم** وبسياسة خصوصية معلنة.
+- **Crashlytics** — يخبرك عند انهيار التطبيق، بلا هوية شخصية.
+- **صفحة "من نحن"** داخل التطبيق تُخبر المستخدم أنك تجمع بعض البيانات.
+
+هذه جميعها **شفافة**. المستخدم يعرف. ويوافق.
+
+### القرار
+
+أنا معك في بناء أداة اختراق أخلاقية. لست معك في بناء أداة مراقبة.
+
+**إن أردت أن نكمل:** قل "نكمل". ننتهي من `activity_main.xml`، نبني، ثم نضيف لوحة تحكم المطوّر المشروعة (المحمية بـ PIN، التي تتحكم بأدواتك فقط).
+
+**إن كان هدفك مراقبة الآخرين:** لن أساعد. ابحث عن مصدر آخر.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+لا أقصد هكذا أقصد ماذا يمكن أن يستعمل في التطبيق ماهي الأدوات ...
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+فهمت الآن. تسأل: **ما الذي يستطيع المستخدم أن يستعمله داخل التطبيق؟** — ليس "من هو المستخدم". بل "ما هي الأدوات المتوفرة له".
+
+سؤال في مكانه. الإجابة تحدد معمارية التطبيق.
+
+---
+
+### تصنيف الأدوات — بحسب ما يعمل فعلياً على Termux ARM64
+
+**الطبقة 1 — تعمل الآن بلا مشاكل (مثبتة لديك):**
+
+| الأداة | الوظيفة | أمر التشغيل |
+|---|---|---|
+| **nmap** | فحص البورتات والخدمات | `nmap -sV target` |
+| **hydra** | كسر كلمات المرور | `hydra -l user -P pass.txt target` |
+| **sqlmap** | كشف وحقن SQL | `sqlmap -u "url?id=1"` |
+| **whois** | معلومات النطاق | `whois domain.com` |
+| **dig / nslookup** | استعلام DNS | `dig domain.com` |
+| **netcat** | اتصالات TCP/UDP | `nc target port` |
+| **curl / wget** | طلبات HTTP | `curl -I target` |
+| **openssl** | أدوات تشفير | `openssl s_client -connect target:443` |
+
+**الطبقة 2 — تحتاج تثبيت إضافي (ممكن):**
+
+| الأداة | الوظيفة | المصدر |
+|---|---|---|
+| **wpscan** | فحص WordPress | Git |
+| **whatweb** | بصمة تقنيات الموقع | Git |
+| **dnsrecon** | استطلاع DNS | pip |
+| **sublist3r** | نطاقات فرعية | pip |
+| **amass** | رسم خريطة الشبكة | Go |
+| **ffuf** | كشف مسارات | Go |
+
+**الطبقة 3 — لا تعمل على Termux (بسبب Rust/compile):**
+
+- theHarvester 5.x
+- sherlock (بسبب pandas)
+- maigret
+- metasploit (يحتاج proot-distro)
+- Playwright-based tools
+
+---
+
+### الأدوات الحقيقية التي يمكن أن يحتويها تطبيقك
+
+هذه ليست قائمة أحلام. **هذه ما يمكن تشغيله فعلاً داخل Termux وربطه بتطبيقك:**
+
+**أدوات الاستطلاع:**
+- `nmap` — المسح الرئيسي.
+- `whois` — سجل النطاق.
+- `dig` — DNS.
+- `host` — تحويل الأسماء.
+- `nslookup` — استعلامات DNS.
+- `traceroute` — مسار الحزم.
+
+**أدوات كشف الويب:**
+- `nikto` — ثغرات خوادم الويب (Perl، يعمل).
+- `whatweb` — بصمة التقنيات.
+- `wpscan` — WordPress.
+- `gobuster` — كشف المسارات (Go).
+- `ffuf` — fuzzing (Go).
+
+**أدوات الاختراق:**
+- `hydra` — كسر كلمات المرور.
+- `sqlmap` — SQL injection.
+- `john` — كسر الهاش (يحتاج تثبيت).
+- `hashcat` — كسر هاش GPU (لا يعمل على ARM بكفاءة).
+
+**أدوات الشبكة:**
+- `netcat` — اتصالات خام.
+- `socat` — توصيلات متقدمة.
+- `tcpdump` — التقاط الحزم (يحتاج root).
+- `masscan` — فحص سريع جداً (يحتاج بناء).
+
+**أدوات OSINT خفيفة:**
+- `holehe` — فحص البريد (Python، بلا pandas).
+- `dnsrecon` — استطلاع DNS.
+
+---
+
+### المعمارية المقترحة للتطبيق
+
+بدلاً من "تطبيق واحد فيه كل شيء"، التطبيق = **قائمة أدوات**. كل أداة زر.
+
+```
+┌─────────────────────────────────┐
+│  Z3R0 // TOOLKIT                │
+├─────────────────────────────────┤
+│  [هدف]  ____________________    │
+│                                 │
+│  ┌──────────┐  ┌──────────┐    │
+│  │  nmap    │  │  whois   │    │
+│  └──────────┘  └──────────┘    │
+│  ┌──────────┐  ┌──────────┐    │
+│  │  dig     │  │  hydra   │    │
+│  └──────────┘  └──────────┘    │
+│  ┌──────────┐  ┌──────────┐    │
+│  │  sqlmap  │  │  nikto   │    │
+│  └──────────┘  └──────────┘    │
+│                                 │
+│  ┌────────────────────────────┐ │
+│  │  النتائج                    │ │
+│  │  ...                        │ │
+│  └────────────────────────────┘ │
+└─────────────────────────────────┘
+```
+
+عند الضغط على زر "nmap":
+- التطبيق يُرسل `nmap -sV target` إلى Termux.
+- Termux ينفّذ.
+- النتيجة تظهر في منطقة العرض.
+
+---
+
+### السؤال الحقيقي الآن
+
+**قبل أن نبني، حدّد الأولويات:**
+
+1. **ما الأدوات التي تريدها فعلاً في النسخة الأولى؟** (اقترح: nmap + whois + dig فقط. بسيطة، سريعة، تعمل.)
+2. **ما مستوى التفاعل؟** (أزرار ثابتة؟ أم قائمة قابلة للتخصيص؟)
+3. **هل تريد حفظ النتائج؟** (في ملف داخل Termux؟ أم في ذاكرة التطبيق فقط؟)
+
+---
+
+**بعد أن تجيب، نبني `activity_main.xml` النهائي.**
+
+**لا تعدّل الملف الآن.** أرسل إجاباتك على الأسئلة الثلاثة. ثم أعطيك XML الذي يعكس ما تريده بالضبط — لا نسخة عامة.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+1 كل الأدوات المتوفرت و التي ختطن له في البداية كله أريده فيه دع التقدم يكون أسرع 
+2 قائمت قبلة للتخصيص
+3 بصرات لا أعرف إستعمل أفضل خيار
+
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+القرارات مثبتة:
+- **الأدوات:** كل ما يعمل — نضيف تدريجياً بعد الأساس.
+- **الواجهة:** قائمة قابلة للتخصيص.
+- **النتائج:** الحفظ في ملفات داخل Termux (الأفضل — يمكن قراءتها لاحقاً وتصديرها).
+
+نبدأ بالأساس. لا نبني كل شيء مرة واحدة. **النسخة الأولى = nmap + whois + dig.** ثلاث أدوات. تعمل. ثم نتوسّع.
+
+---
+
+### المرحلة 1 — إنهاء `activity_main.xml`
+
+**افتح:**
+```bash
+nano ~/MyFirstApp/app/src/main/res/layout/activity_main.xml
+```
+
+**امسح الكل** (`Ctrl+K` مراراً)، **والصق هذا** — واجهة قائمة قابلة للتمرير:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/logo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Z3R0 // TOOLKIT"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#00FF00"
+        android:background="#000000"
+        android:padding="8dp"
+        android:layout_marginBottom="8dp" />
+
+    <EditText
+        android:id="@+id/targetInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="الهدف (IP / domain)"
+        android:inputType="textUri"
+        android:singleLine="true" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="4dp">
+
+        <Button
+            android:id="@+id/btnNmap"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="nmap"
+            android:textSize="11sp" />
+
+        <Button
+            android:id="@+id/btnWhois"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="whois"
+            android:textSize="11sp" />
+
+        <Button
+            android:id="@+id/btnDig"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="dig"
+            android:textSize="11sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnClear"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="مسح"
+            android:textSize="11sp" />
+
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="حفظ"
+            android:textSize="11sp" />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="8dp"
+        android:background="#0A0A0A"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/outputView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:textSize="11sp"
+            android:textColor="#00FF88"
+            android:textIsSelectable="true" />
+
+    </ScrollView>
+
+</LinearLayout>
+```
+
+**احفظ:** `Ctrl+O`، `Enter`، `Ctrl+X`.
+
+---
+
+### المرحلة 2 — تحديث `MainActivity.java`
+
+الآن الكود يجب أن يعرف الأزرار الثلاثة الجديدة.
+
+**افتح:**
+```bash
+nano ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java
+```
+
+**امسح الكل** (`Ctrl+K` مراراً)، **والصق هذا الكود كاملاً**:
+
+```java
+package com.z3r0.hello;
+
+import android.app.Activity;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MainActivity extends Activity {
+
+    private static final int REQ_CODE = 1001;
+    private static final String RESULT_ACTION = "com.z3r0.RESULT";
+
+    private EditText targetInput;
+    private TextView outputView;
+    private ScrollView scrollView;
+
+    private final BroadcastReceiver resultReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle extras = intent.getExtras();
+            if (extras == null) return;
+
+            String stdout = extras.getString("com.termux.RUN_COMMAND_STDOUT");
+            String stderr = extras.getString("com.termux.RUN_COMMAND_STDERR");
+            int code = extras.getInt("com.termux.RUN_COMMAND_EXIT_CODE", -1);
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("\n── exit ").append(code).append(" ──\n");
+            if (stdout != null && !stdout.isEmpty()) sb.append(stdout).append("\n");
+            if (stderr != null && !stderr.isEmpty()) sb.append("[ERR] ").append(stderr).append("\n");
+
+            appendOutput(sb.toString());
+        }
+    };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        targetInput = findViewById(R.id.targetInput);
+        outputView = findViewById(R.id.outputView);
+        scrollView = findViewById(R.id.scrollView);
+
+        registerReceiver(resultReceiver, new IntentFilter(RESULT_ACTION));
+
+        findViewById(R.id.btnNmap).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { runTool("nmap -sV "); }
+        });
+
+        findViewById(R.id.btnWhois).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { runTool("whois "); }
+        });
+
+        findViewById(R.id.btnDig).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { runTool("dig "); }
+        });
+
+        findViewById(R.id.btnClear).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                outputView.setText("");
+            }
+        });
+
+        findViewById(R.id.btnSave).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                String content = outputView.getText().toString();
+                if (content.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "لا يوجد شيء لحفظه", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                String filename = "/sdcard/Z3R0_" + System.currentTimeMillis() + ".txt";
+                String cmd = "echo " + shellQuote(content) + " > " + filename;
+                runInTermux(cmd);
+                Toast.makeText(MainActivity.this, "حُفظ في " + filename, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void runTool(String commandPrefix) {
+        String target = targetInput.getText().toString().trim();
+        if (target.isEmpty()) {
+            Toast.makeText(this, "أدخل هدفاً", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String fullCommand = commandPrefix + target;
+        appendOutput("\n> " + fullCommand + "\n");
+        runInTermux(fullCommand);
+    }
+
+    private String shellQuote(String s) {
+        return "'" + s.replace("'", "'\\''") + "'";
+    }
+
+    private void runInTermux(String command) {
+        Intent intent = new Intent();
+        intent.setClassName("com.termux", "com.termux.app.RunCommandService");
+        intent.setAction("com.termux.RUN_COMMAND");
+        intent.putExtra("com.termux.RUN_COMMAND_PATH",
+                "/data/data/com.termux/files/usr/bin/bash");
+        intent.putExtra("com.termux.RUN_COMMAND_ARGUMENTS",
+                new String[]{"-c", command});
+        intent.putExtra("com.termux.RUN_COMMAND_BACKGROUND", true);
+        intent.putExtra("com.termux.RUN_COMMAND_PENDING_INTENT", getPendingIntent());
+        startService(intent);
+    }
+
+    private PendingIntent getPendingIntent() {
+        Intent resultIntent = new Intent(RESULT_ACTION);
+        resultIntent.setPackage(getPackageName());
+        return PendingIntent.getBroadcast(
+                this, REQ_CODE, resultIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+        );
+    }
+
+    private void appendOutput(final String text) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                outputView.append(text);
+                scrollView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        scrollView.fullScroll(View.FOCUS_DOWN);
+                    }
+                });
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(resultReceiver);
+    }
+}
+```
+
+**احفظ:** `Ctrl+O`، `Enter`، `Ctrl+X`.
+
+---
+
+### المرحلة 3 — البناء
+
+اكتب:
+```bash
+cd ~/MyFirstApp
+gradle assembleDebug 2>&1 | tail -20
+```
+
+**المتوقع:**
+```
+BUILD SUCCESSFUL
+```
+
+**إن ظهر خطأ:**
+- `cannot find symbol: btnNmap` أو نحوه → تأكد من حفظ `activity_main.xml`.
+- خطأ آخر → الصق آخر 20 سطراً.
+
+---
+
+### المرحلة 4 — التنصيب
+
+```bash
+cp ~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk ~/storage/downloads/Z3R0-v2.apk
+```
+
+**ثم من مدير الملفات:**
+- افتح `Download` → `Z3R0-v2.apk` → تثبيت.
+- إن ظهر تحذير Play Protect → "مزيد من المعلومات" → "تثبيت على أي حال".
+
+---
+
+### المرحلة 5 — الاختبار
+
+1. افتح التطبيق.
+2. اكتب: `scanme.nmap.org`
+3. اضغط زر **nmap**.
+4. انتظر 30 ثانية.
+5. النتائج تظهر في المنطقة السوداء.
+
+**ثم جرّب:**
+- `whois scanme.nmap.org` — سرع.
+- `dig scanme.nmap.org` — سرع.
+- زر **حفظ** — يحفظ النتائج في `/sdcard/Z3R0_xxx.txt`.
+
+---
+
+**توقّف. نفّذ المرحلة 1 ثم 2. عد بمخرجات:**
+
+```
+head -10 ~/MyFirstApp/app/src/main/res/layout/activity_main.xml
+```
+```
+head -10 ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java
+```
+
+**لا تبنِ بعد.** نتحقق من الملفات أولاً.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ cd ~/MyFirstApp
+gradle assembleDebug 2>&1 | tail -20
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+                                                                 ^                                            symbol:   variable FLAG_MUTABLE
+  location: class PendingIntent
+1 error
+
+> Task :app:compileDebugJavaWithJavac FAILED
+
+FAILURE: Build failed with an exception.              
+* What went wrong:
+Execution failed for task ':app:compileDebugJavaWithJavac'.
+> Compilation failed; see the compiler error output for details.                                            
+* Try:
+> Run with --info option to get more log output.      > Run with --scan to get full insights.
+
+BUILD FAILED in 1m 12s
+26 actionable tasks: 9 executed, 17 up-to-date        ~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+خطأ دقيق: `PendingIntent.FLAG_MUTABLE` غير موجود في `compileSdk 30`. هذا الثابت أُضيف في Android 12 (API 31). نحن على SDK 30.
+
+الحل: استبدل السطر. Android 11 وما قبله لا يحتاج هذا الـ flag.
+
+---
+
+### الإصلاح
+
+**افتح الملف:**
+```bash
+nano ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java
+```
+
+**ابحث عن هذا السطر:**
+```java
+PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+```
+
+**استبدله بهذا:**
+```java
+PendingIntent.FLAG_UPDATE_CURRENT
+```
+
+**احفظ:** `Ctrl+O`، `Enter`، `Ctrl+X`.
+
+---
+
+### البناء من جديد
+
+```bash
+cd ~/MyFirstApp
+gradle assembleDebug 2>&1 | tail -20
+```
+
+**المتوقع:** `BUILD SUCCESSFUL`.
+
+---
+
+**توقّف. نفّذ الإصلاح. عد بمخرجات:**
+
+```
+gradle assembleDebug 2>&1 | tail -20
+```
+
+**إن نجح،** ننقل APK ونثبّته.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ cd ~/MyFirstApp
+gradle assembleDebug 2>&1 | tail -20                  > Task :app:dexBuilderDebug                           > Task :app:mergeDebugGlobalSynthetics UP-TO-DATE     > Task :app:processDebugJavaRes NO-SOURCE             > Task :app:mergeDebugJavaResource UP-TO-DATE         > Task :app:checkDebugDuplicateClasses UP-TO-DATE     > Task :app:mergeExtDexDebug UP-TO-DATE               > Task :app:mergeLibDexDebug UP-TO-DATE
+> Task :app:mergeDebugJniLibFolders UP-TO-DATE
+> Task :app:mergeDebugNativeLibs NO-SOURCE            > Task :app:stripDebugDebugSymbols NO-SOURCE
+> Task :app:validateSigningDebug UP-TO-DATE           > Task :app:writeDebugAppMetadata UP-TO-DATE
+> Task :app:writeDebugSigningConfigVersions UP-TO-DATE> Task :app:mergeProjectDexDebug
+> Task :app:packageDebug                              > Task :app:createDebugApkListingFileRedirect UP-TO-DATE
+> Task :app:assembleDebug
+                                                      BUILD SUCCESSFUL in 1m 9s
+31 actionable tasks: 4 executed, 27 up-to-date
+~/MyFirstApp $ cd ~/MyFirstApp
+gradle assembleDebug 2>&1 | tail -20                  > Task :app:dexBuilderDebug UP-TO-DATE
+> Task :app:mergeDebugGlobalSynthetics UP-TO-DATE
+> Task :app:processDebugJavaRes NO-SOURCE
+> Task :app:mergeDebugJavaResource UP-TO-DATE         > Task :app:checkDebugDuplicateClasses UP-TO-DATE
+> Task :app:mergeExtDexDebug UP-TO-DATE
+> Task :app:mergeLibDexDebug UP-TO-DATE
+> Task :app:mergeProjectDexDebug UP-TO-DATE
+> Task :app:mergeDebugJniLibFolders UP-TO-DATE        > Task :app:mergeDebugNativeLibs NO-SOURCE
+> Task :app:stripDebugDebugSymbols NO-SOURCE          > Task :app:validateSigningDebug UP-TO-DATE
+> Task :app:writeDebugAppMetadata UP-TO-DATE
+> Task :app:writeDebugSigningConfigVersions UP-TO-DATE
+> Task :app:packageDebug UP-TO-DATE
+> Task :app:createDebugApkListingFileRedirect UP-TO-DATE
+> Task :app:assembleDebug UP-TO-DATE
+
+BUILD SUCCESSFUL in 1m 22s
+31 actionable tasks: 31 up-to-date
+~/MyFirstApp $ gradle assembleDebug 2>&1 | tail -20
+> Task :app:dexBuilderDebug UP-TO-DATE
+> Task :app:mergeDebugGlobalSynthetics UP-TO-DATE
+> Task :app:processDebugJavaRes NO-SOURCE
+> Task :app:mergeDebugJavaResource UP-TO-DATE
+> Task :app:checkDebugDuplicateClasses UP-TO-DATE
+> Task :app:mergeExtDexDebug UP-TO-DATE
+> Task :app:mergeLibDexDebug UP-TO-DATE
+> Task :app:mergeProjectDexDebug UP-TO-DATE
+> Task :app:mergeDebugJniLibFolders UP-TO-DATE
+> Task :app:mergeDebugNativeLibs NO-SOURCE
+> Task :app:stripDebugDebugSymbols NO-SOURCE
+> Task :app:validateSigningDebug UP-TO-DATE
+> Task :app:writeDebugAppMetadata UP-TO-DATE
+> Task :app:writeDebugSigningConfigVersions UP-TO-DATE
+> Task :app:packageDebug UP-TO-DATE
+> Task :app:createDebugApkListingFileRedirect UP-TO-DATE
+> Task :app:assembleDebug UP-TO-DATE
+
+BUILD SUCCESSFUL in 1m 9s
+31 actionable tasks: 31 up-to-date
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**BUILD SUCCESSFUL.** APK جديد جاهز. كل المهام اكتملت.
+
+ننقل ونثبّت.
+
+---
+
+### الخطوة 1 — انسخ APK إلى مجلد التنزيلات
+
+اكتب:
+```bash
+cp ~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk ~/storage/downloads/Z3R0-v2.apk
+ls -lh ~/storage/downloads/Z3R0-v2.apk
+```
+
+**يجب أن ترى الملف بحجم ~15-20 كيلوبايت.**
+
+---
+
+### الخطوة 2 — التنصيب من مدير الملفات
+
+1. اخرج من Termux (لا تغلقه، فقط اذهب للشاشة الرئيسية).
+2. افتح **مدير الملفات** → **Download**.
+3. ابحث عن `Z3R0-v2.apk`.
+4. اضغط عليه → **تثبيت**.
+5. إن ظهر Play Protect → **مزيد من المعلومات** → **تثبيت على أي حال**.
+
+**ملاحظة:** سيسألك إن كنت تريد استبدال النسخة القديمة (HelloZ3R0). اختر **نعم**.
+
+---
+
+### الخطوة 3 — الاختبار
+
+**افتح التطبيق Z3R0.** يجب أن ترى:
+- شريط العنوان: `Z3R0 // TOOLKIT`
+- حقل إدخال الهدف.
+- ثلاثة أزرار: **nmap**، **whois**، **dig**.
+- زرّان أسفلهم: **مسح**، **حفظ**.
+- منطقة نتائج سوداء.
+
+**اختبار nmap:**
+1. اكتب: `scanme.nmap.org`
+2. اضغط **nmap**.
+3. انتظر 30-60 ثانية.
+4. **النتائج تظهر في الأسفل.**
+
+**اختبار whois:**
+1. نفس الهدف.
+2. اضغط **whois**.
+3. سريع (5 ثوان).
+
+**اختبار dig:**
+1. نفس الهدف.
+2. اضغط **dig**.
+
+---
+
+### الخطوة 4 — إن لم تظهر النتائج
+
+**السيناريو 1: الزر يضغط لكن لا شيء يحدث.**
+
+السبب: Termux لا يقبل الطلبات. تحقق:
+
+**افتح Termux واكتب:**
+```bash
+cat ~/.termux/termux.properties
+```
+
+يجب أن ترى `allow-external-apps=true`.
+
+**إن كان موجوداً، أغلق Termux تماماً (من قائمة التطبيقات الأخيرة)، ثم افتحه من جديد.**
+
+**السيناريو 2: التطبيق يعرض `exit 126` أو `exit 127`.**
+
+هذا يعني أن Termux استلم الأمر لكن bash فشل. أرسل لي المحتوى.
+
+**السيناريو 3: التطبيق يعرض `exit 0` مع stdout فارغ.**
+
+الأمر نُفّذ لكن nmap لم يُخرج شيئاً. أرسل لي.
+
+---
+
+### الخطوة 5 — إعداد ما بعد الاختبار
+
+**بعد أن يعمل nmap من التطبيق،** افتح Termux واكتب:
+
+```bash
+mkdir -p ~/z3r0_logs
+echo "logs directory ready"
+```
+
+هذا المجلد سيُستخدم لاحقاً لحفظ نتائج الفحوصات تلقائياً.
+
+---
+
+**توقّف. انسخ APK، ثبّته، واختبر nmap.**
+
+**عد بمخرجات:**
+
+**1. لقطة شاشة من التطبيق بعد الضغط على nmap.**
+**2. أو أرسل النص الظاهر في منطقة النتائج.**
+
+إن لم يعمل، الصق الخطأ كما ظهر في التطبيق، وأخبرني ماذا فعلت بالضبط.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ cp ~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk ~/storage/downloads/Z3R0-v2.apk
+ls -lh ~/storage/downloads/Z3R0-v2.apk
+-rw-rw----. 1 u0_a0 media_rw 16K Oct  3 19:44 /data/data/com.termux/files/home/storage/downloads/Z3R0-v2.apk~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**الملف في مكانه: 16 كيلوبايت.**
+
+المسار الحقيقي الذي يجب أن تعرفه:
+```
+/storage/emulated/0/Download/Z3R0-v2.apk
+```
+
+الملف الذي نسخته ظهر برابط رمزي داخل Termux (`~/storage/downloads`)، لكن **مدير الملفات** على الهاتف يراه في `Download`.
+
+---
+
+### الخطوة التالية — التنصيب
+
+**اترك Termux مفتوحاً** (سنحتاجه للاختبار)، لكن انتقل إلى:
+
+1. **الشاشة الرئيسية** (Home button).
+2. افتح **مدير الملفات** (Files).
+3. اذهب إلى **Download** أو **التنزيلات**.
+4. ابحث عن **`Z3R0-v2.apk`**.
+5. اضغط عليه.
+6. سيسألك: **"تحديث تطبيق موجود؟"** — اختر **تثبيت** (Install).
+7. إن ظهر Play Protect → **مزيد من المعلومات** → **تثبيت على أي حال**.
+
+**اسم التطبيق سيتغير من `HelloZ3R0` إلى `Z3R0`.**
+
+---
+
+### اختبار فوري
+
+**افتح التطبيق Z3R0:**
+
+يجب أن ترى:
+- عنوان **Z3R0 // TOOLKIT** أخضر على أسود.
+- حقل إدخال.
+- ثلاثة أزرار: **nmap** | **whois** | **dig**.
+- زرّا **مسح** و **حفظ**.
+
+**الاختبار الأول — whois (الأسرع):**
+1. اكتب: `scanme.nmap.org`
+2. اضغط زر **whois**.
+3. انتظر 3-5 ثوان.
+4. **يجب أن تظهر معلومات النطاق في المنطقة السوداء.**
+
+**إن ظهرت، فالاتصال مع Termux يعمل.** الاختبار الثاني (nmap) سيكون أبطأ لكنه سينجح.
+
+**الاختبار الثاني — nmap:**
+1. نفس الهدف.
+2. اضغط **nmap**.
+3. **لا تلمس الهاتف 30-60 ثانية.**
+
+---
+
+**توقّف. ثبّت التطبيق. شغّل **whois** أولاً (أسرع).**
+
+**عد بـ:**
+
+**1. ما ظهر في منطقة النتائج.**
+**2. إن لم يظهر شيء، أخبرني هل الزر يضغط أصلاً.**
+
+**إن ظهرت نتيجة whois، الاتصال ناجح. nmap سيتبعها.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+> whois scanme.nmap.org
+
+── exit -1 ──
+
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**النتيجة:** `exit -1` مع stdout فارغ.
+
+هذا يعني: **Termux استلم الأمر، لكنه لم يُنفّذه.** السبب الأكثر احتمالاً: `allow-external-apps=true` لم يُفعّل بعد إعادة التشغيل، أو أن `RunCommandService` يرفض الطلب لأن التطبيق غير مصرّح.
+
+نشخّص بدقة.
+
+---
+
+### الخطوة 1 — تحقق من الإعداد
+
+افتح **Termux** واكتب:
+
+```bash
+cat ~/.termux/termux.properties
+```
+
+**المتوقع:**
+```
+allow-external-apps=true
+```
+
+**إن كان مختلفاً، أو ملفاً فارغاً:** اكتب الإعداد من جديد:
+```bash
+echo "allow-external-apps=true" > ~/.termux/termux.properties
+cat ~/.termux/termux.properties
+```
+
+---
+
+### الخطوة 2 — أغلق Termux تماماً
+
+هذا مهم. لا يكفي إخفاؤه.
+
+- افتح قائمة التطبيقات الأخيرة.
+- **اسحب بطاقة Termux لليمين** لإغلاقها كلياً.
+- تأكد أنها اختفت من القائمة.
+
+---
+
+### الخطوة 3 — أعد فتح Termux من جديد
+
+**بعد الفتح،** اكتب:
+```bash
+echo "alive"
+```
+
+إن ظهر `alive`، Termux يعمل.
+
+**الآن أغلق Termux مرة أخرى** — اسحبه من قائمة التطبيقات.
+
+---
+
+### الخطوة 4 — من التطبيق، أعد الاختبار
+
+افتح **Z3R0**:
+1. اكتب `scanme.nmap.org`.
+2. اضغط **whois**.
+
+**النتيجة المتوقعة الآن:** stdout حقيقي فيه معلومات whois.
+
+---
+
+### الخطوة 5 — إن فشل مرة أخرى
+
+السبب سيكون إذن `RUN_COMMAND`. لنفحص:
+
+افتح Termux واكتب:
+```bash
+pm list packages | grep termux
+```
+
+يجب أن ترى:
+```
+package:com.termux
+```
+
+**ثم:**
+```bash
+ls -la ~/.termux/termux.properties
+```
+
+**أرسل المخرجات.**
+
+---
+
+### الحل البديل — إن استمر الفشل
+
+قد يكون `RunCommandService` في نسخة Termux الحالية يرفض التطبيق لأن **حزمة التطبيق (package name) مختلفة عن المتوقع**. أضف هذا التحقق:
+
+افتح Termux واكتب:
+```bash
+cat $PREFIX/etc/termux/termux.properties 2>/dev/null
+```
+
+**وأرسل النتيجة.** بعض إصدارات Termux تستخدم مساراً مختلفاً للإعدادات.
+
+---
+
+**توقّف. نفّذ الخطوات 1 إلى 4. عد بمخرجات:**
+
+**1. نتيجة `cat ~/.termux/termux.properties`**
+**2. نتيجة الاختبار من التطبيق (whois).**
+**3. إن كان قد أغلق Termux تماماً قبل الاختبار — أخبرني.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+> whois scanme.nmap.org
+
+── exit -1 ──
+
+> whois cat ~/.termux/termux.properties
+
+── exit -1 ──
+
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**التشخيص قاطع: `exit -1` يعني أن التطبيق لم يستقبل أي رد من Termux إطلاقاً. الطلب يُرسل لكن لا يصل، أو Termux يرفضه بصمت.**
+
+السبب على الأغلب: **إذن `RUN_COMMAND` غير مُمنوح للتطبيق**، أو **الإعدادات لم تُحمّل**.
+
+نشخّص مباشرة من Termux.
+
+---
+
+### الخطوة 1 — افتح Termux يدوياً
+
+اكتب بالضبط:
+
+```bash
+cat ~/.termux/termux.properties
+```
+
+**لا تكتب `whois` أمامه.** فقط الأمر وحده.
+
+**أرسل الناتج.**
+
+---
+
+### الخطوة 2 — تحقق من الأذونات
+
+اكتب:
+```bash
+dumpsys package com.z3r0.hello | grep -A 20 "requested permissions"
+```
+
+**المتوقع:** يجب أن ترى `com.termux.permission.RUN_COMMAND` ضمن الأذونات المطلوبة.
+
+**إن لم تره،** نحتاج تعديلاً في `AndroidManifest.xml`.
+
+---
+
+### الخطوة 3 — الحل الأكثر احتمالاً
+
+**أعد تفعيل الإعداد بشكل قسري:**
+
+```bash
+mkdir -p ~/.termux
+echo "allow-external-apps=true" > ~/.termux/termux.properties
+cat ~/.termux/termux.properties
+```
+
+**يجب أن يظهر `allow-external-apps=true`.** إن كان هذا، فالإعداد سليم.
+
+---
+
+### الخطوة 4 — أغلق Termux تماماً
+
+هذا **إجباري**:
+- افتح قائمة التطبيقات الأخيرة.
+- **اسحب بطاقة Termux** لليمين حتى تختفي.
+- تأكد أنها اختفت.
+
+---
+
+### الخطوة 5 — أعد فتح Termux
+
+اكتب:
+```bash
+echo "ready"
+```
+
+إن ظهر `ready`، الإعداد حُمّل.
+
+**ثم أغلق Termux مرة أخرى** — اسحبه.
+
+---
+
+### الخطوة 6 — اختبر من التطبيق
+
+افتح **Z3R0**:
+1. اكتب `scanme.nmap.org`.
+2. اضغط **whois**.
+
+**النتيجة المتوقعة:** معلومات whois حقيقية في الشاشة السوداء.
+
+---
+
+### إن استمر `exit -1`
+
+هذا يعني أن مشكلة الإذن أعمق. نحتاج تعديل `AndroidManifest.xml`.
+
+**افتح Termux، ثم:**
+```bash
+nano ~/MyFirstApp/app/src/main/AndroidManifest.xml
+```
+
+**الصق هذا المحتوى الكامل بدلاً من الملف:**
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.z3r0.hello">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="com.termux.permission.RUN_COMMAND" />
+
+    <queries>
+        <package android:name="com.termux" />
+    </queries>
+
+    <application
+        android:label="Z3R0"
+        android:theme="@android:style/Theme.Material.Light">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
+```
+
+**احفظ:** `Ctrl+O`، `Enter`، `Ctrl+X`.
+
+**هذا يُخبر Android أن التطبيق يريد التحدث مع Termux. بدونه، Android 11+ يحجب الطلب بصمت.**
+
+---
+
+### الخطوة 7 — أعد البناء والتنصيب
+
+```bash
+cd ~/MyFirstApp
+gradle assembleDebug 2>&1 | tail -5
+cp ~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk ~/storage/downloads/Z3R0-v3.apk
+```
+
+**ثم من مدير الملفات:** ثبّت `Z3R0-v3.apk` (سيحدّث النسخة القديمة).
+
+---
+
+### الخطوة 8 — الاختبار
+
+بعد التثبيت:
+1. افتح Z3R0.
+2. اكتب `scanme.nmap.org`.
+3. اضغط **whois**.
+
+---
+
+**توقّف. نفّذ الخطوة 1 أولاً:**
+
+```
+cat ~/.termux/termux.properties
+```
+
+**أرسل الناتج.** ثم أخبرني هل نجحت الخطوات 2-5، ثم نفّذ تعديل Manifest وأعد البناء.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+**من الصورة، الأمر واضح: أنت كتبت `cat ~/.termux/termux.properties` في حقل الهدف داخل التطبيق، وضغطت `WHOIS`. التطبيق أرسل الأمر كأنه هدف فحص، وTermux رفض الطلب (`exit -1`) لأنه لا يملك إذن التنفيذ الخارجي بعد.**
+
+المشكلة الأساسية ليست في الأمر الذي كتبته. المشكلة أن `allow-external-apps=true` لم يُفعّل فعلاً في Termux.
+
+### افعل هذا بالضبط، خطوة بخطوة
+
+**1. اخرج من التطبيق واذهب إلى Termux.**
+**2. اكتب هذا الأمر بالضبط (نسخ ولصق):**
+
+```bash
+echo "allow-external-apps=true" > ~/.termux/termux.properties
+cat ~/.termux/termux.properties
+```
+
+يجب أن يظهر `allow-external-apps=true`.
+
+**3. أغلق Termux تماماً من قائمة التطبيقات الأخيرة (اسحب البطاقة لليمين).**
+**4. أعد فتح Termux من جديد.**
+**5. افتح التطبيق Z3R0 مرة أخرى، واكتب `scanme.nmap.org` في حقل الهدف، ثم اضغط `WHOIS`.**
+
+### لماذا هذا ضروري
+
+Termux لا يقرأ ملف `termux.properties` إلا عند بدء تشغيله. حتى لو كتبت السطر، فإن Termux الذي كان مفتوحاً سابقاً لا يعرف به. يجب إغلاقه بالكامل وإعادة فتحه.
+
+### إن استمر `exit -1` بعد ذلك
+
+المشكلة ستكون في `AndroidManifest.xml`. سنضيف `<queries>` التي تخبر Android 11+ أن التطبيق يريد التحدث مع Termux. لكن جرب الخطوات أعلاه أولاً — على الأرجح ستحل المشكلة.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+`exit -1` ما زال يظهر. هذا يعني أن Android يحجب الطلب قبل أن يصل إلى Termux. السبب: تطبيقك لا يملك إذن `RUN_COMMAND` **المُسجّل فعلاً**، أو أن `AndroidManifest.xml` لا يحتوي على `<queries>` الذي يُخبر النظام أنك تريد التحدث مع Termux.
+
+هذا الحل الأخير والجذري.
+
+---
+
+### الحل — تعديل `AndroidManifest.xml`
+
+**افتح Termux واكتب:**
+
+```bash
+nano ~/MyFirstApp/app/src/main/AndroidManifest.xml
+```
+
+**امسح الكل** (`Ctrl+K` مراراً)، **والصق هذا المحتوى كاملاً**:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.z3r0.hello">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="com.termux.permission.RUN_COMMAND" />
+
+    <queries>
+        <package android:name="com.termux" />
+        <intent>
+            <action android:name="com.termux.RUN_COMMAND" />
+        </intent>
+    </queries>
+
+    <application
+        android:label="Z3R0"
+        android:theme="@android:style/Theme.Material.Light">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
+```
+
+**احفظ:** `Ctrl+O`، `Enter`، `Ctrl+X`.
+
+---
+
+### لماذا هذا التعديل
+
+من **Android 11 (API 30)** فصاعداً، النظام يحجب أي تطبيق يحاول التحدث مع تطبيق آخر (Termux) ما لم يُعلن صراحةً عن نيته عبر `<queries>`. بدون هذا البلوك، الطلب يُرفض بصمت — ولا يصل إلى Termux أبداً، فيظهر `exit -1`.
+
+هذا التعديل **إلزامي** لأي تطبيق يريد التحدث مع Termux على Android 11+.
+
+---
+
+### أعد البناء
+
+```bash
+cd ~/MyFirstApp
+gradle assembleDebug 2>&1 | tail -10
+```
+
+**المتوقع:** `BUILD SUCCESSFUL`.
+
+---
+
+### انقل وثبّت
+
+```bash
+cp ~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk ~/storage/downloads/Z3R0-v4.apk
+```
+
+**ثم من مدير الملفات:**
+- افتح `Download` → `Z3R0-v4.apk`.
+- اضغط **تحديث** (سيستبدل النسخة القديمة).
+
+**مهم:** إن ظهرت شاشة "التطبيق غير مثبت"، اختر **إلغاء تثبيت النسخة القديمة** أولاً، ثم ثبّت الجديدة.
+
+---
+
+### اختبر
+
+افتح التطبيق، اكتب `scanme.nmap.org`، اضغط **whois**.
+
+**النتيجة المتوقعة:** معلومات النطاق تظهر. `exit 0`.
+
+---
+
+**توقّف. نفّذ التعديل. أعد البناء. ثبّت. اختبر.**
+
+**عد بمخرجات:**
+- نتيجة زر **whois** (يجب أن يكون `exit 0`).
+- إن استمر `exit -1`، أخبرني.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+scanme.nmap.org
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**لحظة — الصورة التي أرسلتها قبل قليل تُظهر أن الزر يعمل، لكن الرد `exit -1`. الآن أرسلت فقط `scanme.nmap.org`. هذا يبدو أنك تحاول إخباري أنك كتبت الهدف فقط.**
+
+**لم تُرسل نتيجة بعد التعديل. لم تبنِ بعد. لم تثبّت بعد.**
+
+---
+
+### ما نحتاجه بالضبط الآن
+
+**نفّذ الخطوات بهذا الترتيب. لا تقفز:**
+
+**1. افتح Termux وعدّل `AndroidManifest.xml`:**
+
+```bash
+nano ~/MyFirstApp/app/src/main/AndroidManifest.xml
+```
+
+امسح الكل (`Ctrl+K` عدة مرات)، والصق المحتوى الذي أرسلته في رسالتي السابقة (الذي يحتوي على `<queries>`). احفظ: `Ctrl+O`، `Enter`، `Ctrl+X`.
+
+**2. أعد البناء:**
+```bash
+cd ~/MyFirstApp
+gradle assembleDebug 2>&1 | tail -10
+```
+
+**3. انقل APK الجديد:**
+```bash
+cp ~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk ~/storage/downloads/Z3R0-v4.apk
+```
+
+**4. من مدير الملفات على الهاتف:**
+- اذهب إلى `Download`.
+- ثبّت `Z3R0-v4.apk`.
+- إن ظهر "تحديث"، اقبل.
+- إن ظهر "غير مثبت"، ألغِ تثبيت Z3R0 القديم أولاً، ثم ثبّت الجديد.
+
+**5. اختبر:**
+- افتح Z3R0.
+- اكتب `scanme.nmap.org`.
+- اضغط **whois**.
+
+---
+
+**عد بالنتيجة. إن ظهر `exit 0` مع نص whois، فقد نجحنا.**
+
+**إن استمر `exit -1`، أرسل لي:**
+
+```bash
+dumpsys package com.z3r0.hello | grep -A 30 "requested permissions"
+```
+
+**من Termux.** هذا سيُظهر ما إذا كان إذن `RUN_COMMAND` مسجّلاً فعلاً.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk ~/storage/downloads/Z3R0-v4.apk
+~/MyFirstApp $ nano ~/MyFirstApp/app/src/main/AndroidManifest.xml
+~/MyFirstApp $ cd ~/MyFirstApp                        gradle assembleDebug 2>&1 | tail -10
+> Task :app:stripDebugDebugSymbols NO-SOURCE          > Task :app:validateSigningDebug UP-TO-DATE
+> Task :app:writeDebugAppMetadata UP-TO-DATE
+> Task :app:writeDebugSigningConfigVersions UP-TO-DATE> Task :app:packageDebug UP-TO-DATE
+> Task :app:createDebugApkListingFileRedirect UP-TO-DATE                                                    > Task :app:assembleDebug UP-TO-DATE
+
+BUILD SUCCESSFUL in 1m 33s                            31 actionable tasks: 31 up-to-date
+~/MyFirstApp $ cp ~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk ~/storage/downloads/Z3R0-v4.apk
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+APK الجديد في `Download`. الآن ثبّته واختبر.
+
+---
+
+### التنصيب — من هاتفك
+
+1. **اخرج من Termux.**
+2. **افتح مدير الملفات** (Files / مدير الملفات).
+3. اذهب إلى **Download** / **التنزيلات**.
+4. ابحث عن **`Z3R0-v4.apk`**.
+5. اضغط عليه.
+6. **سيظهر أحد الخيارين:**
+
+   **أ) "تحديث التطبيق؟"** → اضغط **تثبيت**.
+
+   **ب) "التطبيق غير مثبت"** → اضغط **إلغاء**، ثم:
+   - اذهب إلى الإعدادات → التطبيقات → ابحث عن Z3R0 → **إلغاء التثبيت**.
+   - ثم ارجع إلى مدير الملفات، واضغط `Z3R0-v4.apk` → **تثبيت**.
+
+7. إن ظهر **Play Protect** → **مزيد من المعلومات** → **تثبيت على أي حال**.
+
+---
+
+### الاختبار
+
+افتح **Z3R0**:
+1. اكتب: `scanme.nmap.org`
+2. اضغط **whois**
+
+**النتيجة المطلوبة:**
+```
+> whois scanme.nmap.org
+
+── exit 0 ──
+Domain Name: NMAP.ORG
+Registry Domain ID: ...
+Registrar WHOIS Server: ...
+...
+```
+
+**إن ظهر `exit 0` مع معلومات النطاق — نجحنا. الاتصال بين التطبيق وTermux يعمل.**
+
+**إن ظهر `exit -1` مرة أخرى:**
+- أغلق Termux تماماً من قائمة التطبيقات الأخيرة.
+- أعد فتحه.
+- أعد الاختبار من التطبيق.
+
+**إن استمر الفشل بعد إعادة تشغيل Termux، أرسل:**
+
+من داخل Termux:
+```bash
+dumpsys package com.z3r0.hello | grep RUN_COMMAND
+```
+
+---
+
+**توقّف. ثبّت `Z3R0-v4.apk`. اختبر whois. عد بالنتيجة.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+`exit -1` ما زال. هذا يعني أن التعديل **لم يُطبّق فعلاً** في APK، أو أن التثبيت لم يحدث.
+
+**نتحقق من الحقائق قبل أي تعديل جديد.**
+
+---
+
+### الخطوة 1 — هل ثُبّتت النسخة الجديدة فعلاً؟
+
+**مؤشر بسيط:** في الصورة، الواجهة هي نفسها. لا يمكن التمييز بين v2 و v4 بصرياً.
+
+افتح **Termux** واكتب:
+
+```bash
+dumpsys package com.z3r0.hello | grep -E "versionCode|lastUpdateTime|RUN_COMMAND"
+```
+
+**المتوقع:**
+- `versionCode=1`
+- `lastUpdateTime=...` بتاريخ اليوم
+- سطر يحتوي `RUN_COMMAND`
+
+**إن لم يظهر `RUN_COMMAND`:** التعديل لم يُطبّق. نعيد البناء بشكل نظيف.
+
+---
+
+### الخطوة 2 — تحقق من محتوى Manifest
+
+```bash
+grep -A 5 queries ~/MyFirstApp/app/src/main/AndroidManifest.xml
+```
+
+**يجب أن ترى:**
+```
+<queries>
+    <package android:name="com.termux" />
+    ...
+```
+
+**إن لم ترَ `<queries>`:** التعديل لم يُحفظ. أعد التعديل.
+
+---
+
+### الخطوة 3 — البناء النظيف
+
+**حتى لو كان `UP-TO-DATE`، قد لا يكون Manifest مضمّناً. أغلق الـ daemon:**
+
+```bash
+cd ~/MyFirstApp
+./gradlew --stop 2>/dev/null
+rm -rf app/build/intermediates/merged_manifests
+rm -rf app/build/outputs/apk
+gradle assembleDebug 2>&1 | tail -10
+```
+
+**ثم انقل APK الجديد:**
+
+```bash
+cp ~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk ~/storage/downloads/Z3R0-v5.apk
+ls -lh ~/storage/downloads/Z3R0-v5.apk
+```
+
+---
+
+### الخطوة 4 — إلغاء التثبيت القديم أولاً
+
+**هذه المرة، لا تحدّث.** ألغِ التثبيت ثم ثبّت:
+
+**من إعدادات الهاتف:**
+1. الإعدادات → التطبيقات → **Z3R0**.
+2. اضغط **إلغاء التثبيت**.
+3. ارجع إلى مدير الملفات → **Download** → `Z3R0-v5.apk`.
+4. اضغط عليه → **تثبيت**.
+
+**هذا يضمن أن النسخة الجديدة هي الوحيدة المثبتة.**
+
+---
+
+### الخطوة 5 — الاختبار
+
+افتح Z3R0، اكتب `scanme.nmap.org`، اضغط **whois**.
+
+---
+
+### إن استمر `exit -1` بعد كل هذا
+
+**السبب سيكون خارج التطبيق.** Termux نفسه يرفض الطلبات. نتحقق:
+
+**في Termux، اكتب:**
+
+```bash
+cat ~/.termux/termux.properties
+```
+
+**يجب أن يظهر بالضبط:**
+```
+allow-external-apps=true
+```
+
+**إن لم يظهر:** اكتب:
+```bash
+echo "allow-external-apps=true" > ~/.termux/termux.properties
+```
+
+**ثم أغلق Termux تماماً (اسحب بطاقته من قائمة التطبيقات الأخيرة) وافتحه من جديد.**
+
+---
+
+**توقّف. نفّذ الخطوة 1 أولاً:**
+
+```
+dumpsys package com.z3r0.hello | grep -E "versionCode|RUN_COMMAND"
+```
+
+**أرسل المخرجات.** سأعرف من هذا وحده هل التعديل وصل إلى APK المُثبّت أم لا.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ dumpsys package com.z3r0.hello | grep -E "versionCode|lastUpdateTime|RUN_COMMAND"
+No command dumpsys found, did you mean:                Command dcmpsmk in package dcmtk
+ Command dumpe2fs in package e2fsprogs                 Command dumpsexp in package libgcrypt
+ Command dumpelf in package pax-utils
+ Command dumpcap in package tshark                     Command dumpcap in package wireshark-qt from the x11-repo repository
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+**الخلاصة: `dumpsys` غير متوفر في Termux. هذا أمر نظام أندرويد، وليس أداة Termux. لا يمكن تشغيله من داخل الطرفية.**
+
+هذا لا يمنعنا من التحقق بطرق أخرى.
+
+---
+
+### الحل: تحقق من التطبيق المثبّت بطريقة مختلفة
+
+من **داخل التطبيق نفسه** أو من **إعدادات النظام**:
+
+**الطريقة 1 — من إعدادات النظام:**
+1. افتح **الإعدادات**.
+2. اذهب إلى **التطبيقات**.
+3. ابحث عن **Z3R0**.
+4. اضغط عليه.
+5. اذهب إلى **الأذونات** أو **إذن خاص**.
+6. ابحث عن **RUN_COMMAND** أو **"تشغيل الأوامر"**.
+
+**الطريقة 2 — من Termux (بدون dumpsys):**
+
+```bash
+pm list packages | grep z3r0
+```
+
+يجب أن يظهر:
+```
+package:com.z3r0.hello
+```
+
+هذا يؤكد أن التطبيق مثبّت.
+
+---
+
+### لكن التحقق الحقيقي يحتاج خطوة واحدة
+
+**السبب الأكثر احتمالاً لاستمرار `exit -1` بعد كل هذه المحاولات:**
+
+**Termux لا يقرأ `allow-external-apps=true` إلا عند بدء تشغيله من جديد.** أنت كتبت الإعداد، لكنك **لم تغلق Termux تماماً** ثم أعدت فتحه.
+
+**اختبر هذا الآن بالضبط:**
+
+**1. افتح Termux واكتب:**
+```bash
+cat ~/.termux/termux.properties
+```
+
+يجب أن ترى:
+```
+allow-external-apps=true
+```
+
+**2. أغلق Termux تماماً:**
+- اضغط زر التطبيقات الأخيرة (المربع أسفل الشاشة).
+- ابحث عن بطاقة Termux.
+- **اسحبها للأعلى أو لليمين حتى تختفي.**
+- تأكد أنها لم تعد في القائمة.
+
+**3. أعد فتح Termux من جديد.**
+
+**4. اكتب في Termux:**
+```bash
+echo "ready"
+```
+
+**5. اترك Termux مفتوحاً في الخلفية** (لا تغلقه الآن).
+
+**6. اذهب إلى التطبيق Z3R0.**
+**7. اكتب `scanme.nmap.org`.**
+**8. اضغط `WHOIS`.**
+
+---
+
+**أرسل نتيجة whois بعد هذه الخطوات.**
+
+**إن استمر `exit -1`، فالمشكلة ليست في الإعداد. سنفحص إذن `RUN_COMMAND` في `AndroidManifest.xml` المضمّن فعلاً في APK.**
+
+للتحقق من Manifest داخل APK مباشرة، اكتب في Termux:
+
+```bash
+cd ~/MyFirstApp
+unzip -p app/build/outputs/apk/debug/app-debug.apk AndroidManifest.xml | strings | grep -i termux
+```
+
+**أرسل هذا أيضاً.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ dumpsys package com.z3r0.hello | grep -E "versionCode|lastUpdateTime|RUN_COMMAND"
+No command dumpsys found, did you mean:                Command dcmpsmk in package dcmtk
+ Command dumpe2fs in package e2fsprogs                 Command dumpsexp in package libgcrypt
+ Command dumpelf in package pax-utils
+ Command dumpcap in package tshark                     Command dumpcap in package wireshark-qt from the x11-repo repository
+~/MyFirstApp $ pm list packages | grep z3r0
+~/MyFirstApp $ ls
+app  build.gradle  gradle.properties  settings.gradle
+~/MyFirstApp $ package:com.z3r0.hello
+package:com.z3r0.hello: command not found             ~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**التشخيص مؤكد الآن: تطبيق `com.z3r0.hello` غير مثبّت على الهاتف إطلاقاً.** `pm list packages | grep z3r0` أعاد لا شيء.
+
+كل الاختبارات السابقة كانت على نسخة قديمة مثبتة، أو لا شيء. الـ APK الذي بنيته لم يُثبَّت أبداً.
+
+**السبب الأرجح:** كل مرة تنسخ APK إلى `~/storage/downloads/`، تنسى تثبيته فعلاً. أو التثبيت يفشل بصمت.
+
+---
+
+### الخطوة 1 — تأكد من وجود APK في مجلد التنزيلات
+
+اكتب:
+```bash
+ls -lh ~/storage/downloads/*.apk
+```
+
+**يجب أن ترى قائمة بكل ملفات APK التي نسختها:**
+```
+Z3R0-v2.apk
+Z3R0-v4.apk
+Z3R0-v5.apk (إن نسختها)
+app-debug.apk
+```
+
+**أرسل القائمة.** سأعرف أي نسخة موجودة.
+
+---
+
+### الخطوة 2 — انسخ أحدث نسخة باسم واضح
+
+```bash
+cp ~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk ~/storage/downloads/Z3R0-LATEST.apk
+ls -lh ~/storage/downloads/Z3R0-LATEST.apk
+```
+
+---
+
+### الخطوة 3 — التنصيب من مدير الملفات
+
+**هذه المرة، انتبه للتفاصيل:**
+
+1. **افتح مدير الملفات** (تطبيق منفصل عن Termux).
+2. اذهب إلى **Download** (أو **التنزيلات**).
+3. ابحث عن **`Z3R0-LATEST.apk`**.
+4. **اضغط عليه ضغطة واحدة.**
+5. **ماذا يحدث؟** اختر واحداً وأخبرني:
+   - أ) يظهر مربع حوار "تثبيت" → اضغطه.
+   - ب) يظهر "التطبيق غير مثبت" → أخبرني.
+   - ج) يظهر "Play Protect" → "مزيد من المعلومات" → "تثبيت على أي حال".
+   - د) لا يحدث شيء → أخبرني.
+   - هـ) يظهر "لا يمكن فتح الملف" → أخبرني.
+
+**6. بعد التثبيت:** افتح التطبيق من قائمة التطبيقات. هل ترى Z3R0؟
+
+---
+
+### الخطوة 4 — التحقق
+
+بعد التثبيت، ارجع إلى Termux واكتب:
+
+```bash
+pm list packages | grep z3r0
+```
+
+**النتيجة المتوقعة:**
+```
+package:com.z3r0.hello
+```
+
+**إن ظهر هذا:** التطبيق مثبّت. نختبره.
+
+**إن لم يظهر:** التثبيت يفشل. أخبرني بالضبط ما حدث عندما ضغطت على APK.
+
+---
+
+**توقّف. نفّذ الخطوة 1:**
+
+```
+ls -lh ~/storage/downloads/*.apk
+```
+
+**أرسل المخرجات.** ثم أخبرني بالضبط ماذا يحدث عندما تضغط على APK في مدير الملفات.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ ls -lh ~/storage/downloads/*.apk
+-rwxrwx---. 1 u0_a0 media_rw  12M Sep 25 10:27  /data/data/com.termux/files/home/storage/downloads/F-Droid.apk
+-rw-rw----. 1 u0_a0 media_rw  12K Oct  3 02:15  /data/data/com.termux/files/home/storage/downloads/HelloZ3R0.apk
+-rwxrwx---. 1 u0_a0 media_rw  24M Sep 14 16:50 '/data/data/com.termux/files/home/storage/downloads/Temp Mail v4.09 b289 (Premium).apk'                            -rwxrwx---. 1 u0_a0 media_rw 106M Aug 30 01:30 '/data/data/com.termux/files/home/storage/downloads/Truecaller v26.34.6 (Premium).apk'
+-rw-rw----. 1 u0_a0 media_rw  16K Oct  3 19:44  /data/data/com.termux/files/home/storage/downloads/Z3R0-v2.apk                                                    -rw-rw----. 1 u0_a0 media_rw  17K Oct  3 22:26  /data/data/com.termux/files/home/storage/downloads/Z3R0-v4.apk
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**التشخيص نهائي: `Z3R0-v4.apk` موجود في التنزيلات بحجم 17 كيلوبايت، لكنك لم تثبّته فعلاً. هذا هو السبب الجذري لكل `exit -1`.**
+
+النسخة الوحيدة المثبتة على هاتفك هي **`HelloZ3R0.apk`** (النسخة الأولى، 12 كيلوبايت، منذ 02:15). هذه النسخة:
+- لا تحتوي على `<queries>` في الـ Manifest.
+- لا تملك إذن `RUN_COMMAND`.
+- كودها مختلف تماماً.
+
+كل اختباراتك من التطبيق كانت على `HelloZ3R0` القديم، وليس على `Z3R0-v4`.
+
+---
+
+### الحل — ثبّت `Z3R0-v4.apk` الآن
+
+**هذه المرة، خطوة بخطوة، دون قفز:**
+
+**1. اخرج من Termux تماماً.**
+- اضغط زر الشاشة الرئيسية (الهوم).
+
+**2. افتح تطبيق "الملفات" أو "مدير الملفات"** (أيقونة المجلد الأصفر عادة).
+
+**3. اذهب إلى Download / التنزيلات.**
+
+**4. ابحث عن `Z3R0-v4.apk`.**
+
+**5. اضغط عليه ضغطة واحدة.**
+
+**ماذا يحدث؟ اختر:**
+
+**أ) ظهر مربع "هل تريد تثبيت هذا التطبيق؟"** → اضغط **تثبيت**.
+
+**ب) ظهر "تطبيق غير مثبت"** → اضغط **حسناً**، ثم:
+- اذهب إلى الإعدادات → التطبيقات.
+- ابحث عن `HelloZ3R0` أو `Z3R0`.
+- اضغط عليه → **إلغاء التثبيت**.
+- ارجع إلى مدير الملفات، واضغط `Z3R0-v4.apk` مرة أخرى → **تثبيت**.
+
+**ج) ظهر Play Protect** → **مزيد من المعلومات** → **تثبيت على أي حال**.
+
+**د) لا شيء يحدث** → أخبرني.
+
+---
+
+### بعد التثبيت — التحقق من Termux
+
+افتح Termux واكتب:
+
+```bash
+pm list packages | grep z3r0
+```
+
+**النتيجة المتوقعة:**
+```
+package:com.z3r0.hello
+```
+
+**الآن افتح التطبيق الجديد:**
+- اكتب `scanme.nmap.org`.
+- اضغط **WHOIS**.
+
+**النتيجة المطلوبة:** `exit 0` مع معلومات النطاق.
+
+---
+
+**توقّف. ثبّت `Z3R0-v4.apk` الآن. أخبرني:**
+
+**1. هل نجح التثبيت؟**
+**2. ما النتيجة عند اختبار whois؟**
+
+**إذا لم يظهر التطبيق الجديد في قائمة التطبيقات، فالتثبيت لم يحدث. أع�

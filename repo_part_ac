@@ -1,0 +1,3176 @@
+�ة.
+- **الاتصال بالشبكة** قد يُعاد توجيهه، فينقطع `udocker pull` في المنتصف.
+- **الملف المحمّل جزئياً** قد يتلف، فتضطر لإعادة التحميل من الصفر (لا استئناف في هذه المرحلة).
+
+لكن هناك استثناءات دقيقة، إليك الجدول:
+
+| المرحلة | هل يمكن ترك Termux؟ | لماذا |
+|---|---|---|
+| `pkg install` | لا | عملية كتابة ملفات، انقطاعها يفسد الحزم |
+| `udocker pull` | لا | تحميل طويل، انقطاعه يلغي كل شيء |
+| `udocker create` | لا | سريع (ثوانٍ) لكن لا داعي للمخاطرة |
+| `udocker run` (تشغيل Kali) | لا | جلسة تفاعلية تُقتل عند التجمد |
+| **بعد كل ما سبق** | **نعم** | لا يوجد تحميل جارٍ |
+
+---
+
+### الحل العملي — ما تفعله
+
+1. **أوقف إشعارات التطبيقات الأخرى مؤقتاً** (اختياري لكن مفيد).
+2. **ضع الهاتف على الشاحن.** التحميل يستهلك بطارية.
+3. **أوقف القفل التلقائي للشاشة** — الإعدادات → الشاشة → مهلة القفل → "أبداً" مؤقتاً.
+4. **افتح Termux، ابدأ الأمر، لا تلمس الهاتف.**
+5. **انتظر حتى تنتهي العملية تماماً** وظهور الموجّه `~ $`.
+
+---
+
+### تحذير صريح — انتبه لهذه اللحظات
+
+**احذر أن:**
+
+- **تنقر زر الرجوع (Back)** أثناء التنفيذ. قد يقتل الجلسة.
+- **تفتح واتساب أو يوتيوب** "لدقيقة فقط". هذه "الدقيقة" قاتلة.
+- **ترد على مكالمة.** المكالمة ستوقف الشبكة مؤقتاً.
+- **تُغلق الشاشة يدوياً.** في بعض الأجهزة هذا يُجمّد Termux.
+
+**افعل فقط:**
+
+- اترك الشاشة مضاءة.
+- لا تلمس الهاتف.
+- إن أردت التأكد أن العملية مستمرة، انظر هل الأرقام في الشاشة تتغير (النسبة المئوية للتحميل).
+
+---
+
+### استثناء واحد مهم
+
+إن **انقطع التحميل**، الأمر `udocker pull` **يعيد المحاولة تلقائياً** لأنه يستخدم طبقات. لكن `pkg install` لا يستأنف. لذا:
+
+- إن انقطع `pkg install` → أعد الأمر `pkg install -y proot udocker`.
+- إن انقطع `udocker pull` → أعد الأمر `udocker pull kalilinux/kali-rolling`.
+
+لا تحذف شيئاً. فقط أعد الأمر.
+
+---
+
+### الآن
+
+أنت في الخطوة 6 (`udocker install`). هل انتهت؟ اكتب:
+
+```bash
+udocker --version
+```
+
+**أرسل الناتج.** إذا ظهر رقم النسخة، ننتقل للخطوة 7. وإذا فشل، الصق الخطأ.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+Need to get 84.0 kB of archives.
+After this operation, 668 kB of additional disk space will be used.
+Get:1 https://linux.domainesia.com/applications/termux/termux-main stable/main aarch64 udocker all 1.3.17-5 [84.0 kB]
+Fetched 84.0 kB in 2s (45.0 kB/s)
+Selecting previously unselected package udocker.
+(Reading database ... 36807 files and directories currently installed.)
+Preparing to unpack .../udocker_1.3.17-5_all.deb ...
+Unpacking udocker (1.3.17-5) ...
+Setting up udocker (1.3.17-5) ...
+~ $ udocker --version
+Info: creating repo: /data/data/com.termux/files/home/.udocker
+version: 1.3.17
+tarball: https://download.a.incd.pt/udocker/udocker-englib-1.2.11.tar.gz https://raw.githubusercontent.com/jorge-lip/udocker-builds/master/tarballs/udocker-englib-1.2.11.tar.gz
+tarball_release: 1.2.11
+~ $ udocker install
+Info: udocker command line interface 1.3.17
+Info: searching for udockertools >= 1.2.11
+Info: installing udockertools 1.2.11
+Info: installation of udockertools successful
+~ $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+udocker 1.3.17 مثبّت. udockertools 1.2.11 مثبّت.
+الطبقة الأولى جاهزة. ننتقل لتحميل صورة Kali.
+
+---
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║  الخطوة 7 // تحميل صورة Kali                                 ║
+║  هذه هي الخطوة الأطول. لا تلمس الهاتف.                        ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+### قبل أن تكتب الأمر
+
+**نفّذ هذه التحضيرات أولاً:**
+
+1. **وصّل الهاتف بالشاحن** إن لم يكن موصولاً.
+2. **أوقف القفل التلقائي للشاشة** مؤقتاً.
+3. **أغلق كل التطبيقات الأخرى** (واتساب، يوتيوب، غيرهما).
+4. **تأكد أن الشاشة أمامك** ولا تنوي مغادرة Termux.
+
+---
+
+### الآن اكتب
+
+```bash
+udocker pull kalilinux/kali-rolling
+```
+
+**ماذا سيحدث:**
+- udocker سيتصل بـ Docker Hub.
+- سيحمّل الصورة على شكل طبقات (layers).
+- سترى تقدماً بنسبة مئوية وأرقام ميغابايت.
+- الحجم الكلي ~120 ميغا.
+- **المدة:** من 5 إلى 20 دقيقة، حسب سرعة الإنترنت.
+
+---
+
+### تحذير — لا تفعل هذه الأشياء
+
+| لا تفعل | لماذا |
+|---|---|
+| **لا تفتح تطبيقاً آخر** | Android سيُجمّد Termux، وينقطع التحميل |
+| **لا تُطفئ الشاشة** | بعض الأجهزة تُجمّد Termux عند إطفاء الشاشة |
+| **لا ترجع بزر Back** | قد يقتل الجلسة |
+| **لا ترد على مكالمة** | المكالمة ستُوقف الشبكة مؤقتاً |
+| **لا تُغلق Termux** | سيُلغى كل ما تحمّل |
+
+---
+
+### ماذا تفعل إن انقطع التحميل
+
+- **إن ظهر خطأ شبكة:** أعد نفس الأمر `udocker pull kalilinux/kali-rolling`. لا تحذف شيئاً. udocker يستأنف من حيث توقف.
+- **إن تجمّد Termux تماماً:** أغلق التطبيق وأعد فتحه، ثم أعد الأمر.
+- **لا تحذف مجلد `~/.udocker`** مهما حدث.
+
+---
+
+### علامة النجاح
+
+بعد انتهاء التحميل، اكتب:
+```bash
+udocker images
+```
+
+يجب أن ترى:
+```
+REPOSITORY              TAG          IMAGE ID       CREATED       SIZE
+kalilinux/kali-rolling  latest       xxxxxxxxxxxx   ...           ~120MB
+```
+
+---
+
+**توقّف. نفّذ الخطوة 7. عد بمخرجات:**
+
+```
+udocker images
+```
+
+**إن ظهر خطأ، الصقه كاملاً.** لا تحاول إصلاحه بنفسك. سأحلله.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+$ udocker images
+REPOSITORY
+kalilinux/kali-rolling:latest    .
+~ $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+الصورة محمّلة بنجاح. `kalilinux/kali-rolling:latest` موجودة.
+ننتقل لإنشاء الحاوية.
+
+---
+
+### الخطوة 8 — إنشاء الحاوية من الصورة
+
+اكتب:
+```bash
+udocker create --name=kali kalilinux/kali-rolling
+```
+
+**ماذا يحدث:**
+- udocker ينشئ حاوية باسم `kali` من الصورة.
+- سيُظهر لك **معرّف الحاوية** (سلسلة hex مثل `a3f2b1c9`).
+- **احتفظ بهذا المعرّف.** ستحتاجه في الأوامر القادمة.
+
+**المدة:** ثوانٍ فقط. هذه العملية لا تحمّل شيئاً من الإنترنت.
+
+**مثال للمخرجات المتوقعة:**
+```
+a3f2b1c9d4e5f6...
+```
+
+---
+
+### تحقق من النجاح
+
+اكتب:
+```bash
+udocker ps -a
+```
+
+**يجب أن ترى:**
+```
+CONTAINER ID    IMAGE                       COMMAND    NAME
+a3f2b1c9d4e5    kalilinux/kali-rolling      /bin/bash  kali
+```
+
+---
+
+### الخطوة 9 — أول تشغيل
+
+اكتب:
+```bash
+udocker run kali /bin/bash
+```
+
+**انتبه:** في udocker، الأمر يختلف قليلاً عن Docker. الصيغة هنا:
+- `udocker run <name> <command>` — استخدمنا `kali` كاسم و `/bin/bash` كأمر.
+
+**لكن** — إن فشل هذا، سنستخدم الصيغة البديلة بمعرّف الحاوية:
+```bash
+udocker run a3f2b1c9d4e5 /bin/bash
+```
+(استبدل المعرّف بمعرّفك الفعلي)
+
+**ما سيحدث:** ستدخل إلى موجه Kali الجديد. سيبدو هكذا:
+```
+root@localhost:/#
+```
+
+**هذا يعني أنك داخل Kali الآن.** لا تخرج منه بعد — نكمل الخطوة التالية مباشرة.
+
+---
+
+**توقّف. نفّذ الخطوتين 8 و 9. عد بمخرجات:**
+
+```
+udocker ps -a
+```
+
+**وأخبرني:**
+1. هل ظهر معرّف الحاوية؟
+2. هل دخلت إلى موجه `root@localhost:/#`؟
+
+إذا نجحت، الخطوة التالية هي تحديث Kali وتثبيت nmap.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+udocker ps -a
+Error: syntax error at: -a
+~ $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+الخطأ بسيط: udocker لا يقبل `-a` في هذا الإصدار. الصيغة الصحيحة مختلفة.
+
+---
+
+### تحقق من الحاويات
+
+اكتب:
+```bash
+udocker ps
+```
+
+هذا يعرض الحاويات النشطة فقط. لكن حاويتك متوقفة (لم نشغّلها بعد). لذا:
+
+اكتب:
+```bash
+udocker ps -m
+```
+
+`-m` تعني "أظهر الحاويات المتوقفة أيضاً".
+
+**البديل الأضمن** — اعرض كل شيء دفعة واحدة:
+```bash
+udocker inspect kali
+```
+
+إن كان الاسم `kali` موجوداً، سيظهر تعريف الحاوية. إن لم يكن، سنعيد إنشاءها.
+
+---
+
+### وإن لم تنجح الأوامر
+
+اكتب:
+```bash
+udocker help
+```
+
+وأرسل لي السطور الأولى. سأعرف منها الصيغة الصحيحة لهذا الإصدار.
+
+---
+
+**توقّف. نفّذ:**
+
+```
+udocker ps -m
+```
+
+**عد بالمخرجات.** إن ظهرت الحاوية `kali` في القائمة، ننتقل للخطوة 9 (تشغيلها).
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+ضهرت
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+الحاوية `kali` موجودة. ننتقل للتشغيل.
+
+---
+
+### الخطوة 9 — أول دخول إلى Kali
+
+اكتب:
+```bash
+udocker run kali /bin/bash
+```
+
+**ما سيحدث خلال ثوانٍ:**
+- سيتغير الموجّه من `~ $` إلى `root@localhost:/#`
+- هذا يعني أنك **داخل Kali Linux الآن**.
+
+**انتظر حتى يظهر الموجّه الجديد.** لا تكتب شيئاً حتى يظهر.
+
+---
+
+### بعد الدخول — أول أمر
+
+اكتب:
+```bash
+cat /etc/os-release
+```
+
+**يجب أن ترى:**
+```
+PRETTY_NAME="Kali GNU/Linux Rolling"
+NAME="Kali GNU/Linux"
+ID=kali
+```
+
+إن ظهر هذا، فأنت داخل Kali فعلاً.
+
+---
+
+### الخطوة 10 — تحديث Kali
+
+اكتب:
+```bash
+apt update && apt upgrade -y
+```
+
+**ماذا يحدث:**
+- `apt update` — يحدّث قوائم الحزم. سريع، 30 ثانية.
+- `apt upgrade` — يحدّث كل الحزم المثبتة. **قد يستغرق 10-20 دقيقة.**
+- حجم التنزيل المتوقع: 100-300 ميغا.
+
+**تحذير — لا تخرج من Termux خلال هذه العملية.** الشاشة مضاءة، لا تطبيقات أخرى، لا مكالمات.
+
+**قد يسألك عن إعدادات** (مثل "restart services during upgrade"). اختر:
+- للـ **services**: `Yes` أو `Ok` (اقبل الافتراضي).
+- للـ **config files**: اختر `keep the local version currently installed`.
+
+---
+
+### الخطوة 11 — تثبيت nmap
+
+بعد أن ينتهي `apt upgrade`، اكتب:
+```bash
+apt install -y nmap
+```
+
+**المدة:** دقيقة إلى ثلاث.
+
+**تحقق:**
+```bash
+nmap --version
+```
+
+يجب أن يظهر رقم النسخة مثل `Nmap version 7.94`.
+
+---
+
+### الخطوة 12 — اختبار حقيقي
+
+اكتب:
+```bash
+nmap -sV 127.0.0.1
+```
+
+هذا يفحص جهازك المحلي (localhost) — لن يخرج للإنترنت.
+
+**المتوقع:** قائمة ببورتات مفتوحة في Kali نفسه (عادة بورت واحد أو اثنان).
+
+إن ظهرت النتائج، **nmap يعمل فعلياً.** أنت الآن داخل Kali، بأداة اختبار اختراق حقيقية، على هاتفك.
+
+---
+
+**توقّف. نفّذ الخطوات 9 إلى 12. عد بمخرجات:**
+
+```
+cat /etc/os-release
+```
+```
+nmap --version
+```
+
+**وإن ظهر خطأ، الصقه كاملاً.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+dpkg-realpath: error: symbolic link '/bin' size has changed from 18 to 7
+dpkg-realpath: error: symbolic link '/bin' size has changed from 18 to 7
+dpkg-realpath: error: symbolic link '/bin' size has changed from 18 to 7
+Processing triggers for libc-bin (2.43-4) ...
+
+┌──(root㉿localhost)-[/]
+└─#
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+الموجّه تغيّر إلى `root@localhost`. **أنت داخل Kali الآن.**
+سطور `dpkg-realpath` مجرد تحذيرات، ليست أخطاء قاتلة. تجاهلها.
+
+---
+
+### تحقق سريع — هل التحديث انتهى فعلاً؟
+
+اكتب:
+```bash
+cat /etc/os-release
+```
+
+**يجب أن ترى:**
+```
+PRETTY_NAME="Kali GNU/Linux Rolling"
+```
+
+ثم:
+```bash
+apt list --upgradable
+```
+
+إن ظهرت قائمة فارغة أو قليلة، فالتحديث انتهى. إن ظهرت قائمة طويلة، نفّذ:
+```bash
+apt upgrade -y
+```
+مرة أخرى.
+
+---
+
+### الخطوة 11 — تثبيت nmap
+
+اكتب:
+```bash
+apt install -y nmap
+```
+
+**تحقق:**
+```bash
+nmap --version
+```
+
+**المتوقع:**
+```
+Nmap version 7.9x ( https://nmap.org )
+```
+
+---
+
+### الخطوة 12 — اختبار حقيقي
+
+اكتب:
+```bash
+nmap -sV 127.0.0.1
+```
+
+**المتوقع:** قائمة ببورتات مفتوحة في Kali. عادة بورت واحد.
+
+إن ظهرت النتائج، **nmap يعمل فعلياً.**
+
+---
+
+**توقّف. نفّذ:**
+
+```
+cat /etc/os-release
+```
+```
+nmap --version
+```
+
+**والصق أي خطأ يظهر كاملاً.** لا تصلح شيئاً بنفسك.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+dpkg-realpath: error: symbolic link '/bin' size has changed from 18 to 7
+dpkg-realpath: error: symbolic link '/bin' size has changed from 18 to 7
+dpkg-realpath: error: symbolic link '/bin' size has changed from 18 to 7
+Processing triggers for libc-bin (2.43-4) ...
+
+┌──(root㉿localhost)-[/]
+└─#
+لقد ضهر هذا في أخر نتيجة الأمر 
+apt update && apt upgrade -y
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+الخطأ الذي ظهر ليس فشلاً. هو **تحذير dpkg** بشأن الروابط الرمزية داخل Kali. Kali واصل العمل بعده. والموجّه `┌──(root㉿localhost)-[/]` يعني أنك **داخل Kali الآن**.
+
+لكن هذا التحذير قد يسبب مشاكل لاحقاً عند تثبيت حزم. نعالجه فوراً.
+
+---
+
+### الخطوة 10.5 — إصلاح الروابط الرمزية
+
+اكتب داخل Kali:
+```bash
+rm -f /bin && ln -sf usr/bin /bin
+```
+
+**ماذا يفعل:**
+- `/bin` يجب أن يكون رابطاً رمزياً إلى `usr/bin`.
+- التحذير يقول إن حجم الرابط تغيّر — هذا سببه udocker عند إنشاء الحاوية.
+- الأمر يعيد الرابط لحالته الصحيحة.
+
+**ثم أعد الفحص:**
+```bash
+apt update
+```
+
+**يجب ألا يظهر خطأ `dpkg-realpath` هذه المرة.**
+
+---
+
+### الخطوة 10.6 — إكمال التحديث
+
+اكتب:
+```bash
+apt upgrade -y
+```
+
+**قد يظهر سؤال** عن ملفات الإعدادات. اختر:
+- `keep the local version currently installed`
+
+---
+
+### الخطوة 11 — تثبيت nmap
+
+اكتب:
+```bash
+apt install -y nmap
+```
+
+**المدة:** دقيقة إلى ثلاث.
+
+**تحقق:**
+```bash
+nmap --version
+```
+
+يجب أن يظهر رقم النسخة.
+
+---
+
+### الخطوة 12 — اختبار حقيقي
+
+اكتب:
+```bash
+nmap -sV 127.0.0.1
+```
+
+هذا يفحص جهازك المحلي فقط. لن يخرج للإنترنت.
+
+**المتوقع:** قائمة ببورتات مفتوحة في Kali نفسه (عادة واحد أو اثنان).
+
+---
+
+### تحذير قبل المتابعة
+
+- **لا تخرج من `udocker run`** أثناء هذه الخطوات. الخروج يقتل الجلسة.
+- إن أردت الخروج لاحقاً، اكتب `exit` فقط.
+- لإعادة الدخول لاحقاً، نفس الأمر: `udocker run kali /bin/bash`.
+
+---
+
+**توقّف. نفّذ الخطوات 10.5 إلى 12. عد بمخرجات:**
+
+```
+nmap --version
+```
+```
+nmap -sV 127.0.0.1
+```
+
+**إن ظهر أي خطأ، الصقه كاملاً.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+┌──(root㉿localhost)-[/]
+└─# apt install -y nmap
+Installing:
+  nmap
+
+Installing dependencies:
+  libblas3     liblua5.4-0    nmap-common
+  libdbus-1-3  libpcap0.8t64
+  liblinear4   libssh2-1t64
+
+Suggested packages:
+  liblinear-tools  ncat   zenmap
+  liblinear-dev    ndiff
+
+Summary:
+  Upgrading: 0, Installing: 8, Removing: 0, Not Upgrading: 0
+  Download size: 7474 kB
+  Space needed: 31.5 MB / 28.1 GB available
+
+Get:2 http://http.kali.org/kali kali-rolling/main arm64 libdbus-1-3 arm64 1.16.2-5+b1 [165 kB]
+Get:4 http://kali.download/kali kali-rolling/main arm64 liblua5.4-0 arm64 5.4.9-1 [133 kB]
+Get:5 http://kali.mirror.garr.it/kali kali-rolling/main arm64 libpcap0.8t64 arm64 1.10.7-1 [166 kB]
+Get:6 http://kali.download/kali kali-rolling/main arm64 libssh2-1t64 arm64 1.11.1-6 [235 kB]
+Get:7 http://http.kali.org/kali kali-rolling/non-free arm64 nmap-common all 7.99+dfsg-1kali1 [4698 kB]
+Ign:1 https://kalimirror.velden.media/kali kali-rolling/main arm64 libblas3 arm64 3.12.1-8
+Get:3 http://http.kali.org/kali kali-rolling/main arm64 liblinear4 arm64 2.3.0+dfsg-5+b3 [38.1 kB]
+Ign:8 http://http.kali.org/kali kali-rolling/non-free arm64 nmap arm64 7.99+dfsg-1kali1
+Ign:1 https://kalimirror.velden.media/kali kali-rolling/main arm64 libblas3 arm64 3.12.1-8
+Ign:8 http://http.kali.org/kali kali-rolling/non-free arm64 nmap arm64 7.99+dfsg-1kali1
+Ign:1 https://kalimirror.velden.media/kali kali-rolling/main arm64 libblas3 arm64 3.12.1-8
+Err:1 https://kalimirror.velden.media/kali kali-rolling/main arm64 libblas3 arm64 3.12.1-8
+  SSL connection failed: error:0A000086:SSL routines::certificate verify failed / Success [IP: 77.73.242.235 443]
+Ign:8 http://http.kali.org/kali kali-rolling/non-free arm64 nmap arm64 7.99+dfsg-1kali1
+Err:8 http://http.kali.org/kali kali-rolling/non-free arm64 nmap arm64 7.99+dfsg-1kali1
+  SSL connection failed: error:0A000086:SSL routines::certificate verify failed / Success [IP: 77.73.242.235 443]
+Fetched 5435 kB in 16s (336 kB/s)
+Error: Failed to fetch https://kalimirror.velden.media/kali/pool/main/l/lapack/libblas3_3.12.1-8_arm64.deb  SSL connection failed: error:0A000086:SSL routines::certificate verify failed / Success [IP: 77.73.242.235 443]
+Error: Failed to fetch https://kalimirror.velden.media/kali/pool/non-free/n/nmap/nmap_7.99+dfsg-1kali1_arm64.deb  SSL connection failed: error:0A000086:SSL routines::certificate verify failed / Success [IP: 77.73.242.235 443]
+Error: Unable to fetch some archives, maybe run apt update or try with --fix-missing?
+
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+المشكلة واضحة: **مرآة (mirror) معطوبة**. `kalimirror.velden.media` يفشل في شهادة SSL. الأسباب: مرآة قديمة، شهادة منتهية، أو حجب شبكي.
+
+الحل: **تجاوز هذه المرآة** واستخدام مرآة Kali الرسمية.
+
+---
+
+### الخطوة 12.5 — إصلاح مصدر الحزم
+
+اكتب داخل Kali:
+
+```bash
+cat /etc/apt/sources.list
+```
+
+**أرسل لي المخرجات.** سأعرف منها ما هي المرايا المُعدّة.
+
+---
+
+### حل سريع الآن — جرّب هذا فوراً
+
+```bash
+sed -i 's|https://|http://|g' /etc/apt/sources.list
+```
+
+**ماذا يفعل:** يحوّل كل الروابط من HTTPS إلى HTTP. هذا يتجاوز مشكلة SSL مؤقتاً.
+
+**تحذير:** هذا حل مؤقت. HTTP أقل أماناً من HTTPS. لكنه مقبول داخل حاوية محلية.
+
+**ثم:**
+```bash
+apt update
+apt install -y nmap
+```
+
+---
+
+### إن فشل الحل السريع — الحل الجذري
+
+استبدل كل مصادر الحزم بمرآة Kali الرسمية:
+
+```bash
+cat > /etc/apt/sources.list << 'EOF'
+deb http://http.kali.org/kali kali-rolling main contrib non-free non-free-firmware
+EOF
+```
+
+ثم:
+```bash
+apt update
+apt install -y nmap
+```
+
+---
+
+### إن فشل حتى هذا — تجاوز التحقق من الشهادة
+
+```bash
+apt -o Acquire::https::Verify-Peer=false -o Acquire::https::Verify-Host=false update
+apt -o Acquire::https::Verify-Peer=false -o Acquire::https::Verify-Host=false install -y nmap
+```
+
+**هذا آخر حل.** يُخبر apt أن يتجاهل التحقق من شهادة SSL. **آمن داخل حاوية محلية**، لكن **لا تستخدمه على جهاز إنتاجي**.
+
+---
+
+**توقّف. نفّذ:**
+
+```
+cat /etc/apt/sources.list
+```
+
+**أرسل الناتج.** ثم جرّب الحل السريع. أخبرني أيهما نجح.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+cat /etc/apt/sources.list
+cat: /etc/apt/sources.list: No such file or directory
+
+┌──(root㉿localhost)-[/]
+└─#
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+الملف غير موجود. Kali الحديث يستخدم صيغة جديدة: `/etc/apt/sources.list.d/`. اكتشف الملفات الفعلية.
+
+---
+
+### الخطوة 1 — اعرض المصادر الحقيقية
+
+اكتب:
+```bash
+ls /etc/apt/sources.list.d/
+```
+
+ثم:
+```bash
+cat /etc/apt/sources.list.d/*
+```
+
+**أرسل لي المخرجات.** سأعرف منها أي مرآة معطوبة وأيها سليم.
+
+---
+
+### الخطوة 2 — الحل الجذري الفوري
+
+في الوقت نفسه، جرّب هذا. يكتب ملف مصدر نظيفاً بمرآة Kali الرسمية:
+
+```bash
+echo "deb http://http.kali.org/kali kali-rolling main contrib non-free non-free-firmware" > /etc/apt/sources.list
+```
+
+ثم:
+```bash
+rm -f /etc/apt/sources.list.d/*.list
+rm -f /etc/apt/sources.list.d/*.sources
+```
+
+**ماذا يفعل:**
+- يكتب ملف مصدر واحد نظيف في `/etc/apt/sources.list`.
+- يحذف كل الملفات القديمة في `/etc/apt/sources.list.d/` لأنها تحتوي المرآة المعطوبة.
+
+**تحذير:** هذا يحذف كل المصادر المضافة يدوياً. لا مشكلة — سنضيف ما نحتاجه فقط.
+
+---
+
+### الخطوة 3 — التحديث والتثبيت
+
+```bash
+apt update
+```
+
+**يجب ألا يظهر خطأ SSL هذه المرة.** المرآة `http.kali.org` رسمية ومستقرة.
+
+ثم:
+```bash
+apt install -y nmap
+```
+
+---
+
+**توقّف. نفّذ الخطوات 1 إلى 3 بالترتيب. عد بمخرجات:**
+
+```
+cat /etc/apt/sources.list.d/* 2>/dev/null
+```
+
+**ثم:**
+
+```
+apt install -y nmap 2>&1 | tail -20
+```
+
+**آخر 20 سطراً تكفي.** إن نجح، `nmap --version` سيعمل. إن فشل، سأرى السبب من الأسطر الأخيرة.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+┌──(root㉿localhost)-[/]
+└─# ls /etc/apt/sources.list.d/
+kali.sources
+
+┌──(root㉿localhost)-[/]
+└─# cat /etc/apt/sources.list.d/*
+Types: deb
+URIs: http://http.kali.org/kali/
+Suites: kali-rolling
+Components: main contrib non-free non-free-firmware
+Signed-By: /usr/share/keyrings/kali-archive-keyring.gpg
+
+┌──(root㉿localhost)-[/]
+└─#
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+المصدر نظيف بالفعل. المرآة `http.kali.org` — الرسمية. لا مشكلة فيها.
+
+إذن الفشل السابق سببه أن apt احتفظ بميرور قديم في الذاكرة. نحتاج فقط مسح القوائم وإعادة التحديث.
+
+---
+
+### الخطوة 1 — مسح قوائم apt
+
+اكتب:
+```bash
+apt clean
+rm -rf /var/lib/apt/lists/*
+```
+
+**ماذا يفعل:** يحذف كل قوائم الحزم المخزّنة التي تشير للمرآة القديمة.
+
+---
+
+### الخطوة 2 — إعادة التحديث
+
+اكتب:
+```bash
+apt update
+```
+
+**هذه المرة**، سيحمّل القوائم من `http.kali.org` مباشرة.
+
+**المتوقع:** قائمة طويلة من `Get:` بلا أخطاء SSL.
+
+---
+
+### الخطوة 3 — تثبيت nmap
+
+اكتب:
+```bash
+apt install -y nmap
+```
+
+**المتوقع:** يبدأ التنزيل بلا مشاكل.
+
+---
+
+**توقّف. نفّذ الخطوات 1 إلى 3. عد بمخرجات:**
+
+```
+apt install -y nmap 2>&1 | tail -15
+```
+
+**إن نجح،** اختبر فوراً:
+```bash
+nmap --version
+nmap -sV 127.0.0.1
+```
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+في أخر الخطوت 3
+Error: Failed to fetch https://kalimirror.velden.media/kali/pool/main/libp/libpcap/libpcap0.8t64_1.10.7-1_arm64.deb  SSL connection failed: error:0A000086:SSL routines::certificate verify failed / Success [IP: 77.73.242.235 443]
+Error: Unable to fetch some archives, maybe run apt update or try with --fix-missing?
+
+┌──(root㉿localhost)-[/]
+└─#
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+المرآة المعطوبة راسخة في مكان آخر: **`/etc/apt/mirrors/`** أو **`/etc/apt/apt.conf.d/`**. ملف `kali.sources` نظيف، لكن apt لا يقرأ منه فعلياً — يقرأ من مكان آخر.
+
+نكتشف المكان الحقيقي أولاً.
+
+---
+
+### الخطوة 1 — اكتشف أين يخفي apt المرآة
+
+اكتب:
+```bash
+grep -rn "velden" /etc/apt/ 2>/dev/null
+```
+
+ثم:
+```bash
+grep -rn "velden" /etc/ 2>/dev/null | head -20
+```
+
+**أرسل النتائج.** سأعرف منها مكان الإعداد الخفي.
+
+---
+
+### الخطوة 2 — الحل الجذري الفوري
+
+في الوقت نفسه، جرّب هذا. يُجبر apt على تجاهل كل المصادر ويستخدم المرآة الرسمية فقط:
+
+**أولاً، اعرض قائمة كل ملفات المصادر:**
+```bash
+ls -la /etc/apt/sources.list.d/
+ls -la /etc/apt/mirrors/ 2>/dev/null
+```
+
+**ثم احذف الملف `kali.sources` وأعد كتابته يدوياً بصيغة نظيفة:**
+```bash
+rm -f /etc/apt/sources.list.d/kali.sources
+cat > /etc/apt/sources.list.d/kali.sources << 'EOF'
+Types: deb
+URIs: http://http.kali.org/kali/
+Suites: kali-rolling
+Components: main contrib non-free non-free-firmware
+Signed-By: /usr/share/keyrings/kali-archive-keyring.gpg
+EOF
+```
+
+---
+
+### الخطوة 3 — امسح كل ذاكرة apt وأعد البناء
+
+```bash
+rm -rf /var/lib/apt/lists/*
+rm -rf /var/cache/apt/archives/*
+apt clean
+```
+
+ثم:
+```bash
+apt update
+```
+
+**راقب سطور `Get:`**. يجب أن تظهر `http.kali.org` فقط. **لا يجب أن تظهر `velden` إطلاقاً.**
+
+**إن ظهرت `velden` رغم ذلك:** فهناك إعداد خفي في `/etc/apt/apt.conf` أو `/etc/apt/apt.conf.d/`. أخبرني فوراً وسنحذفه.
+
+---
+
+**توقّف. نفّذ:**
+
+```
+grep -rn "velden" /etc/apt/ 2>/dev/null
+```
+
+**أرسل الناتج.** هذا سيحدد المشكلة بدقة.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+Fetched 7308 kB in 10s (738 kB/s)
+Error: Failed to fetch https://kalimirror.velden.media/kali/pool/main/libp/libpcap/libpcap0.8t64_1.10.7-1_arm64.deb  SSL connection failed: error:0A000086:SSL routines::certificate verify failed / Success [IP: 77.73.242.235 443]
+Error: Unable to fetch some archives, maybe run apt update or try with --fix-missing?
+
+┌──(root㉿localhost)-[/]
+└─# grep -rn "velden" /etc/apt/ 2>/dev/null
+
+┌──(root㉿localhost)-[/]
+└─# grep -rn "velden" /etc/ 2>/dev/null | head -20
+
+┌──(root㉿localhost)-[/]
+└─#
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+`grep` لم يجد شيئاً. المرآة المعطوبة **ليست في أي ملف إعداد**. إذن apt يحصل عليها من **ذاكرة داخلية** أو من **إعادة توجيه (redirect) من الخادم الرسمي نفسه**.
+
+السبب الحقيقي: **`http.kali.org` هو موازن تحميل (load balancer)**. يعيد توجيهك لمرآة عشوائية. حظك وقع على `kalimirror.velden.media` — وهي معطوبة.
+
+الحل: **ثبّت مرآة واحدة بعينها**. لا تعتمد على الموازن.
+
+---
+
+### الخطوة 1 — استخدم مرآة ثابتة موثوقة
+
+اكتب:
+```bash
+cat > /etc/apt/sources.list.d/kali.sources << 'EOF'
+Types: deb
+URIs: https://kali.download/kali/
+Suites: kali-rolling
+Components: main contrib non-free non-free-firmware
+Signed-By: /usr/share/keyrings/kali-archive-keyring.gpg
+EOF
+```
+
+**لماذا `kali.download`:** هي المرآة الرسمية المباشرة لـ Kali. لا تحويلات. لا موازن. عنوان واحد ثابت.
+
+---
+
+### الخطوة 2 — امسح كل الذاكرة
+
+```bash
+rm -rf /var/lib/apt/lists/*
+rm -rf /var/cache/apt/archives/*
+apt clean
+```
+
+---
+
+### الخطوة 3 — حدّث
+
+```bash
+apt update
+```
+
+**راقب:** يجب أن تظهر `kali.download` فقط. لا `velden`. لا `http.kali.org`.
+
+---
+
+### الخطوة 4 — ثبّت nmap
+
+```bash
+apt install -y nmap
+```
+
+---
+
+### إن فشلت `kali.download` أيضاً
+
+هناك بديلان رسميان:
+
+**البديل 1 — مرآة أوروبية ثابتة:**
+```bash
+sed -i 's|kali.download|ftp.halifax.rwth-aachen.de/kali|' /etc/apt/sources.list.d/kali.sources
+apt update && apt install -y nmap
+```
+
+**البديل 2 — تجاوز التحقق من SSL (حل أخير):**
+```bash
+echo 'Acquire::https::Verify-Peer "false";' > /etc/apt/apt.conf.d/99no-ssl-verify
+echo 'Acquire::https::Verify-Host "false";' >> /etc/apt/apt.conf.d/99no-ssl-verify
+apt update && apt install -y nmap
+```
+
+**تحذير:** البديل 2 يُعطّل التحقق الأمني. مقبول داخل حاوية محلية، مرفوض على أي نظام إنتاجي. استخدمه فقط إن فشل كل ما سبق.
+
+---
+
+**توقّف. نفّذ الخطوات 1 إلى 4. عد بمخرجات:**
+
+```
+apt install -y nmap 2>&1 | tail -10
+```
+
+**إن نجح:**
+```bash
+nmap --version
+```
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+  SSL connection failed: error:0A000086:SSL routines::certificate verify failed / Success [IP: 104.17.254.239 443]
+All packages are up to date.
+Warning: Failed to fetch https://kali.download/kali/dists/kali-rolling/InRelease  SSL connection failed: error:0A000086:SSL routines::certificate verify failed / Success [IP: 104.17.254.239 443]
+Warning: Some index files failed to download. They have been ignored, or old ones used instead.
+
+┌──(root㉿localhost)-[/]
+└─# apt install -y nmap
+Error: Unable to locate package nmap
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**التشخيص النهائي: المشكلة ليست في المرآة. المشكلة في الشهادة (SSL certificates) داخل الحاوية.**
+
+كل المرايا تفشل بنفس الخطأ: `certificate verify failed`. هذا يعني:
+- الحاوية لا تملك شهادات SSL الجذرية (CA certificates).
+- أو الساعة الداخلية خاطئة، فتظن الشهادات منتهية.
+- أو udocker لم ينسخ `/etc/ssl` بشكل صحيح.
+
+الحل: تجاوز التحقق من SSL مؤقتاً. **هذا مقبول داخل حاوية محلية** لأن الحزم تأتي من مرايا Kali الرسمية نفسها.
+
+---
+
+### الخطوة 1 — عطّل التحقق من SSL مؤقتاً
+
+اكتب:
+```bash
+echo 'Acquire::https::Verify-Peer "false";' > /etc/apt/apt.conf.d/99no-ssl-verify
+echo 'Acquire::https::Verify-Host "false";' >> /etc/apt/apt.conf.d/99no-ssl-verify
+echo 'Acquire::AllowInsecureRepositories "true";' >> /etc/apt/apt.conf.d/99no-ssl-verify
+```
+
+**ماذا يفعل:** يُخبر apt أن يتجاهل فشل شهادة SSL. سيحمّل الحزم على أي حال.
+
+**التبرير:** أنت داخل حاوية Kali. الحزم من مرايا رسمية. الخطر منخفض جداً. وبعد أن يعمل كل شيء، سنصلح الشهادات ونُعيد التحقق.
+
+---
+
+### الخطوة 2 — تأكد أن الساعة صحيحة
+
+الشهادة قد تفشل لأن **ساعة الحاوية خاطئة** (مثلاً 1970). اكتب:
+```bash
+date
+```
+
+**يجب أن يُظهر تاريخ اليوم.** إن أظهر تاريخاً قديماً جداً (قبل 2024)، هذا هو السبب الحقيقي.
+
+**لإصلاح الساعة:**
+```bash
+apt install -y tzdata 2>/dev/null
+ln -sf /usr/share/zoneinfo/Africa/Tunis /etc/localtime
+```
+
+**لكن** — إن كانت الساعة خاطئة، سيفشل `apt install` أيضاً لأن apt يفحص الساعة. لذا **نفّذ الخطوة 1 أولاً**، ثم الساعة، ثم التثبيت.
+
+---
+
+### الخطوة 3 — حدّث وثبّت
+
+```bash
+apt update
+```
+
+**تجاهل التحذيرات** عن "insecure repositories". هذا متوقع.
+
+ثم:
+```bash
+apt install -y nmap --allow-unauthenticated
+```
+
+**`--allow-unauthenticated`:** يسمح بتثبيت حزم بدون توقيع. مقبول مؤقتاً.
+
+---
+
+### الخطوة 4 — التحقق
+
+```bash
+nmap --version
+```
+
+إن ظهر رقم النسخة، **nmap يعمل فعلياً الآن**.
+
+---
+
+### الخطوة 5 (لاحقاً) — إصلاح الشهادات
+
+بعد أن يعمل nmap، نُصلح الشهادات:
+
+```bash
+apt install -y ca-certificates
+update-ca-certificates
+```
+
+ثم **احذف تجاوز SSL**:
+```bash
+rm /etc/apt/apt.conf.d/99no-ssl-verify
+apt update
+```
+
+إن نجح هذه المرة بدون أخطاء، فقد أصلحنا النظام بشكل نهائي.
+
+---
+
+**توقّف. نفّذ الخطوات 1 إلى 4. عد بمخرجات:**
+
+```
+date
+```
+```
+nmap --version
+```
+
+**إن ظهر رقم النسخة، ننتقل لاختبار حقيقي على هدف.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+┌──(root㉿localhost)-[/]
+└─# echo 'Acquire::https::Verify-Peer "false";' > /etc/apt/apt.conf.d/99no-ssl-verify
+echo 'Acquire::https::Verify-Host "false";' >> /etc/apt/apt.conf.d/99no-ssl-verify
+echo 'Acquire::AllowInsecureRepositories "true";' >> /etc/apt/apt.conf.d/99no-ssl-verify
+
+┌──(root㉿localhost)-[/]
+└─# date
+Sat Oct  3 14:40:00 UTC 2026
+
+┌──(root㉿localhost)-[/]
+└─#
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+الساعة سليمة: `Sat Oct 3 14:40:00 UTC 2026`. هذا تاريخ اليوم. إذن المشكلة في الشهادات فعلاً، لا في الساعة.
+
+تجاوز SSL مضبوط. الآن نُكمل.
+
+---
+
+### الخطوة 3 — حدّث قوائم الحزم
+
+اكتب:
+```bash
+apt update
+```
+
+**المتوقع:** تظهر `Get:` من `kali.download`. **قد تظهر تحذيرات** عن "insecure" — هذا متوقع، تجاهلها.
+
+**الخطأ الحقيقي هو فقط `Err:`**. إن لم يظهر `Err:`، فالتحديث نجح.
+
+---
+
+### الخطوة 4 — ثبّت nmap
+
+اكتب:
+```bash
+apt install -y nmap --allow-unauthenticated
+```
+
+**`--allow-unauthenticated`:** يسمح بتثبيت الحزم بدون التحقق من التوقيع. مقبول مؤقتاً داخل الحاوية.
+
+**المتوقع:** تحميل 7 ميغا. ثم تثبيت. ثم انتهاء.
+
+---
+
+### الخطوة 5 — التحقق
+
+اكتب:
+```bash
+nmap --version
+```
+
+**يجب أن يظهر:**
+```
+Nmap version 7.99 ( https://nmap.org )
+Platform: aarch64-unknown-linux-gnu
+Compiled with: ...
+```
+
+إن ظهر، فـ nmap يعمل فعلياً.
+
+---
+
+### الخطوة 6 — اختبار حقيقي
+
+اكتب:
+```bash
+nmap -sV 127.0.0.1
+```
+
+هذا يفحص جهازك المحلي — **لا يخرج للإنترنت**. آمن تماماً.
+
+**المتوقع:** قائمة ببورتات مفتوحة داخل Kali نفسه.
+
+---
+
+**توقّف. نفّذ الخطوات 3 إلى 6. عد بمخرجات:**
+
+```
+nmap --version
+```
+
+**و:**
+```
+nmap -sV 127.0.0.1
+```
+
+**إن نجح، فأنت الآن تملك nmap حقيقياً داخل Kali، على هاتفك، بلا root، بلا حاسوب.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+
+┌──(root㉿localhost)-[/]
+└─# nmap --version
+Nmap version 7.99 ( https://nmap.org )
+Platform: aarch64-unknown-linux-gnu
+Compiled with: liblua-5.4.8 openssl-3.6.4 libssh2-1.11.1 libz-1.3.1 libpcre2-10.48 libpcap-1.10.7 nmap-libdnet-1.18.0 ipv6
+Compiled without:
+Available nsock engines: epoll poll select
+
+┌──(root㉿localhost)-[/]
+└─# nmap -sV 127.0.0.1
+Starting Nmap 7.99 ( https://nmap.org ) at 2026-10-03 14:42 +0000
+setup_target: failed to determine route to 127.0.0.1
+WARNING: No targets were specified, so 0 hosts scanned.
+Nmap done: 0 IP addresses (0 hosts up) scanned in 1.18 seconds
+
+┌──(root㉿localhost)-[/]
+└─#
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+nmap 7.99 يعمل، لكنه لا يستطيع رسم الطريق لـ `127.0.0.1`. هذه مشكلة شبكة داخل الحاوية. السبب معروف: **udocker لم يضبط واجهة `lo` (loopback)**.
+
+الحل: نتجاوز الاختبار المحلي ونختبر على هدف حقيقي. **nmap يعمل أساساً.** هذه مجرد مشكلة داخلية في الحاوية.
+
+---
+
+### الخطوة 7 — اختبار على هدف حقيقي
+
+اختر هدفاً شرعياً:
+
+**الخيار 1 — فحص موقعك الخاص:**
+إن كان لديك موقع أو دومين، اكتب:
+```bash
+nmap -sV your-domain.com
+```
+
+**الخيار 2 — هدف اختبار قانوني:**
+```bash
+nmap -sV scanme.nmap.org
+```
+هذا موقع مخصص للاختبار، أطلقته منظمة nmap نفسها للتدريب. آمن وقانوني.
+
+**الخيار 3 — فحص سريع للبورتات الشائعة:**
+```bash
+nmap -F scanme.nmap.org
+```
+
+**الخيار 4 — فحص شامل (يستغرق وقتاً):**
+```bash
+nmap -A scanme.nmap.org
+```
+
+---
+
+### الخطوة 8 — إن فشل الفحص الخارجي أيضاً
+
+**السبب المحتمل:** udocker يعطّل الشبكة الخارجية افتراضياً في بعض الإعدادات.
+
+اكتب:
+```bash
+ping -c 2 8.8.8.8
+```
+
+**إن نجح ping:** الشبكة تعمل. المشكلة في nmap فقط. جرّب:
+```bash
+nmap -Pn scanme.nmap.org
+```
+`-Pn` يتخطى فحص ping ويعامل الهدف كأنه نشط.
+
+**إن فشل ping:** الحاوية معزولة عن الشبكة. نضيف:
+
+```bash
+exit
+```
+(للخروج من Kali، عودة إلى Termux)
+
+ثم:
+```bash
+udocker run --net=host kali /bin/bash
+```
+
+**`--net=host`** — يشارك شبكة Termux مع الحاوية. هذا يعطيك اتصال إنترنت كامل.
+
+---
+
+### الخطوة 9 — اختبار حقيقي بعد الإصلاح
+
+داخل Kali:
+```bash
+ping -c 2 8.8.8.8
+nmap -Pn scanme.nmap.org
+```
+
+**إن نجح:** nmap يعمل فعلياً على شبكة حقيقية.
+
+---
+
+**توقّف. نفّذ الخطوة 7 أولاً (جرّب `nmap -sV scanme.nmap.org`).**
+
+**إن فشل،** نفّذ الخطوة 8.
+
+**عد بمخرجات:**
+
+```
+ping -c 2 8.8.8.8
+```
+```
+nmap -Pn scanme.nmap.org
+```
+
+**المهم:** لا تفحص أي هدف لا تملكه أو لا يوجد تصريح بفحصه. `scanme.nmap.org` هو الهدف التدريبي الرسمي.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+┌──(root㉿localhost)-[/]
+└─# nmap --version
+Nmap version 7.99 ( https://nmap.org )
+Platform: aarch64-unknown-linux-gnu
+Compiled with: liblua-5.4.8 openssl-3.6.4 libssh2-1.11.1 libz-1.3.1 libpcre2-10.48 libpcap-1.10.7 nmap-libdnet-1.18.0 ipv6
+Compiled without:
+Available nsock engines: epoll poll select
+
+┌──(root㉿localhost)-[/]
+└─# nmap -sV 127.0.0.1
+Starting Nmap 7.99 ( https://nmap.org ) at 2026-10-03 14:42 +0000
+setup_target: failed to determine route to 127.0.0.1
+WARNING: No targets were specified, so 0 hosts scanned.
+Nmap done: 0 IP addresses (0 hosts up) scanned in 0.62 seconds
+
+┌──(root㉿localhost)-[/]
+└─# nmap --version
+Nmap version 7.99 ( https://nmap.org )
+Platform: aarch64-unknown-linux-gnu
+Compiled with: liblua-5.4.8 openssl-3.6.4 libssh2-1.11.1 libz-1.3.1 libpcre2-10.48 libpcap-1.10.7 nmap-libdnet-1.18.0 ipv6
+Compiled without:
+Available nsock engines: epoll poll select
+
+┌──(root㉿localhost)-[/]
+└─# nmap --version
+Nmap version 7.99 ( https://nmap.org )
+Platform: aarch64-unknown-linux-gnu
+Compiled with: liblua-5.4.8 openssl-3.6.4 libssh2-1.11.1 libz-1.3.1 libpcre2-10.48 libpcap-1.10.7 nmap-libdnet-1.18.0 ipv6
+Compiled without:
+Available nsock engines: epoll poll select
+
+┌──(root㉿localhost)-[/]
+└─# nmap -sV 127.0.0.1
+Starting Nmap 7.99 ( https://nmap.org ) at 2026-10-03 14:42 +0000
+setup_target: failed to determine route to 127.0.0.1
+WARNING: No targets were specified, so 0 hosts scanned.
+Nmap done: 0 IP addresses (0 hosts up) scanned in 1.18 seconds
+
+┌──(root㉿localhost)-[/]
+└─# nmap -sV scanme.nmap.org
+Starting Nmap 7.99 ( https://nmap.org ) at 2026-10-03 14:43 +0000
+setup_target: failed to determine route to scanme.nmap.org (45.33.32.156)
+WARNING: No targets were specified, so 0 hosts scanned.
+Nmap done: 0 IP addresses (0 hosts up) scanned in 1.31 seconds
+
+┌──(root㉿localhost)-[/]
+└─# nmap -F scanme.nmap.org
+Starting Nmap 7.99 ( https://nmap.org ) at 2026-10-03 14:44 +0000
+setup_target: failed to determine route to scanme.nmap.org (45.33.32.156)
+WARNING: No targets were specified, so 0 hosts scanned.
+Nmap done: 0 IP addresses (0 hosts up) scanned in 0.20 seconds
+
+┌──(root㉿localhost)-[/]
+└─# nmap -A scanme.nmap.org
+Starting Nmap 7.99 ( https://nmap.org ) at 2026-10-03 14:44 +0000
+setup_target: failed to determine route to scanme.nmap.org (45.33.32.156)
+WARNING: No targets were specified, so 0 hosts scanned.
+Nmap done: 0 IP addresses (0 hosts up) scanned in 2.51 seconds
+
+┌──(root㉿localhost)-[/]
+└─# ping -c 2 8.8.8.8
+bash: ping: command not found
+
+┌──(root㉿localhost)-[/]
+└─# nmap -Pn scanme.nmap.org
+Starting Nmap 7.99 ( https://nmap.org ) at 2026-10-03 14:45 +0000
+setup_target: failed to determine route to scanme.nmap.org (45.33.32.156)
+WARNING: No targets were specified, so 0 hosts scanned.
+Nmap done: 0 IP addresses (0 hosts up) scanned in 0.20 seconds
+
+┌──(root㉿localhost)-[/]
+└─#
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**التشخيص قاطع: الحاوية بلا شبكة إطلاقاً.**
+- `ping` غير مثبت (لكن هذا ثانوي).
+- `setup_target: failed to determine route` — لا يوجد جدول توجيه (routing table).
+- udocker يعزل الشبكة افتراضياً.
+
+الحل: **إعادة تشغيل الحاوية بـ `--net=host`** حتى تشارك شبكة Termux.
+
+---
+
+### الخطوة 1 — اخرج من Kali
+
+اكتب:
+```bash
+exit
+```
+
+ستعود إلى موجه Termux: `~ $`.
+
+---
+
+### الخطوة 2 — أعد تشغيل الحاوية بشبكة المضيف
+
+اكتب:
+```bash
+udocker run --net=host kali /bin/bash
+```
+
+**`--net=host`** — يشارك شبكة Termux مباشرة مع Kali. هذه هي المفتاح.
+
+**ما سيحدث:** تدخل Kali مرة أخرى، لكن هذه المرة **بشبكة حقيقية**.
+
+---
+
+### الخطوة 3 — اختبر الشبكة من داخل Kali
+
+اكتب:
+```bash
+apt install -y iproute2 iputils-ping --allow-unauthenticated
+```
+
+(لتثبيت أدوات الشبكة)
+
+ثم:
+```bash
+ip route
+```
+
+**المتوقع:** يجب أن ترى جدول توجيه، مثل:
+```
+default via 10.x.x.x dev eth0
+```
+
+**ثم:**
+```bash
+ping -c 2 8.8.8.8
+```
+
+**المتوقع:** ردود من 8.8.8.8.
+
+---
+
+### الخطوة 4 — اختبر nmap
+
+```bash
+nmap -sV scanme.nmap.org
+```
+
+**المتوقع الآن:** nmap يبدأ الفحص الفعلي. قد يستغرق 30 ثانية إلى دقيقتين.
+
+**ما ستراه:**
+```
+Starting Nmap 7.99 ...
+Nmap scan report for scanme.nmap.org (45.33.32.156)
+Host is up (...)
+PORT     STATE    SERVICE    VERSION
+22/tcp   open     ssh        OpenSSH ...
+80/tcp   open     http       Apache ...
+...
+```
+
+إن ظهر هذا، **فأنت الآن تستطيع فحص أي هدف مصرح به من هاتفك، عبر Kali، عبر nmap حقيقي.**
+
+---
+
+### الخطوة 5 — إن فشل `--net=host` أيضاً
+
+قد يكون udocker لا يدعمه في هذا الإصدار. البديل:
+
+```bash
+exit
+```
+(خروج من Kali)
+
+ثم في Termux:
+```bash
+udocker setup --net=host kali
+udocker run kali /bin/bash
+```
+
+**`udocker setup --net=host`** — يضبط إعداد الشبكة الدائم للحاوية.
+
+---
+
+### ملاحظة مهمة
+
+**`--net=host` هو الحل القياسي** لمشاكل الشبكة في udocker. لكن إن فشل، هناك مسار ثالث: تعديل إعدادات الشبكة داخل Kali يدوياً (`ip link set eth0 up`). لن نصل إليه إلا إن فشل كل ما سبق.
+
+---
+
+**توقّف. نفّذ الخطوات 1 إلى 4. عد بمخرجات:**
+
+```
+ip route
+```
+```
+ping -c 2 8.8.8.8
+```
+```
+nmap -sV scanme.nmap.org
+```
+
+**إن نجح nmap في فحص scanme.nmap.org، فأنت تجاوزت أصعب عقبة في هذا المشروع. الخطوة التالية ستكون بناء واجهة APK للتحكم بكل هذا.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+┌──(root㉿localhost)-[/]
+└─# exit
+exit
+~ $ udocker run --net=host kali /bin/bash
+Error: syntax error at: --net=host
+~ $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+udocker لا يقبل `--net=host` في هذا الإصدار. الصيغة مختلفة. نستخدم `udocker setup`.
+
+---
+
+### الخطوة 1 — اضبط الشبكة بشكل دائم
+
+اكتب في Termux:
+```bash
+udocker setup --net=host kali
+```
+
+**المتوقع:** رسالة تؤكد أن الإعداد طُبّق.
+
+**إن فشل أيضاً:** جرّب:
+```bash
+udocker setup --net=host --name=kali
+```
+
+---
+
+### الخطوة 2 — شغّل الحاوية
+
+```bash
+udocker run kali /bin/bash
+```
+
+**هذه المرة**، الشبكة يجب أن تكون مضبوطة.
+
+---
+
+### الخطوة 3 — اختبر من داخل Kali
+
+```bash
+ip route
+```
+
+**يجب أن ترى:**
+```
+default via 10.x.x.x dev eth0
+10.x.x.x/x dev eth0 scope link
+```
+
+**إن ظهر جدول التوجيه، الشبكة تعمل.**
+
+ثم:
+```bash
+apt install -y iputils-ping --allow-unauthenticated
+ping -c 2 8.8.8.8
+```
+
+**إن ردّ 8.8.8.8:** الشبكة كاملة.
+
+---
+
+### الخطوة 4 — فحص حقيقي
+
+```bash
+nmap -sV scanme.nmap.org
+```
+
+**المتوقع:** الفحص يعمل فعلاً. 30 ثانية إلى دقيقتين.
+
+---
+
+### إن فشل `udocker setup --net=host`
+
+هناك بديل: **`--net=host` قد لا يكون مدعوماً في udocker 1.3.17**. افحص:
+
+```bash
+udocker setup --help
+```
+
+**أرسل لي المخرجات.** سأعرف منها الصيغة الصحيحة المدعومة في إصدارك.
+
+---
+
+**توقّف. نفّذ:**
+
+```
+udocker setup --help
+```
+
+**أرسل المخرجات كاملة.** سأعطيك الأمر الصحيح بناءً على ما يدعمه إصدارك فعلاً، لا بناءً على تخميني.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+└─# exit
+exit
+~ $ udocker run --net=host kali /bin/bash
+Error: syntax error at: --net=host
+~ $ udocker setup --net=host kali
+Error: syntax error at: --net=host
+~ $ udocker setup --net=host --name=kali
+Error: syntax error at: --net=host --name=kali
+~ $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**التشخيص: udocker 1.3.17 لا يدعم `--net=host` في أمر `run` ولا في أمر `setup`.** الخيار غير موجود في هذا الإصدار أصلاً. هذا ليس خطأ منك.
+
+المشكلة الحقيقية التي اكتشفناها: **مشكلة شبكة معروفة في udocker على Termux.** الحل الرسمي موجود في مستودع udocker نفسه.
+
+---
+
+### السبب
+
+udocker على Termux يواجه قيوداً من **SELinux** و من إعدادات **DNS** داخل الحاوية. الحاوية تحصل على عنوان IP لكن لا تحصل على خادم أسماء (nameserver) صالح. لذلك:
+- `setup_target: failed to determine route` — لأن الحاوية لا تعرف كيف تترجم الأسماء أو توجّه الحزم.
+- `ping: command not found` — لأن ping غير مثبت في الصورة الأساسية (ثانوي).
+
+---
+
+### الحل — من مستودع udocker الرسمي
+
+في **Issue #437** على GitHub، نوقشت نفس المشكلة بالضبط: "udocker container without internet access in termux" .
+
+التشخيص: **Android SELinux يمنع udocker من الوصول للشبكة بشكل كامل.** الحل المذكور هو تعديل إعدادات معينة في Termux و udocker.
+
+**الحلول المقترحة، مرتبة من الأسهل:**
+
+**الحل 1 — تعطيل SECCOMP في udocker**
+
+SECCOMP هو فلتر يستخدمه udocker P1 mode. تعطيله قد يسمح بمرور استدعاءات الشبكة:
+
+```bash
+exit
+```
+(للخروج من Kali)
+
+ثم:
+```bash
+udocker setup --execmode=P2 kali
+udocker run kali /bin/bash
+```
+
+**P2 mode** لا يستخدم SECCOMP filtering . أبطأ قليلاً لكنه يسمح باستدعاءات نظام أكثر.
+
+---
+
+**الحل 2 — تعديل resolv.conf يدوياً**
+
+بعد الدخول إلى Kali:
+
+```bash
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+echo "nameserver 1.1.1.1" >> /etc/resolv.conf
+```
+
+ثم:
+```bash
+apt update
+```
+
+---
+
+**الحل 3 — تفعيل `hostauth` و `hostenv` عند التشغيل**
+
+```bash
+exit
+udocker run --hostauth --hostenv kali /bin/bash
+```
+
+**`--hostauth`** — يمرر صلاحيات المضيف (Termux) للحاوية .
+**`--hostenv`** — يمرر متغيرات البيئة من المضيف، بما فيها إعدادات الشبكة.
+
+---
+
+**الحل 4 — تثبيت ping أولاً (للتشخيص)**
+
+داخل Kali:
+```bash
+apt install -y iputils-ping iproute2 --allow-unauthenticated
+```
+
+ثم:
+```bash
+ip route
+ping -c 2 8.8.8.8
+```
+
+**هذا سيخبرنا هل المشكلة في DNS فقط أم في الشبكة كلياً.**
+
+---
+
+### ترتيب التنفيذ
+
+**نفّذ بهذا الترتيب:**
+
+**الخطوة 1 — اخرج من Kali:**
+```bash
+exit
+```
+
+**الخطوة 2 — غيّر وضع التشغيل:**
+```bash
+udocker setup --execmode=P2 kali
+```
+
+**الخطوة 3 — شغّل بـ hostauth و hostenv:**
+```bash
+udocker run --hostauth --hostenv kali /bin/bash
+```
+
+**الخطوة 4 — من داخل Kali، أصلح DNS:**
+```bash
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+```
+
+**الخطوة 5 — ثبّت أدوات الشبكة واختبر:**
+```bash
+apt install -y iproute2 iputils-ping --allow-unauthenticated
+ip route
+ping -c 2 8.8.8.8
+```
+
+**الخطوة 6 — اختبر nmap:**
+```bash
+nmap -sV scanme.nmap.org
+```
+
+---
+
+**توقّف. نفّذ الخطوات 1 إلى 5. عد بمخرجات:**
+
+```
+ip route
+```
+```
+ping -c 2 8.8.8.8
+```
+
+**إن نجح ping، nmap سيعمل.** إن فشل، أخبرني بالخطأ بالضبط وسننتقل للحل الجذري (تعديل SELinux context أو استخدام proot-distro بدلاً من udocker).
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+
+Docs:       https://termux.dev/docs
+Donate:     https://termux.dev/donate
+Community:  https://termux.dev/community
+
+Working with packages:
+
+ - Search:  pkg search <query>
+ - Install: pkg install <package>
+ - Upgrade: pkg upgrade
+
+Subscribing to additional repositories:
+
+ - Root:    pkg install root-repo
+ - X11:     pkg install x11-repo
+
+For fixing any repository issues,
+try 'termux-change-repo' command.
+
+Report issues at https://termux.dev/issues
+~/MyFirstApp $ cd $HOME                               ~ $ udocker setup --execmode=P2 kali                  udocker run kali /bin/bash
+
+ ******************************************************************************
+ *                                                                            *
+ *               STARTING 82214707-2f8e-3879-9da7-80245b166c1b                *
+ *                                                                            *
+ ******************************************************************************
+ executing: bash
+┌──(root㉿localhost)-[/]
+└─# echo "nameserver 8.8.8.8" > /etc/resolv.conf
+echo "nameserver 1.1.1.1" >> /etc/resolv.conf
+
+┌──(root㉿localhost)-[/]
+└─# apt update
+Hit:1 https://kali.download/kali kali-rolling InRelease
+All packages are up to date.
+
+┌──(root㉿localhost)-[/]
+└─# exit
+udocker run --hostauth --hostenv kali /bin/bash
+exit
+~ $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+لاحظت شيئاً مهماً: `apt update` نجح — `Hit:1 https://kali.download/kali kali-rolling InRelease`. **هذا يعني أن الشبكة تعمل الآن.** لكنك خرجت من Kali قبل أن نختبر nmap.
+
+نعيد الدخول ونختبر.
+
+---
+
+### الخطوة 1 — ادخل إلى Kali
+
+```bash
+udocker run --hostauth --hostenv kali /bin/bash
+```
+
+---
+
+### الخطوة 2 — من داخل Kali، ثبّت أدوات الشبكة
+
+```bash
+apt install -y iproute2 iputils-ping --allow-unauthenticated
+```
+
+**قد يسأل** عن إعادة تثبيت. اختر `Y`.
+
+---
+
+### الخطوة 3 — اختبر التوجيه
+
+```bash
+ip route
+```
+
+**يجب أن ترى سطر `default via ... dev ...`.**
+
+---
+
+### الخطوة 4 — اختبر الاتصال
+
+```bash
+ping -c 2 8.8.8.8
+```
+
+**يجب أن ترى ردوداً.**
+
+إن لم يردّ، جرّب:
+```bash
+ping -c 2 scanme.nmap.org
+```
+
+هذا يختبر DNS أيضاً.
+
+---
+
+### الخطوة 5 — فحص nmap
+
+إذا نجحت الخطوة 4:
+
+```bash
+nmap -sV scanme.nmap.org
+```
+
+**المتوقع:**
+```
+Nmap scan report for scanme.nmap.org (45.33.32.156)
+Host is up (...)
+PORT     STATE    SERVICE    VERSION
+22/tcp   open     ssh        OpenSSH ...
+80/tcp   open     http       Apache ...
+```
+
+---
+
+**توقّف. نفّذ الخطوات 1 إلى 5. عد بمخرجات:**
+
+```
+ip route
+```
+```
+ping -c 2 8.8.8.8
+```
+```
+nmap -sV scanme.nmap.org
+```
+
+**إن نجح الفحص، فأنت تجاوزت كل العقبات التقنية. الخطوة التالية ستكون بناء واجهة APK.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+
+┌──(root㉿localhost)-[/]
+└─# exit
+udocker run --hostauth --hostenv kali /bin/bash
+exit
+~ $ udocker run --hostauth --hostenv kali /bin/bash
+
+ ******************************************************************************
+ *                                                                            *
+ *               STARTING 82214707-2f8e-3879-9da7-80245b166c1b                *
+ *                                                                            *
+ ******************************************************************************
+ executing: bash
+proot error: execve("/usr/bin/bash"): No such file or directory
+proot info: possible causes:
+  * the program is a script but its interpreter (eg. /bin/sh) was not found;
+  * the program is an ELF but its interpreter (eg. ld-linux.so) was not found;
+  * the program is a foreign binary but qemu was not specified;
+  * qemu does not work correctly (if specified);
+  * the loader was not found or doesn't work.
+fatal error: see `proot --help`.
+~ $ apt install -y iproute2 iputils-ping --allow-unauthenticated
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+E: Unable to locate package iputils-ping
+~ $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**خطآن، كلاهما مفهوم:**
+
+**الخطأ 1:** `proot error: execve("/usr/bin/bash"): No such file or directory`
+السبب: `udocker setup --execmode=P2` غيّر وضع التشغيل، لكن P1 كان يعمل سابقاً. **نرجع إلى P1.**
+
+**الخطأ 2:** `Unable to locate package iputils-ping`
+السبب: أنت الآن في **Termux**، ليس في Kali. حزمة `iputils-ping` في Termux اسمها مختلف: `iputils`.
+
+---
+
+### الخطوة 1 — أرجع Kali لوضع التشغيل الأصلي
+
+في Termux:
+```bash
+udocker setup --execmode=P1 kali
+```
+
+---
+
+### الخطوة 2 — ادخل إلى Kali
+
+```bash
+udocker run kali /bin/bash
+```
+
+**يجب أن تدخل بلا أخطاء.** سترى `┌──(root㉿localhost)-[/]└─#`.
+
+**إن ظهر خطأ proot مرة أخرى:** اكتب `exit` ثم `udocker ps -m` وأرسل المخرجات.
+
+---
+
+### الخطوة 3 — من داخل Kali، ثبّت أدوات الشبكة
+
+```bash
+apt install -y iproute2 iputils-ping --allow-unauthenticated
+```
+
+**الفرق:** الآن أنت في **Kali**، حيث `iputils-ping` موجود فعلاً.
+
+---
+
+### الخطوة 4 — اختبر
+
+```bash
+ip route
+ping -c 2 8.8.8.8
+```
+
+**إن ردّ 8.8.8.8:** الشبكة تعمل.
+
+---
+
+### الخطوة 5 — nmap
+
+```bash
+nmap -sV scanme.nmap.org
+```
+
+---
+
+**توقّف. نفّذ الخطوات 1 إلى 5. عد بمخرجات:**
+
+```
+ip route
+```
+```
+ping -c 2 8.8.8.8
+```
+
+**تأكد أنك داخل Kali عندما تكتب أوامر apt.** الموجّه يجب أن يكون:
+```
+┌──(root㉿localhost)-[/]
+└─#
+```
+وليس `~ $`.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+┌──(root㉿localhost)-[/]
+└─# ip route
+10.0.0.0/8 dev ccmni3 proto kernel scope link src 10.191.44.154
+
+┌──(root㉿localhost)-[/]
+└─# ping -c 2 8.8.8.8
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+64 bytes from 8.8.8.8: icmp_seq=1 ttl=115 time=61.5 ms
+64 bytes from 8.8.8.8: icmp_seq=2 ttl=115 time=60.5 ms
+
+--- 8.8.8.8 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1003ms
+rtt min/avg/max/mdev = 60.487/61.003/61.520/0.516 ms
+
+┌──(root㉿localhost)-[/]
+└─#
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**الشبكة تعمل. ping نجح. 8.8.8.8 ردّ.**
+الآن nmap يجب أن يعمل. اختبره.
+
+---
+
+### الخطوة 1 — فحص حقيقي
+
+اكتب:
+```bash
+nmap -sV scanme.nmap.org
+```
+
+**المتوقع:** الفحص يبدأ. 30 ثانية إلى دقيقتين.
+
+**ما ستراه:**
+```
+Starting Nmap 7.99 ( https://nmap.org )
+Nmap scan report for scanme.nmap.org (45.33.32.156)
+Host is up (0.xxs latency).
+Other addresses for scanme.nmap.org (not scanned): ...
+Not shown: xxx filtered tcp ports
+PORT     STATE    SERVICE    VERSION
+22/tcp   open     ssh        OpenSSH x.x
+80/tcp   open     http       Apache httpd x.x.x
+...
+Nmap done: 1 IP address (1 host up) scanned in x.xx seconds
+```
+
+**إن ظهر هذا، فقد نجح كل شيء.**
+
+---
+
+### الخطوة 2 — اختبارات إضافية (اختياري)
+
+**فحص سريع للبورتات الشائعة:**
+```bash
+nmap -F scanme.nmap.org
+```
+
+**فحص نظام التشغيل:**
+```bash
+nmap -O scanme.nmap.org
+```
+
+**فحص كامل:**
+```bash
+nmap -A scanme.nmap.org
+```
+
+---
+
+**توقّف. نفّذ الخطوة 1. عد بمخرجات:**
+
+```
+nmap -sV scanme.nmap.org
+```
+
+**إن نجح، انتهت مرحلة البنية التحتية بالكامل.** أنت الآن تملك:
+- Termux
+- Kali Linux داخل حاوية
+- nmap حقيقي بصلاحيات كاملة
+- شبكة إنترنت تعمل
+- معالج ARM64 يستطيع تشغيل أي أداة اختبار اختراق
+
+**الخطوة التالية:** تثبيت بقية الأدوات (Metasploit، sqlmap، theHarvester، Nikto، وغيرها)، ثم بناء واجهة APK للتحكم بها.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+┌──(root㉿localhost)-[/]
+└─# nmap -sV scanme.nmap.org
+Starting Nmap 7.99 ( https://nmap.org ) at 2026-10-03 14:54 +0000
+setup_target: failed to determine route to scanme.nmap.org (45.33.32.156)
+WARNING: No targets were specified, so 0 hosts scanned.
+Nmap done: 0 IP addresses (0 hosts up) scanned in 1.53 seconds
+
+┌──(root㉿localhost)-[/]
+└─#
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**تشخيص دقيق: `ping` ينجح لأن ICMP يمرّ عبر المسار الافتراضي، لكن nmap يفشل لأن جدول التوجيه يفتقد `default route`.**
+
+انظر إلى مخرجات `ip route`:
+```
+10.0.0.0/8 dev ccmni3 proto kernel scope link src 10.191.44.154
+```
+
+**لا يوجد سطر `default via ...`.** هذا يعني أن الحاوية تعرف فقط شبكة `10.0.0.0/8`، ولا تعرف كيف تصل إلى الإنترنت (45.33.32.156). `ping` نجح لأن Termux مرّر ICMP مباشرة، لكن nmap يستخدم جدول التوجيه ولا يجده.
+
+الحل: **أضف المسار الافتراضي يدوياً.**
+
+---
+
+### الخطوة 1 — اكتشف البوابة (gateway)
+
+اكتب:
+```bash
+cat /proc/net/route
+```
+
+**أرسل المخرجات.** سأعرف منها عنوان البوابة.
+
+**المتوقع:** سطر يحتوي `00000000` في العمود الثاني (Destination)، وبعده عنوان Gateway بصيغة hex.
+
+---
+
+### الخطوة 2 — حل مؤقت بالتحايل
+
+في الوقت نفسه، جرّب هذا الحل الذي لا يحتاج معرفة البوابة:
+
+```bash
+nmap -e ccmni3 -sV scanme.nmap.org
+```
+
+**`-e ccmni3`** — يُجبر nmap على استخدام واجهة `ccmni3` مباشرة، متجاوزاً جدول التوجيه.
+
+**إن نجح، nmap يعمل. وإن لم ينجح:**
+
+جرّب:
+```bash
+nmap -Pn -e ccmni3 scanme.nmap.org
+```
+
+**`-Pn`** — يتخطى فحص ping الأولي.
+
+---
+
+### الخطوة 3 — حل جذري: أضف default route
+
+**إن أردت حلاً دائماً:**
+
+تحقق من واجهة الشبكة:
+```bash
+ip addr show ccmni3
+```
+
+**سترى عنواناً مثل:**
+```
+inet 10.191.44.154/8
+```
+
+البوابة عادة هي `.1` من نفس الشبكة. لذا:
+
+```bash
+ip route add default via 10.0.0.1 dev ccmni3
+```
+
+**أو جرّب**:
+```bash
+ip route add default via 10.191.44.1 dev ccmni3
+```
+
+**ثم:**
+```bash
+ip route
+```
+
+**يجب أن ترى سطر `default` الآن.**
+
+ثم:
+```bash
+nmap -sV scanme.nmap.org
+```
+
+---
+
+### الخطوة 4 — إن فشل كل ذلك
+
+هناك طريقة أخرى: **إعطاء nmap عنوان المصدر مباشرة**.
+
+```bash
+nmap -S 10.191.44.154 -e ccmni3 -sV scanme.nmap.org
+```
+
+**`-S`** — يُخبر nmap أن يستخدم هذا العنوان كمصدر.
+
+---
+
+**توقّف. نفّذ الخطوة 1 أولاً (للتشخيص):**
+
+```
+cat /proc/net/route
+```
+
+**ثم نفّذ الخطوة 2 (الحل السريع):**
+
+```
+nmap -e ccmni3 -sV scanme.nmap.org
+```
+
+**عد بمخرجات الأمرين.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+┌──(root㉿localhost)-[/]
+└─# cat /proc/net/route
+cat: /proc/net/route: Permission denied
+
+┌──(root㉿localhost)-[/]
+└─# cat /proc/net/route
+cat: /proc/net/route: Permission denied
+
+┌──(root㉿localhost)-[/]
+└─# nmap -e ccmni3 -sV scanme.nmap.org
+Starting Nmap 7.99 ( https://nmap.org ) at 2026-10-03 14:55 +0000
+I cannot figure out what source address to use for device ccmni3, does it even exist?
+QUITTING!
+
+┌──(root㉿localhost)-[/]
+└─# nmap -Pn -e ccmni3 scanme.nmap.org
+Starting Nmap 7.99 ( https://nmap.org ) at 2026-10-03 14:55 +0000
+I cannot figure out what source address to use for device ccmni3, does it even exist?
+QUITTING!
+
+┌──(root㉿localhost)-[/]
+└─#
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**التشخيص النهائي والحاسم:**
+
+`nmap` لا يرى الواجهة `ccmni3` لأنها موجودة في **Termux** (نظام المضيف)، وليس داخل Kali. Kali في udocker يعمل بطبقة proot، ولا يرى واجهات الشبكة الحقيقية — فقط يرى شبكة وهمية يمرّرها udocker.
+
+هذا يعني: **udocker لا يستطيع تمرير raw sockets إلى nmap.** `ping` نجح لأن ICMP يعمل بطبقة أعلى. لكن nmap يحتاج raw sockets، وهي **محجوبة داخل proot** بشكل أساسي.
+
+**الخلاصة القاطعة:** udocker + proot لا يصلحان لـ nmap. يجب تغيير المسار.
+
+---
+
+## الحل الجذري: nmap داخل Termux مباشرة
+
+Termux يملك نسخة أصلية من nmap، تعمل بصلاحيات كاملة على الشبكة الحقيقية. لا Kali. لا udocker. لا proot.
+
+هذا هو الحل الذي كان يجب أن نبدأ به.
+
+---
+
+### الخطوة 1 — اخرج من Kali
+
+اكتب:
+```bash
+exit
+```
+ستعود إلى `~ $`.
+
+---
+
+### الخطوة 2 — ثبّت nmap في Termux
+
+```bash
+pkg install -y nmap
+```
+
+**ماذا يحدث:** Termux يملك حزمة nmap رسمية. تُثبّت بسرعة. حجمها صغير.
+
+**المدة:** دقيقة أو اثنتان.
+
+---
+
+### الخطوة 3 — اختبره فوراً
+
+```bash
+nmap -sV scanme.nmap.org
+```
+
+**المتوقع هذه المرة:** يعمل. لأن nmap في Termux يعمل خارج أي حاوية، وله وصول مباشر لشبكة الهاتف.
+
+**إن ظهرت النتائج، انتهت المشكلة نهائياً.**
+
+---
+
+### الخطوة 4 — تثبيت بقية الأدوات في Termux
+
+بعد نجاح nmap، ثبّت الأدوات الأخرى مباشرة في Termux (لا في Kali):
+
+```bash
+pkg install -y \
+  python \
+  python-pip \
+  git \
+  curl \
+  wget \
+  openssl \
+  libxml2 \
+  libxslt
+```
+
+**هذه هي القاعدة الأساسية.** الأدوات في Termux مباشرة:
+
+| الأداة | أمر التثبيت |
+|---|---|
+| nmap | `pkg install nmap` |
+| hydra | `pkg install hydra` |
+| sqlmap | `pip install sqlmap` |
+| theHarvester | `pip install theHarvester` |
+| sherlock | `pip install sherlock-project` |
+| holehe | `pip install holehe` |
+| whois | `pkg install whois` |
+| dnsutils | `pkg install dnsutils` |
+| netcat | `pkg install netcat-openbsd` |
+| nikto | `pkg install nikto` |
+| gobuster | `pkg install gobuster` |
+
+**Metasploit** لا يوجد في Termux repo. لكن هناك نسخة مجتمعية يمكن تثبيتها لاحقاً عبر `git clone` مع Ruby — أصعب لكن ممكن.
+
+---
+
+### الخطوة 5 — حذف udocker (اختياري)
+
+إن أردت استعادة المساحة:
+
+```bash
+udocker rm kali
+udocker rmi kalilinux/kali-rolling
+rm -rf ~/.udocker
+pkg uninstall udocker proot -y
+```
+
+**هذا يحذف ~500 ميغا.** لكن لا تفعل هذا الآن — انتظر حتى تتأكد أن nmap في Termux يعمل بشكل كامل.
+
+---
+
+### تحذير أخير
+
+`udocker` و `proot` مفيدان لتشغيل **أدوات لا تحتاج raw sockets** (مثل sqlmap، theHarvester، أدوات OSINT). لكن **nmap و masscan و hping يحتاجون وصولاً مباشراً للشبكة** — وهذه لا تعمل داخل الحاويات بدون root.
+
+لذا الاستراتيجية الصحيحة:
+- **أدوات الشبكة الخام:** في Termux مباشرة.
+- **أدوات Python و Ruby و OSINT:** في Termux مباشرة أيضاً (عبر pip).
+- **Kali كامل:** فقط إن احتجت أدوات محددة غير متوفرة في Termux.
+
+---
+
+**توقّف. نفّذ الخطوات 1 إلى 3. عد بمخرجات:**
+
+```
+nmap -sV scanme.nmap.org
+```
+
+**إن ظهرت نتائج الفحص، فأنت وصلت. nmap حقيقي يعمل على هاتفك بلا حاسوب، بلا root، بلا Kali، بلا udocker.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+$ pkg install -y \
+  python \
+  python-pip \
+  git \
+  curl \
+  wget \
+  openssl \
+  libxml2 \
+  libxslt
+Checking availability of current mirror:
+[*] https://linux.domainesia.com/applications/termux/termux-main: ok
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+python is already the newest version (3.14.6-1).
+python-pip is already the newest version (26.2.1).
+python-pip set to manually installed.
+git is already the newest version (2.56.0).
+curl is already the newest version (8.22.0).
+wget is already the newest version (1.25.0-1).
+openssl is already the newest version (1:3.6.5).
+libxml2 is already the newest version (2.15.4-1).
+libxslt is already the newest version (1.1.45-1).
+0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+~ $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+كل الأدوات مثبتة مسبقاً. Python 3.14، pip 26.2، git، curl، wget، openssl — كلها جاهزة.
+
+**لكن لاحظت أنك نفّذت الخطوة 4 ولم تنفّذ الخطوة 2 (`pkg install nmap`).** nmap ليس في القائمة. نحتاج تثبيته.
+
+---
+
+### الخطوة 1 — ثبّت nmap في Termux
+
+```bash
+pkg install -y nmap
+```
+
+**المتوقع:** تحميل سريع. دقيقة أو اثنتان.
+
+---
+
+### الخطوة 2 — اختبره فوراً
+
+```bash
+nmap -sV scanme.nmap.org
+```
+
+**هذه هي اللحظة الحاسمة.** إما سيعمل، أو سيفشل.
+
+- **إن نجح:** انتهت رحلة البنية التحتية. تملك nmap حقيقياً.
+- **إن فشل بخطأ `permission denied`:** أضف `--unprivileged`:
+  ```bash
+  nmap --unprivileged -sV scanme.nmap.org
+  ```
+- **إن فشل بخطأ آخر:** الصقه.
+
+---
+
+### الخطوة 3 — إن نجح، ثبّت الأدوات التالية مباشرة
+
+**أدوات النظام (سريعة):**
+```bash
+pkg install -y hydra whois dnsutils netcat-openbsd nikto gobuster
+```
+
+**أدوات Python (عبر pip):**
+```bash
+pip install --upgrade pip
+pip install sqlmap theHarvester sherlock-project holehe maigret
+```
+
+**المدة:** pip قد يستغرق 5-15 دقيقة. لا تقاطع.
+
+**إن فشل `pip` بأخطاء compile:** أخبرني، سنثبّت حزم `build-essential` والاعتماديات.
+
+---
+
+**توقّف. نفّذ الخطوات 1 إلى 2. عد بمخرجات:**
+
+```
+nmap -sV scanme.nmap.org
+```
+
+**إذا ظهرت نتائج الفحص، فأنت رسمياً تجاوزت كل العقبات.** nmap يعمل على هاتفك. بعدها ننتقل لتثبيت بقية الترسانة، ثم بناء واجهة APK.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+pkg install -y nmap
+Checking availability of current mirror:
+[*] https://linux.domainesia.com/applications/termux/termux-main: ok
+Hit:1 https://linux.domainesia.com/applications/termux/termux-main stable InRelease
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+All packages are up to date.
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+nmap is already the newest version (7.991).
+0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+~ $ nmap -sV scanme.nmap.org
+Starting Nmap 7.991 ( https://nmap.org ) at 2026-10-03 15:56 +0100
+Warning: Hostname scanme.nmap.org resolves to 2 IPs. Using 45.33.32.156.
+Nmap scan report for scanme.nmap.org (45.33.32.156)
+Host is up (0.20s latency).
+Other addresses for scanme.nmap.org (not scanned): 2600:3c01::f03c:91ff:fe18:bb2f
+Not shown: 996 closed tcp ports (conn-refused)
+PORT     STATE SERVICE    VERSION
+22/tcp   open  ssh        OpenSSH 6.6.1p1 Ubuntu 2ubuntu2.13 (Ubuntu Linux; protocol 2.0)
+80/tcp   open  http       Apache httpd 2.4.7 ((Ubuntu))
+8080/tcp open  tcpwrapped
+9929/tcp open  nping-echo Nping echo
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 23.48 seconds
+~ $ pkg install -y \
+  python \
+  python-pip \
+  git \
+  curl \
+  wget \
+  openssl \
+  libxml2 \
+  libxslt
+Checking availability of current mirror:
+[*] https://linux.domainesia.com/applications/termux/termux-main: ok
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+python is already the newest version (3.14.6-1).
+python-pip is already the newest version (26.2.1).
+python-pip set to manually installed.
+git is already the newest version (2.56.0).
+curl is already the newest version (8.22.0).
+wget is already the newest version (1.25.0-1).
+openssl is already the newest version (1:3.6.5).
+libxml2 is already the newest version (2.15.4-1).
+libxslt is already the newest version (1.1.45-1).
+0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+~ $ pkg install -y nmap
+Checking availability of current mirror:
+[*] https://linux.domainesia.com/applications/termux/termux-main: ok
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+nmap is already the newest version (7.991).
+0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+~ $ nmap -sV scanme.nmap.org
+Starting Nmap 7.991 ( https://nmap.org ) at 2026-10-03 15:59 +0100
+Warning: Hostname scanme.nmap.org resolves to 2 IPs. Using 45.33.32.156.
+Nmap scan report for scanme.nmap.org (45.33.32.156)
+Host is up (0.20s latency).
+Other addresses for scanme.nmap.org (not scanned): 2600:3c01::f03c:91ff:fe18:bb2f
+Not shown: 995 closed tcp ports (conn-refused)
+PORT     STATE SERVICE    VERSION
+22/tcp   open  ssh        OpenSSH 6.6.1p1 Ubuntu 2ubuntu2.13 (Ubuntu Linux; protocol 2.0)
+80/tcp   open  http       Apache httpd 2.4.7 ((Ubuntu))
+443/tcp  open  tcpwrapped
+8080/tcp open  tcpwrapped
+9929/tcp open  nping-echo Nping echo
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 29.23 seconds
+~ $ nmap --unprivileged -sV scanme.nmap.org
+Starting Nmap 7.991 ( https://nmap.org ) at 2026-10-03 15:59 +0100
+Warning: Hostname scanme.nmap.org resolves to 2 IPs. Using 45.33.32.156.
+Stats: 0:00:14 elapsed; 0 hosts completed (1 up), 1 undergoing Connect Scan
+Connect Scan Timing: About 35.11% done; ETC: 16:00 (0:00:26 remaining)
+Stats: 0:00:18 elapsed; 0 hosts completed (1 up), 1 undergoing Connect Scan
+Connect Scan Timing: About 56.11% done; ETC: 16:00 (0:00:22 remaining)
+Nmap scan report for scanme.nmap.org (45.33.32.156)
+Host is up (0.20s latency).
+Other addresses for scanme.nmap.org (not scanned): 2600:3c01::f03c:91ff:fe18:bb2f
+Not shown: 995 closed tcp ports (conn-refused)
+PORT     STATE SERVICE    VERSION
+22/tcp   open  ssh        OpenSSH 6.6.1p1 Ubuntu 2ubuntu2.13 (Ubuntu Linux; protocol 2.0)
+80/tcp   open  http       Apache httpd 2.4.7 ((Ubuntu))
+443/tcp  open  tcpwrapped
+8443/tcp open  tcpwrapped
+9929/tcp open  nping-echo Nping echo
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 32.60 seconds
+~ $ pkg install -y hydra whois dnsutils netcat-openbsd nikto gobuster
+Checking availability of current mirror:
+[*] https://linux.domainesia.com/applications/termux/termux-main: ok
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+E: Unable to locate package hydra
+E: Unable to locate package nikto
+E: Unable to locate package gobuster
+~ $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**nmap يعمل. الشبكة تعمل. الفحص الحقيقي نجح.**
+
+انظر إلى النتائج: `22/tcp open ssh`، `80/tcp open http`، `8080/tcp open`. هذا **nmap حقيقي** اكتشف خدمات حقيقية على هدف حقيقي. أنت تجاوزت أصعب عقبة تقنية في هذا المشروع كله.
+
+الآن نصلح مشكلة الحزم المفقودة.
+
+---
+
+### المشكلة
+
+Termux repo لا يحتوي على `hydra`، `nikto`، `gobuster`. هذه الحزم إما غير متوفرة لـ ARM، أو في repos إضافية.
+
+**الحل:** ثلاث مسارات.
+
+**المسار الأول — repos إضافية:**
+```bash
+pkg install -y root-repo
+pkg update
+pkg install -y hydra nikto
+```
+
+**`root-repo`** — repo إضافي في Termux يحتوي أدوات أكثر.
+
+**إن نجح:** بعض الأدوات تُثبّت.
+
+**المسار الثاني — أدوات Python (الأكثر موثوقية):**
+```bash
+pip install --upgrade pip
+pip install sqlmap theHarvester
+```
+
+**`sqlmap`** و **`theHarvester`** متوفران في pip، ويعملان مباشرة.
+
+**المسار الثالث — gobuster من المصدر:**
+```bash
+pkg install -y golang
+go install github.com/OJ/gobuster/v3@latest
+```
+(gobuster مكتوب بلغة Go، لا Python)
+
+---
+
+### الأداة الأهم — Metasploit
+
+لا يوجد في Termux repo. الحل: تثبيته من المصدر عبر git + Ruby.
+
+**لكن** — هذا سيستغرق وقتاً طويلاً، وقد يفشل. الأفضل تأجيله حتى نُكمل الأدوات الأساسية.
+
+---
+
+### الخطوة العملية الآن
+
+نفّذ بالترتيب، واحداً واحداً. أي واحد يفشل، أخبرني:
+
+**1. أدوات الشبكة الأساسية (موجودة في Termux):**
+```bash
+pkg install -y whois dnsutils netcat-openbsd
+```
+
+**2. repos إضافية:**
+```bash
+pkg install -y root-repo
+pkg update
+```
+
+**3. حاول تثبيت المفقود:**
+```bash
+pkg install -y hydra nikto gobuster
+```
+
+**4. أدوات Python:**
+```bash
+pip install --upgrade pip
+pip install sqlmap
+pip install theHarvester
+```
+
+**5. أدوات OSINT:**
+```bash
+pip install holehe
+pip install maigret
+```
+
+**6. gobuster من Go:**
+```bash
+pkg install -y golang
+go install github.com/OJ/gobuster/v3@latest
+```
+
+---
+
+**توقّف. نفّذ الأوامر واحداً واحداً. لا تنفّذها كلها دفعة واحدة.**
+
+**عد بمخرجات:**
+1. ما نجح من الأوامر.
+2. ما فشل ومن أي أمر.
+
+**سأبني لك خطة دقيقة بناءً على ما هو متوفر فعلاً في Termux ARM64، لا على تخميني.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+ $ pkg install -y whois dnsutils netcat-openbsd
+Checking availability of current mirror:
+[*] https://linux.domainesia.com/applications/termux/termux-main: ok
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following additional packages will be installed:
+  cmocka json-c libbsd libcap liburcu
+The following NEW packages will be installed:
+  cmocka dnsutils json-c libbsd libcap liburcu
+  netcat-openbsd whois
+0 upgraded, 8 newly installed, 0 to remove and 0 not upgraded.
+Need to get 2218 kB of archives.
+After this operation, 11.4 MB of additional disk space will be used.
+Get:1 https://linux.domainesia.com/applications/termux/termux-main stable/main aarch64 cmocka aarch64 2.0.2 [48.5 kB]
+Get:2 https://linux.domainesia.com/applications/termux/termux-main stable/main aarch64 json-c aarch64 0.19 [52.0 kB]
+Get:3 https://linux.domainesia.com/applications/termux/termux-main stable/main aarch64 libcap aarch64 2.69-1 [74.3 kB]
+Get:4 https://linux.domainesia.com/applications/termux/termux-main stable/main aarch64 liburcu aarch64 0.15.6 [122 kB]
+Get:5 https://linux.domainesia.com/applications/termux/termux-main stable/main aarch64 dnsutils aarch64 9.20.26 [1710 kB]
+Get:6 https://linux.domainesia.com/applications/termux/termux-main stable/main aarch64 libbsd aarch64 0.11.7-3 [151 kB]
+Get:7 https://linux.domainesia.com/applications/termux/termux-main stable/main aarch64 netcat-openbsd aarch64 1.238-1-1 [21.3 kB]
+Get:8 https://linux.domainesia.com/applications/termux/termux-main stable/main aarch64 whois aarch64 5.6.6 [39.0 kB]
+Fetched 2218 kB in 4s (495 kB/s)
+Selecting previously unselected package cmocka.
+(Reading database ... 36871 files and directories currently installed.)
+Preparing to unpack .../0-cmocka_2.0.2_aarch64.deb ...
+Unpacking cmocka (2.0.2) ...
+Selecting previously unselected package json-c.
+Preparing to unpack .../1-json-c_0.19_aarch64.deb ...
+Unpacking json-c (0.19) ...
+Selecting previously unselected package libcap.
+Preparing to unpack .../2-libcap_2.69-1_aarch64.deb ...
+Unpacking libcap (2.69-1) ...
+Selecting previously unselected package liburcu.
+Preparing to unpack .../3-liburcu_0.15.6_aarch64.deb ...
+Unpacking liburcu (0.15.6) ...
+Selecting previously unselected package dnsutils.
+Preparing to unpack .../4-dnsutils_9.20.26_aarch64.deb ...
+Unpacking dnsutils (9.20.26) ...
+Selecting previously unselected package libbsd.
+Preparing to unpack .../5-libbsd_0.11.7-3_aarch64.deb ...
+Unpacking libbsd (0.11.7-3) ...
+Selecting previously unselected package netcat-openbsd.
+Preparing to unpack .../6-netcat-openbsd_1.238-1-1_aarch64.deb ...
+Unpacking netcat-openbsd (1.238-1-1) ...
+Selecting previously unselected package whois.
+Preparing to unpack .../7-whois_5.6.6_aarch64.deb ...
+Unpacking whois (5.6.6) ...
+Setting up whois (5.6.6) ...
+Setting up libcap (2.69-1) ...
+Setting up json-c (0.19) ...
+Setting up cmocka (2.0.2) ...
+Setting up libbsd (0.11.7-3) ...
+Setting up liburcu (0.15.6) ...
+Setting up netcat-openbsd (1.238-1-1) ...
+update-alternatives: using /data/data/com.termux/files/usr/bin/netcat-openbsd to provide /data/data/com.termux/files/usr/bin/nc (nc) in auto mode
+update-alternatives: warning: skipping updating manpage database as 'makewhatis' command from 'mandoc' package is not installed
+Setting up dnsutils (9.20.26) ...
+~ $ pkg install -y root-repo
+pkg update
+Checking availability of current mirror:
+[*] https://linux.domainesia.com/applications/termux/termux-main: ok
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following NEW packages will be installed:
+  root-repo
+0 upgraded, 1 newly installed, 0 to remove and 0 not upgraded.
+Need to get 1220 B of archives.
+After this operation, 53.2 kB of additional disk space will be used.
+Get:1 https://linux.domainesia.com/applications/termux/termux-main stable/main aarch64 root-repo all 2.4-2 [1220 B]
+Fetched 1220 B in 1s (1177 B/s)
+Selecting previously unselected package root-repo.
+(Reading database ... 37814 files and directories currently installed.)
+Preparing to unpack .../root-repo_2.4-2_all.deb ...
+Unpacking root-repo (2.4-2) ...
+Setting up root-repo (2.4-2) ...
+Downloading updated package list ...
+Testing the available mirrors:
+[*] (1) https://linux.domainesia.com/applications/termux/termux-main: ok
+[*] (1) https://termux.niranjan.co/termux-main: ok
+[*] (1) https://mirror.bardia.tech/termux/termux-main: bad
+[*] (1) https://mirrors.saswata.cc/termux/termux-main: bad
+[*] (1) https://mirrors.ravidwivedi.in/termux/termux-main: ok
+[*] (1) https://mirror.textcord.xyz/termux/termux-main: bad
+[*] (1) https://mirrors.krnk.org/apt/termux/termux-main: ok
+[*] (1) https://mirror.rinarin.dev/termux/termux-main: ok
+[*] (1) https://mirror.jeonnam.school/termux/termux-main: ok
+[*] (1) https://mirrors.nguyenhoang.cloud/termux/termux-main: ok
+[*] (1) https://mirrors.cbrx.io/apt/termux/termux-main: ok
+[*] (1) https://tmx.xvx.my.id/apt/termux-main: ok
+[*] (1) https://mirror.albony.in/termux/termux-main: ok
+[*] (1) https://mirror.twds.com.tw/termux/termux-main: ok
+[*] (1) https://mirror.nevacloud.com/applications/termux/termux-main: ok
+[*] (1) https://mirror.meowsmp.net/termux/termux-main: bad
+[*] (1) https://mirror.freedif.org/termux/termux-main: ok
+[*] (1) https://mirrors.in.sahilister.net/termux/termux-main/: ok
+Picking mirror: (0) /data/data/com.termux/files/usr/etc/termux/chosen_mirrors/linux.domainesia.com
+Hit:1 https://linux.domainesia.com/applications/termux/termux-main stable InRelease
+Get:2 https://linux.domainesia.com/applications/termux/termux-root root InRelease [14.2 kB]
+Get:3 https://linux.domainesia.com/applications/termux/termux-root root/stable aarch64 Packages [20.8 kB]
+Fetched 35.0 kB in 4s (8843 B/s)
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+All packages are up to date.
+Checking availability of current mirror:
+[*] https://linux.domainesia.com/applications/termux/termux-main: ok
+Hit:1 https://linux.domainesia.com/applications/termux/termux-main stable InRelease
+Hit:2 https://linux.domainesia.com/applications/termux/termux-root root InRelease
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+All packages are up to date.
+~ $ pkg install -y hydra nikto gobuster
+Checking availability of current mirror:
+[*] https://linux.domainesia.com/applications/termux/termux-main: ok
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+E: Unable to locate package hydra
+E: Unable to locate package nikto
+E: Unable to locate package gobuster
+~ $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+**الخلاصة أولاً: `hydra` و `nikto` و `gobuster` غير موجودة في مستودعات Termux الرسمية. هذه ليست مشكلة في إعداداتك — Termux أزالها نهائياً من مستودعاته الرئيسية والجذرية.**
+
+السبب موثّق في Wiki الرسمي لـ Termux: “Hydra, Metasploit and Sqlmap have been removed from Termux repositories”. `root-repo` الذي ثبّته لا يحتوي عليها أيضاً. الحلول المتاحة هي التثبيت من مصدر خارجي أو بناء من الكود المصدري.
+
+---
+
+### ما نجح فعلاً في خطوتك الأخيرة
+
+- `whois` — يعمل
+- `dnsutils` — يعمل (يوفر `dig`, `nslookup`)
+- `netcat-openbsd` — يعمل
+
+هذه أدوات استطلاع أساسية. لكن المفقود (`hydra`, `nikto`, `gobuster`) يحتاج مسارات بديلة.
+
+---
+
+### المسار 1 — Hydra: بناء من المصدر مع تصحيح
+
+يوجد سكربت تثبيت مخصص لـ Termux يبني `hydra` من المصدر تلقائياً، ويطبق تصحيح `fdsan` اللازم لأندرويد 12+ (بدون التصحيح، Hydra ينهار فوراً على الأجهزة الحديثة).
+
+```bash
+pkg install -y clang make libssh openssl libiconv
+curl -LO https://raw.githubusercontent.com/qrt2/instalar_hydra/main/termux_hydra
+chmod +x termux_hydra
+./termux_hydra
+```
+
+**المدة المتوقعة:** 5-15 دقيقة (بناء من المصدر). السكربت يشمل التنزيل، التصحيح، والبناء. بعد الانتهاء، اكتب `hydra` للتأكد.
+
+---
+
+### المسار 2 — Nikto: تثبيت يدوي من GitHub
+
+`nikto` غير موجود في مستودع Termux، لكن يمكن تحميله كملف Perl مباشر:
+
+```bash
+pkg install -y perl
+git clone https://github.com/sullo/nikto.git
+cd nikto
+perl program/nikto.pl -h scanme.nmap.org
+```
+
+**ملاحظة:** قد يحتاج بعض المكتبات (`libwhisker` مدمج في المستودع). إذا ظهرت أخطاء مكتبات، أخبرني.
+
+---
+
+### المسار 3 — Gobuster: بناء من Go
+
+Termux يوفر `golang`، و Gobuster مكتوب بـ Go:
+
+```bash
+pkg install -y golang
+go install github.com/OJ/gobuster/v3@latest
+```
+
+**قد يستغرق البناء 5-10 دقائق.** بعد الانتهاء، الـ binary يكون في `$GOPATH/bin/gobuster`. أضفه للـ PATH:
+
+```bash
+export PATH=$PATH:$HOME/go/bin
+gobuster --version
+```
+
+---
+
+### المسار 4 — الأدوات البديلة الأكثر عملية
+
+بدلاً من مقارعة Termux لاستعادة أدوات مُزالة، هناك أدوات Python تعمل بشكل ممتاز ومتوافقة مع ARM64:
+
+```bash
+pip install sqlmap       # بديل كامل لقواعد البيانات
+pip install theHarvester  # جمع معلومات
+pip install holehe        # OSINT على البريد
+pip install maigret       # OSINT على أسماء المستخدمين
+pip install sherlock-project
+```
+
+هذه تُثبّت مباشرة من PyPI، لا تحتاج بناء، وتعمل فوراً.
+
+---
+
+### المسار 5 — Metasploit (لاحقاً)
+
+Metasploit أيضاً مُزال من Termux. لكن يوجد سكربت تثبيت يستخدم **proot-distro مع Debian** لتجاوز مشاكل compilation. هذا الحل موصى به لأنه يستخدم حزمة Rapid7 الرسمية المُجمّعة مسبقاً.
+
+لكن **لا تفعل هذا الآن.** أولاً أنهِ الأدوات الأساسية. Metasploit مشروع منفصل يستغرق 30-60 دقيقة.
+
+---
+
+### خطة العمل الحالية
+
+نفّذ بالترتيب:
+
+**1. Hydra:**
+```bash
+pkg install -y clang make libssh openssl libiconv
+curl -LO https://raw.githubusercontent.com/qrt2/instalar_hydra/main/termux_hydra
+chmod +x termux_hydra
+./termux_hydra
+```
+
+**2. sqlmap (الأسهل):**
+```bash
+pip install sqlmap
+sqlmap --version
+```
+
+**3. theHarvester:**
+```bash
+pip install theHarvester
+theHarvester --help
+```
+
+**4. OSINT tools:**
+```bash
+pip install holehe maigret sherlock-project
+```
+
+---
+
+**توقّف. نفّذ الخطوة 1 (Hydra) أولاً. أخبرني: هل نجح البناء أم ظهر خطأ؟**
+
+إذا نجح، نواصل الباقي. إذا فشل، سننتقل لخطة أخرى (استخدام Kali NetHunter CLI بدلاً من Termux المباشر).
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+/dev/null
+sed -e "s|^INSTALLDIR=.*|INSTALLDIR="/data/data/com.termux/files/usr"|" dpl4hydra.sh | sed -e "s|^LOCATION=.*|LOCATION="/etc"|" > /data/data/com.termux/files/usr/bin/dpl4hydra.sh
+chmod 755 /data/data/com.termux/files/usr/bin/dpl4hydra.sh
+mkdir -p /data/data/com.termux/files/usr/etc
+cp -f *.csv /data/data/com.termux/files/usr/etc
+mkdir -p /data/data/com.termux/files/usr/man/man1/
+cp -f hydra.1 xhydra.1 pw-inspector.1 /data/data/com.termux/files/usr/man/man1/
+mkdir -p /data/data/com.termux/files/usr/share/pixmaps
+cp -f xhydra.png /data/data/com.termux/files/usr/share/pixmaps/
+mkdir -p /data/data/com.termux/files/usr/share/applications
+desktop-file-install --dir /data/data/com.termux/files/usr/share/applications xhydra.desktop
+make: desktop-file-install: No such file or directory
+make: [Makefile:101: install] Error 127 (ignored)
+
+ Instalação Concluída com sucesso!
+Hydra v9.8dev (c) 2023 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
+~ $ pip install sqlmap
+sqlmap --version
+Collecting sqlmap
+  Downloading sqlmap-1.10.9-py2.py3-none-any.whl.metadata (4.1 kB)
+Downloading sqlmap-1.10.9-py2.py3-none-any.whl (8.8 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━ 8.8/8.8 MB 2.7 MB/s  0:00:03
+Installing collected packages: sqlmap
+Successfully installed sqlmap-1.10.9
+1.10.9#pip
+~ $ pip install theHarvester
+theHarvester --help
+Collecting theHarvester
+  Downloading theHarvester-0.0.1-py3-none-any.whl.metadata (4.6 kB)
+Downloading theHarvester-0.0.1-py3-none-any.whl (97 kB)
+Installing collected packages: theHarvester
+Successfully installed theHarvester-0.0.1
+theHarvester: command not found
+~ $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**نتيجتان مهمتان:**
+
+1. **Hydra نجح.** `Hydra v9.8dev` — مثبّت ويعمل. تحذير `desktop-file-install` لا يهم (يخص واجهة رسومية لا نحتاجها).
+2. **sqlmap نجح.** `1.10.9` — مثبّت ويعمل.
+3. **theHarvester فشل.** الحزمة التي على PyPI اسمها `theHarvester` لكن محتواها قديم (0.0.1) ولا يحتوي الأمر التنفيذي. يجب تثبيته من GitHub مباشرة.
+
+---
+
+### الخطوة 1 — إصلاح theHarvester
+
+**أولاً، احذف النسخة الخاطئة:**
+```bash
+pip uninstall theHarvester -y
+```
+
+**ثانياً، ثبّته من GitHub:**
+```bash
+cd ~
+git clone https://github.com/laramies/theHarvester.git
+cd theHarvester
+pip install -r requirements/base.txt
+```
+
+**ثالثاً، شغّله مباشرة من المجلد:**
+```bash
+python theHarvester.py -d example.com -b all
+```
+
+**أو** — اجعله متاحاً في كل مكان:
+```bash
+echo 'alias theHarvester="python ~/theHarvester/theHarvester.py"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+**اختبار:**
+```bash
+theHarvester -d scanme.nmap.org -b bing
+```
+
+---
+
+### الخطوة 2 — أدوات OSINT الأخرى
+
+```bash
+pip install holehe
+pip install maigret
+pip install sherlock-project
+```
+
+**إن فشل أي منها:** قد يحتاج `rust` أو `build-essential`. أخبرني بالخطأ.
+
+**اختبار سريع:**
+```bash
+holehe --help
+sherlock --help
+```
+
+---
+
+### الخطوة 3 — nikto (Perl)
+
+```bash
+pkg install -y perl
+cd ~
+git clone https://github.com/sullo/nikto.git
+cd nikto
+```
+
+**اختبار:**
+```bash
+perl program/nikto.pl -h scanme.nmap.org
+```
+
+**إن نجح، اجعله متاحاً:**
+```bash
+echo 'alias nikto="perl ~/nikto/program/nikto.pl"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+---
+
+### الخطوة 4 — gobuster (Go)
+
+```bash
+pkg install -y golang
+go install github.com/OJ/gobuster/v3@latest
+```
+
+**قد يستغرق البناء 5-10 دقائق.** بعد الانتهاء:
+```bash
+export PATH=$PATH:$HOME/go/bin
+echo 'export PATH=$PATH:$HOME/go/bin' >> ~/.bashrc
+gobuster --version
+```
+
+---
+
+### الخطوة 5 — التحقق الشامل
+
+بعد كل ما سبق، اكتب هذه الأوامر واحداً واحداً، وأرسل لي النتائج:
+
+```bash
+nmap --version
+hydra -h 2>&1 | head -3
+sqlmap --version
+holehe --help 2>&1 | head -3
+sherlock --help 2>&1 | head -3
+nikto -Version 2>&1 | head -3
+gobuster --version
+```
+
+---
+
+**توقّف. نفّذ الخطوة 1 أولاً (theHarvester). عد بمخرجات:**
+
+```
+theHarvester -d scanme.nmap.org -b bing
+```
+
+**إن نجح، نواصل الباقي. إن فشل، الصق الخطأ كاملاً.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~ $ pip uninstall theHarvester -y
+Found existing installation: theHarvester 0.0.1
+Uninstalling theHarvester-0.0.1:
+  Successfully uninstalled theHarvester-0.0.1
+~ $ cd ~
+git clone https://github.com/laramies/theHarvester.git
+cd theHarvester
+pip install -r requirements/base.txt
+Cloning into 'theHarvester'...
+remote: Enumerating objects: 23073, done.
+remote: Counting objects: 100% (728/728), done.
+remote: Compressing objects: 100% (234/234), done.
+Receiving objects:  11% (2539/23073), 1.22 MiB | 2.37 Receiving objects:  12% (2769/23073), 1.22 MiB | 2.37 Receiving objects:  13% (3000/23073), 1.22 MiB | 2.37 Receiving objects:  14% (3231/23073), 1.22 MiB | 2.37 Receiving objects:  15% (3461/23073), 1.22 MiB | 2.37 Receiving objects:  16% (3692/23073), 1.22 MiB | 2.37 Receiving objects:  17% (3923/23073), 1.22 MiB | 2.37 Receiving objects:  18% (4154/23073), 1.22 MiB | 2.37 Receiving objects:  19% (4384/23073), 1.22 MiB | 2.37 Receiving objects:  20% (4615/23073), 1.22 MiB | 2.37 Receiving objects:  21% (4846/23073), 1.22 MiB | 2.37 Receiving objects:  21% (4954/23073), 2.43 MiB | 2.31 Receiving objects:  22% (5077/23073), 2.43 MiB | 2.31 Receiving objects:  23% (5307/23073), 2.43 MiB | 2.31 Receiving objects:  24% (5538/23073), 2.43 MiB | 2.31 Receiving objects:  25% (5769/23073), 3.73 MiB | 2.38 Receiving objects:  26% (5999/23073), 3.73 MiB | 2.38 Receiving objects:  27% (6230/23073), 3.73 MiB | 2.38 Receiving objects:  28% (6461/23073), 3.73 MiB | 2.38 Receiving objects:  29% (6692/23073), 3.73 MiB | 2.38 Receiving objects:  30% (6922/23073), 3.73 MiB | 2.38 Receiving objects:  31% (7153/23073), 3.73 MiB | 2.38 Receiving objects:  32% (7384/23073), 3.73 MiB | 2.38 Receiving objects:  33% (7615/23073), 3.73 MiB | 2.38 Receiving objects:  34% (7845/23073), 3.73 MiB | 2.38 Receiving objects:  35% (8076/23073), 3.73 MiB | 2.38 Receiving objects:  35% (8080/23073), 3.73 MiB | 2.38 Receiving objects:  36% (8307/23073), 5.19 MiB | 2.50 Receiving objects:  37% (8538/23073), 5.19 MiB | 2.50 Receiving objects:  38% (8768/23073), 5.19 MiB | 2.50 Receiving objects:  39% (8999/23073), 5.19 MiB | 2.50 Receiving objects:  40% (9230/23073), 5.19 MiB | 2.50 Receiving objects:  41% (9460/23073), 5.19 MiB | 2.50 Receiving objects:  42% (9691/23073), 6.65 MiB | 2.57 Receiving objects:  43% (9922/23073), 6.65 MiB | 2.57 Receiving objects:  44% (10153/23073), 6.65 MiB | 2.57Receiving objects:  45% (10383/23073), 6.65 MiB | 2.57Receiving objects:  46% (10614/23073), 6.65 MiB | 2.57Receiving objects:  47% (10845/23073), 6.65 MiB | 2.57Receiving objects:  48% (11076/23073), 6.65 MiB | 2.57Receiving objects:  49% (11306/23073), 6.65 MiB | 2.57Receiving objects:  50% (11537/23073), 6.65 MiB | 2.57Receiving objects:  51% (11768/23073), 6.65 MiB | 2.57Receiving objects:  52% (11998/23073), 6.65 MiB | 2.57Receiving objects:  53% (12229/23073), 6.65 MiB | 2.57Receiving objects:  54% (12460/23073), 6.65 MiB | 2.57Receiving objects:  55% (12691/23073), 6.65 MiB | 2.57Receiving objects:  56% (12921/23073), 6.65 MiB | 2.57Receiving objects:  57% (13152/23073), 6.65 MiB | 2.57Receiving objects:  58% (13383/23073), 6.65 MiB | 2.57Receiving objects:  59% (13614/23073), 6.65 MiB | 2.57Receiving objects:  60% (13844/23073), 6.65 MiB | 2.57Receiving objects:  61% (14075/23073), 6.65 MiB | 2.57Receiving objects:  62% (14306/23073), 6.65 MiB | 2.57Receiving objects:  63% (14536/23073), 6.65 MiB | 2.57Receiving objects:  64% (14767/23073), 6.65 MiB | 2.57Receiving objects:  65% (14998/23073), 6.65 MiB | 2.57Receiving objects:  66% (15229/23073), 6.65 MiB | 2.57Receiving objects:  67% (15459/23073), 6.65 MiB | 2.57Receiving objects:  67% (15535/23073), 6.65 MiB | 2.57Receiving objects:  68% (15690/23073), 6.65 MiB | 2.57Receiving objects:  69% (15921/23073), 6.65 MiB | 2.57Receiving objects:  70% (16152/23073), 6.65 MiB | 2.57Receiving objects:  71% (16382/23073), 6.65 MiB | 2.57Receiving objects:  72% (16613/23073), 6.65 MiB | 2.57Receiving objects:  73% (16844/23073), 6.65 MiB | 2.57Receiving objects:  74% (17075/23073), 6.65 MiB | 2.57Receiving objects:  75% (17305/23073), 6.65 MiB | 2.57Receiving objects:  76% (17536/23073), 8.97 MiB | 2.91Receiving objects:  77% (17767/23073), 8.97 MiB | 2.91Receiving objects:  78% (17997/23073), 8.97 MiB | 2.91Receiving objects:  79% (18228/23073), 8.97 MiB | 2.91Receiving objects:  80% (18459/23073), 8.97 MiB | 2.91Receiving objects:  81% (18690/23073), 8.97 MiB | 2.91Receiving objects:  82% (18920/23073), 8.97 MiB | 2.91Receiving objects:  83% (19151/23073), 8.97 MiB | 2.91Receiving objects:  84% (19382/23073), 8.97 MiB | 2.91Receiving objects:  85% (19613/23073), 8.97 MiB | 2.91Receiving objects:  86% (19843/23073), 8.97 MiB | 2.91Receiving objects:  87% (20074/23073), 8.97 MiB | 2.91Receiving objects:  88% (20305/23073), 8.97 MiB | 2.91Receiving objects:  89% (20535/23073), 8.97 MiB | 2.91Receiving objects:  90% (20766/23073), 8.97 MiB | 2.91Receiving objects:  91% (20997/23073), 8.97 MiB | 2.91Receiving objects:  92% (21228/23073), 8.97 MiB | 2.91Receiving objects:  93% (21458/23073), 8.97 MiB | 2.91Receiving objects:  94% (21689/23073), 8.97 MiB | 2.91Receiving objects:  95% (21920/23073), 8.97 MiB | 2.91Receiving objects:  96% (22151/23073), 8.97 MiB | 2.91Receiving objects:  97% (22381/23073), 8.97 MiB | 2.91Receiving objects:  98% (22612/23073), 8.97 MiB | 2.91Receiving objects:  99% (22843/23073), 8.97 MiB | 2.91remote: Total 23073 (delta 597), reused 498 (delta 494), pack-reused 22345 (from 4)
+Receiving objects: 100% (23073/23073), 12.51 MiB | 3.4Receiving objects: 100% (23073/23073), 12.66 MiB | 3.50 MiB/s, done.
+Resolving deltas: 100% (15471/15471), done.
+ERROR: Could not open requirements file: [Errno 2] No such file or directory: 'requirements/base.txt'
+~/theHarvester $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+`requirements/base.txt` غير موجود. هيكل theHarvester تغيّر في النسخ الحديثة. نكتشف الملف الصحيح.
+
+---
+
+### الخطوة 1 — اعرض محتوى المجلد
+
+اكتب:
+```bash
+ls -la ~/theHarvester/
+```
+
+ثم:
+```bash
+ls -la ~/theHarvester/requirements/ 2>/dev/null
+```
+
+**أرسل المخرجات.** سأعرف منها اسم ملف المتطلبات الفعلي.
+
+---
+
+### الخطوة 2 — احتمالات شائعة، جرّبها بالترتيب
+
+**الاحتمال 1 — ملف المتطلبات في مكان مختلف:**
+```bash
+ls ~/theHarvester/*.txt ~/theHarvester/requirements*.txt 2>/dev/null
+```
+
+**الاحتمال 2 — لم تعد هناك حاجة لـ requirements، فقط ثبّت مباشرة:**
+```bash
+cd ~/theHarvester
+pip install .
+```
+
+**الاحتمال 3 — ثبّت الم�

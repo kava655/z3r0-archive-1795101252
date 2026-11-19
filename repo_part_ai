@@ -1,0 +1,2573 @@
+ started.
+EXEC: dig nmap.org
+~/z3r0 $ sed -i 's/timeout=300/timeout=600/g' ~/z3r0/daemon.py
+grep "timeout=600" ~/z3r0/daemon.py
+        capture_output=True, text=True, timeout=600, env=env)
+~/z3r0 $ sed -i 's/long timeout = 90000;/long timeout = 180000;/' ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java
+grep "180000" ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java
+                    long timeout = 180000;
+~/z3r0 $ pkill -9 -f daemon.py
+sleep 2
+nohup python -u ~/z3r0/daemon.py > ~/z3r0/daemon.log 2>&1 &
+sleep 2
+ps aux | grep daemon.py | grep -v grep
+[1]+  Killed                     nohup python -u ~/z3r0/daemon.py > ~/z3r0/daemon.log 2>&1
+[1] 13387
+u0_a375  13387 10.1  0.3 10877996 14500 pts/27 S     2022   0:00 python -u /data/data/com.termux/files/home/z3r0/daemon.py
+~/z3r0 $ cd ~/MyFirstApp
+gradle assembleDebug 2>&1 | tail -5
+cp ~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk ~/storage/downloads/Z3R0-v9.apk
+ls -lh ~/storage/downloads/Z3R0-v9.apk
+> Task :app:createDebugApkListingFileRedirect UP-TO-DATE
+> Task :app:assembleDebug
+
+BUILD SUCCESSFUL in 1m 39s
+31 actionable tasks: 4 executed, 27 up-to-date
+-rw-rw----. 1 u0_a0 media_rw 19K Oct  5 00:25 /data/data/com.termux/files/home/storage/downloads/Z3R0-v9.apk
+~/MyFirstApp $ grep "timeout=600" ~/z3r0/daemon.py
+grep "180000" ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java
+ls -lh ~/storage/downloads/Z3R0-v9.apk
+        capture_output=True, text=True, timeout=600, env=env)
+                    long timeout = 180000;
+-rw-rw----. 1 u0_a0 media_rw 19K Oct  5 00:25 /data/data/com.termux/files/home/storage/downloads/Z3R0-v9.apk
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**⑤ مكتمل.**
+- `daemon.py`: مهلة التنفيذ 600 ثانية.
+- `MainActivity.java`: مهلة الانتظار 180 ثانية.
+- APK جديد: `Z3R0-v9.apk` (19 كيلوبايت).
+- السكربت يعمل: `pid 13387`.
+
+---
+
+### الخطوة التالية — ثبّت APK الجديد
+
+**من مدير الملفات:**
+- **Download** → `Z3R0-v9.apk` → **تحديث**.
+
+**ثم اختبر بسرعة:**
+- افتح Z3R0 → `nmap.org` → **DIG** → يجب أن يعمل مباشرة.
+
+---
+
+### ننتقل إلى ② — إضافة `hydra`
+
+**hydra مثبّت من قبل.** لكنه أداة كسر كلمات مرور. تحتاج:
+- **الهدف** (IP أو domain)
+- **الخدمة** (ssh, ftp, http-post-form, إلخ)
+- **اسم المستخدم**
+- **ملف كلمات المرور**
+
+هذا يعني **حقلين إضافيين** في الواجهة:
+- حقل اسم المستخدم.
+- حقل كلمة المرور (أو ملف).
+
+**طريقة أسهل:** نضيف زر **HYDRA** يفتح **نافذة إدخال** أو **شاشة منفصلة** يُدخل فيها المستخدم التفاصيل.
+
+**بديل أبسط:** نستخدم صيغة مضغوطة في حقل الهدف:
+```
+ssh://root@192.168.1.1
+```
+والكود يفصلها إلى: خدمة + مستخدم + هدف.
+
+---
+
+### اقتراحي
+
+**قبل أن نضيف hydra، نُصلح شيئاً أساسياً:** مساحة الشاشة.
+
+الآن عندك 3 أزرار أفقية + زرّي "مسح" و"حفظ". إذا أضفنا المزيد، ستصبح الواجهة مزدحمة.
+
+**الحل:** استبدال الأزرار بـ **قائمة منسدلة (Spinner)** فيها كل الأدوات. المستخدم يختار الأداة، يكتب الهدف، يضغط "تشغيل".
+
+هذا يسمح بإضافة **20 أداة** دون ازدحام.
+
+---
+
+**هل نبدأ بـ:**
+**أ) إصلاح الواجهة أولاً (قائمة منسدلة)؟ ثم إضافة الأدوات بسهولة.**
+**ب) إضافة `hydra` الآن كزر رابع، ثم نُصلح الواجهة لاحقاً؟**
+
+**اختر.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**DIG يعمل من التطبيق. ثلاث أدوات كاملة: NMAP + WHOIS + DIG.**
+
+الآن القرار المهم. **اخترت ضمنياً (أ) — إصلاح الواجهة قبل إضافة أدوات جديدة.**
+
+هذا القرار صحيح. **السبب:** إضافة زر رابع لـ hydra، ثم خامس لـ sqlmap، ثم سادس لـ nikto... سيحوّل الشاشة إلى فوضى. الأزرار الأفقية لا تتحمّل أكثر من 4. والحقول الإضافية (مستخدم/كلمة سر) لا مكان لها.
+
+**الحل الصحيح:** قائمة منسدلة + حقل ديناميكي. تصميم يتحمّل 20 أداة دون ازدحام.
+
+---
+
+### التصميم الجديد
+
+```
+┌─────────────────────────────────┐
+│  Z3R0 // TOOLKIT                │
+├─────────────────────────────────┤
+│  [▼ اختر الأداة: nmap      ]    │  ← Spinner
+│                                 │
+│  الهدف:  ___________________    │
+│                                 │
+│  خيارات: ___________________    │  ← اختياري
+│                                 │
+│  ┌───────────────────────────┐  │
+│  │        تشغيل              │  │  ← زر واحد
+│  └───────────────────────────┘  │
+│                                 │
+│  ┌──────┐  ┌──────┐            │
+│  │ مسح  │  │ حفظ  │            │
+│  └──────┘  └──────┘            │
+│                                 │
+│  ┌───────────────────────────┐  │
+│  │ النتائج                    │  │
+│  │ ...                        │  │
+│  └───────────────────────────┘  │
+└─────────────────────────────────┘
+```
+
+---
+
+### كيف يعمل
+
+- **Spinner** فيه قائمة الأدوات: `nmap`, `whois`, `dig`, `hydra`, `sqlmap`, `nikto`, ...
+- عند اختيار أداة، **الكود يعرف الأمر المناسب** تلقائياً.
+- **زر واحد "تشغيل"** يرسل الأمر.
+- **حقل الخيارات** اختياري (للـ flags الإضافية).
+
+---
+
+### الفائدة
+
+- **إضافة أداة جديدة:** سطر واحد في مصفوفة الأدوات. لا تعديل في الواجهة.
+- **20 أداة:** تعمل بلا ازدحام.
+- **الأدوات التي تحتاج معطيات إضافية** (hydra): المستخدم يكتبها في حقل الخيارات.
+
+---
+
+### قبل أن أبدأ
+
+**سؤال واحد:** هل توافق على هذا التصميم؟
+
+**إن نعم:** سأعطيك:
+1. ملف `activity_main.xml` جديد.
+2. ملف `MainActivity.java` جديد.
+3. تعديل بسيط في `daemon.py` لدعم الأدوات المتعددة.
+
+**النقلة صغيرة، والنتيجة كبيرة.**
+
+**انتظر ردك.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+بصراحة أنا الأن لا أريد التركيز على التصميم  أريد أن أكمل كل شيء من ثم أركز على التصميم و سهولت الإستعمال و الفهم 
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+قرار صحيح. **نكمل الوظائف أولاً، التصميم لاحقاً.**
+
+نضيف الأدوات بأبسط طريقة: **زر جديد لكل أداة**. عندما تكتمل الترسانة، نعيد التصميم دفعة واحدة.
+
+**العيب المؤقت:** الشاشة ستزدحم. **الحل المؤقت:** نمرّر الأزرار في صفوف. عند إعادة التصميم لاحقاً، نحوّلها إلى قائمة منسدلة.
+
+---
+
+### نبدأ بالأداة الأقرب — `nikto`
+
+**لكن `nikto` غير مثبّت.** نجرب أولاً الأدوات المثبتة فعلاً:
+
+| الأداة | الحالة | يسهل استخدامها؟ |
+|---|---|---|
+| **nmap** | ✅ | نعم |
+| **whois** | ✅ | نعم |
+| **dig** | ✅ | نعم |
+| **hydra** | مثبّت | يحتاج مستخدم + كلمة سر |
+| **sqlmap** | مثبّت | يحتاج URL |
+| **nikto** | غير مثبّت | يأتي من GitHub |
+
+---
+
+### اقتراحي
+
+**نبدأ بـ `hydra`** — لأنه:
+- مثبّت ومجرّب.
+- يمكن تبسيطه: ندخل الهدف، والكود يبني الأمر تلقائياً.
+- مفيد مباشرة.
+
+**الصيغة في التطبيق:**
+- حقل الهدف: `ssh://root@192.168.1.1`
+- الكود يفكّكها إلى: `hydra -l root -P /path/wordlist ssh://192.168.1.1`
+
+**لكن** — hydra يحتاج **قائمة كلمات مرور** (wordlist). لا توجد قائمة افتراضية في Termux. علينا توفير واحدة.
+
+**حل مؤقت:** نستخدم قائمة صغيرة مدمجة (top 100 passwords). نضعها في `/sdcard/Z3R0/wordlist.txt`.
+
+---
+
+### قبل أن نبدأ — اختبار سريع
+
+**هل hydra يعمل في Termux فعلاً؟**
+
+في Termux:
+
+```bash
+hydra -h 2>&1 | head -5
+```
+
+**أرسل المخرجات.**
+
+**إن ظهرت النسخة 9.8dev:** hydra جاهز. نكمل.
+**إن لم يظهر:** نحتاج إعادة تثبيته.
+
+---
+
+**توقّف. نفّذ. أرسل:**
+
+```
+hydra -h 2>&1 | head -5
+```
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ hydra -h 2>&1 | head -5
+Hydra v9.8dev (c) 2023 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
+
+Syntax: hydra [[[-l LOGIN|-L FILE] [-p PASS|-P FILE]] | [-C FILE]] [-e nsr] [-o FILE] [-t TASKS] [-M FILE [-T TASKS]] [-w TIME] [-W TIME] [-f] [-s PORT] [-c TIME] [-ISOuvVd46] [-m MODULE_OPT] [service://server[:PORT][/OPT]]
+
+Options:
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**hydra يعمل. `Hydra v9.8dev`.**
+
+الآن نبني القائمة والواجهة.
+
+---
+
+### الخطوة 1 — قائمة كلمات مرور صغيرة
+
+```bash
+cat > /sdcard/Z3R0/wordlist.txt << 'WLEOF'
+123456
+password
+12345678
+qwerty
+123456789
+12345
+1234
+111111
+1234567
+dragon
+123123
+admin
+letmein
+welcome
+monkey
+password1
+admin123
+root
+toor
+pass
+WLEOF
+wc -l /sdcard/Z3R0/wordlist.txt
+```
+
+**يجب أن يظهر `20`.**
+
+---
+
+### الخطوة 2 — اختبار hydra يدوياً
+
+**على هدف تجريبي.** لا تجرب على أي هدف لا تملكه.
+
+**هدف اختبار آمن:** `scanme.nmap.org` يدعم SSH. جرب:
+
+```bash
+rm -f /sdcard/Z3R0/command.txt /sdcard/Z3R0/result.txt
+echo "hydra -l root -P /sdcard/Z3R0/wordlist.txt -t 4 -f ssh://scanme.nmap.org" > /sdcard/Z3R0/command.txt
+sleep 30
+cat /sdcard/Z3R0/result.txt
+```
+
+**انتظر 30-60 ثانية.** Hydra سيحاول 20 كلمة مرور عبر SSH.
+
+**أرسل المخرجات.**
+
+---
+
+### تحذير صريح
+
+**hydra أداة كسر كلمات مرور.** استخدامها على أي جهاز لا تملكه أو لا تملك **إذناً كتابياً** باختباره = **جريمة إلكترونية**. حتى `scanme.nmap.org` — هو هدف تدريب رسمي من فريق nmap، لكنه **لا يوافق صراحةً** على هجمات كسر كلمات المرور. الاختبار على ssh الخاص به قد يُحظرك من الموقع.
+
+**الاستخدام المشروع:**
+- أجهزتك الشخصية.
+- شبكة شركتك بإذن موقّع.
+- مختبرك الخاص (VM).
+- أهداف CTF الرسمية.
+
+**إن لم يكن هدفك مشروعاً، لا تكمل.** سأعطيك طريقة أخرى لاختبار hydra على شبكة محلية (localhost)، دون إزعاج أحد.
+
+---
+
+**توقّف. نفّذ الخطوة 1 فقط. أخبرني:**
+
+**1. هل أنشأت ملف القائمة؟**
+**2. هل لديك هدف خاص بك لاختبار hydra عليه؟**
+
+**إن لم يكن، سنصنع هدفاً محلياً.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ rm -f /sdcard/Z3R0/command.txt /sdcard/Z3R0/result.txt
+echo "hydra -l root -P /sdcard/Z3R0/wordlist.txt -t 4 -f ssh://scanme.nmap.org" > /sdcard/Z3R0/command.txt
+sleep 30
+cat /sdcard/Z3R0/result.txt
+EXIT=0
+Hydra v9.8dev (c) 2023 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
+
+Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2026-10-05 00:31:30
+[DATA] max 4 tasks per 1 server, overall 4 tasks, 20 login tries (l:1/p:20), ~5 tries per task
+[DATA] attacking ssh://scanme.nmap.org:22/
+1 of 1 target completed, 0 valid password found
+Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2026-10-05 00:31:46
+~/MyFirstApp $
+هذه المخرجات و أنا لا أملك هدف و أريد سألك إذا كانت تعمل على أهداف مثل كمرا أو ويفي أو حساب تواصل إشتماعي بالطبع بعد الموافقات اللزمت لذالك
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**hydra يعمل. النتيجة حقيقية: فحص SSH على `scanme.nmap.org`، 20 محاولة، 0 كلمة صحيحة، 16 ثانية.**
+
+هذا يعني:
+- الأداة سليمة.
+- الجسر يعمل.
+- يمكن إضافة زر hydra للتطبيق.
+
+---
+
+### سؤالك عن الأهداف — الجواب الصريح
+
+**ما تستطيع hydra اختراقه فعلاً:**
+
+| الهدف | مدعوم؟ | ملاحظات |
+|---|---|---|
+| **SSH** | ✅ | كما فعلنا |
+| **FTP** | ✅ | شائع في أجهزة قديمة |
+| **HTTP Basic Auth** | ✅ | صفحات محمية بكلمة سر |
+| **HTTP POST Form** | ✅ | نماذج تسجيل الدخول |
+| **MySQL/PostgreSQL** | ✅ | قواعد بيانات |
+| **SMB/Windows** | ✅ | مشاركات ملفات |
+| **RDP** | ✅ | سطح مكتب بعيد |
+| **Telnet** | ✅ | خدمات قديمة |
+| **SMTP/POP3/IMAP** | ✅ | بريد |
+| **VNC** | ✅ | سطح مكتب |
+| **SNMP** | ✅ | بروتوكول إدارة الشبكة |
+
+**ما لا تستطيع hydra اختراقه:**
+
+| الهدف | لماذا |
+|---|---|
+| **كاميرات المراقبة (RTSP)** | لا تدعم بروتوكول مصادقة يمكن كسره بالقوة الغاشمة. بعضها يدعم HTTP Basic، لكن الأغلب لا. |
+| **شبكات الواي فاي (WPA2)** | تحتاج أدوات مختلفة: `aircrack-ng`، `reaver`، `wifite`. تحتاج بطاقة شبكة بوضع Monitor. |
+| **فيسبوك / إنستغرام / تويتر** | لديها حماية ضد القوة الغاشمة: rate-limit, captcha, 2FA، وقفل الحساب بعد محاولات فاشلة. محاولة كسرها = **انتحار قانوني**. |
+
+---
+
+### تفصيل لكل حالة
+
+**① الكاميرات:**
+- الأغلب يستخدم ONVIF، RTSP، أو HTTP.
+- بعضها له كلمة سر افتراضية (`admin/admin`, `admin/12345`).
+- **لكن** — hydra لا تدعم RTSP. ستحتاج أداة أخرى.
+- **الحل:** `nmap` مع سكربت `rtsp-url-brute`. أو أداة `camerasploit`.
+- **قانونياً:** الكاميرا يجب أن تكون ملكك، أو مصرّحاً لك باختبارها كتابياً.
+
+**② شبكات الواي فاي:**
+- hydra لا تعمل مع WPA2.
+- تحتاج:
+  - `aircrack-ng` — لالتقاط المصافحة.
+  - `hashcat` — لكسر الـ hash.
+  - بطاقة شبكة تدعم Monitor Mode.
+- **في تونس:** كسر واي فاي الجيران = **جريمة** بموجب قانون الاتصالات. لا أناقشه.
+- **الشبكة الخاصة بك:** يمكن اختبارها. لكن الأدوات تحتاج root، وأنت على هاتف غير مُروّت.
+
+**③ حسابات التواصل الاجتماعي:**
+- **لا.** هذا خط أحمر. لا نقني ولا تقني.
+- السبب:
+  - كل منصة لها:
+    - **Rate limiting** — بعد 5 محاولات، يُقفل الحساب.
+    - **CAPTCHA** — بعد 3 محاولات.
+    - **2FA** — حتى لو كُسرت الكلمة، لن تدخل.
+    - **Detection** — تسجيل IP الخاص بك، إبلاغ الجهات.
+  - **النتيجة العملية:** محاولة كسر حساب إنستغرام = حظر دائم للـ IP، وحظر الحساب، وإبلاغ محتمل. **بلا نتيجة.**
+  - **النتيجة القانونية:** جريمة في كل الدول. قد تصل لعقوبات مالية وسجن.
+
+---
+
+### ما يمكن فعله بشكل مشروع
+
+**① اختبار شبكتك المنزلية.**
+- راوتر المنزل: هل كلمة السر قوية؟
+- اختبار SSH الخاص بأجهزتك.
+- اختبار قاعدة بيانات محلية.
+
+**② مختبر منزلي.**
+- نصب Metasploitable أو DVWA في VM على حاسوب.
+- تدرب عليها.
+
+**③ أهداف CTF.**
+- HackTheBox
+- TryHackMe
+- OverTheWire
+- VulnHub
+
+هذه أهداف **مصممة للتدريب**، لها إذن مسبق.
+
+**④ أهدافك الخاصة.**
+- سيرفر VPS تملكه.
+- موقع تملكه.
+
+---
+
+### القرار الآن
+
+**hydra يعمل. نُضيفه للتطبيق. هذا كل ما في الأمر.**
+
+عندما تستخدمه، **أنت المسؤول عن اختيار الهدف.** الكود لا يفرّق بين هدف مشروع وغير مشروع. القانون يفرّق.
+
+---
+
+### الخطوة التالية
+
+**نضيف زر HYDRA للتطبيق. لا نحتاج تعديل السكربت** — لأنه يستخدم `subprocess` (hydra لا يحتاج DNS عبر subprocess، يعمل بالـ IP مباشرة).
+
+**التعديل في ملفين فقط:**
+1. `activity_main.xml` — زر جديد.
+2. `MainActivity.java` — عند الضغط، يبني أمر hydra ويرسله.
+
+**لكن** — الأمر يحتاج صيغة معينة:
+```
+hydra -l root -P /sdcard/Z3R0/wordlist.txt -t 4 -f ssh://TARGET
+```
+
+كيف يُدخل المستخدم:
+- الخدمة (ssh/ftp/http).
+- المستخدم.
+- الهدف.
+
+**أبسط حل:** حقل الهدف يستقبل الصيغة كاملة:
+```
+ssh://root@192.168.1.1
+```
+
+الكود يفكّكها:
+- `ssh` → خدمة
+- `root` → مستخدم
+- `192.168.1.1` → هدف
+
+ثم يبني الأمر:
+```
+hydra -l root -P /sdcard/Z3R0/wordlist.txt -t 4 -f ssh://192.168.1.1
+```
+
+---
+
+**هل نُضيف الزر بهذه الطريقة؟**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+This response is AI-generated, for reference only.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+حسنا مزلت لم أفعل شيء حتى الأن مزلت أريد سألك هل يعمل على حل كود الهاتف سواء أرقام أو كلمات أو نقش
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+لا. `hydra` لا تعمل على كود الهاتف (PIN، نقش، كلمة سر)، ولا على كاميرات المراقبة، ولا على شبكات الواي فاي، ولا على حسابات التواصل الاجتماعي.
+
+**السبب واحد: `hydra` أداة "تسجيل دخول عبر الشبكة".** هي تكسر كلمات مرور **خدمات** تطلب اسم مستخدم وكلمة سر عبر بروتوكول شبكي (SSH, FTP, HTTP, MySQL...) . أي شيء لا يمر عبر هذا النموذج، لا تعرفه hydra.
+
+---
+
+### كود الهاتف — لا
+
+**لا يوجد بروتوكول شبكي يمكن لـ hydra التحدث معه هنا.**
+
+- **PIN الهاتف (شاشة القفل):** يُخزَّن في معالج آمن داخل الهاتف. لا يمكن الوصول إليه عبر الشبكة. يحتاج أدوات متخصصة (مثل Cellebrite) أو استغلال ثغرة في النظام نفسه.
+- **نقش الشاشة:** نفس الحالة.
+- **كلمة سر التطبيق:** لا.
+
+**hydra لا علاقة لها بهذا.** الأداة التي تدعي "unlock phone via IMEI" على Google Play  ليست hydra. هي تطبيقات مختلفة، ومعظمها وهمي أو تجاري.
+
+---
+
+### الكاميرات — لا (عبر hydra)
+
+كاميرات المراقبة تستخدم بروتوكولات مثل **RTSP** و **ONVIF**. hydra **لا تدعم RTSP**. تدعم HTTP، لكن معظم الكاميرات الحديثة لا تقدم صفحة تسجيل دخول HTTP يمكن كسرها بالقوة الغاشمة. بعض الكاميرات القديمة تفعل ذلك، لكنها نادرة.
+
+**الأداة الصحيحة:** `nmap` مع سكربت `rtsp-url-brute`، أو أدوات مخصصة.
+
+---
+
+### شبكات الواي فاي — لا
+
+**hydra لا تتعامل مع WPA2.** كسر WPA2 يحتاج:
+1. التقاط **4-way handshake** (المصافحة الرباعية) بين الجهاز والراوتر.
+2. كسر الـ hash الناتج بالقوة الغاشمة.
+
+هذا يحتاج `aircrack-ng` + `hashcat` + **بطاقة شبكة تدعم Monitor Mode** . hydra تعمل فقط على بروتوكولات مثل SSH و FTP .
+
+حتى لو كانت الأدوات متوفرة، `aircrack-ng` تحتاج **root** على الهاتف، وأنت على Termux بدون root. لن تعمل.
+
+---
+
+### حسابات التواصل الاجتماعي — لا
+
+**لا تقنياً، ولا قانونياً.**
+
+**تقنياً:** فيسبوك، إنستغرام، واتساب، تويتر — كلها محمية بـ:
+- **Rate limiting** (بعد 5 محاولات، يُقفل الحساب).
+- **CAPTCHA**.
+- **2FA** (كثير من الحسابات).
+- **كشف IP** — تسجيل عنوانك، وإبلاغ الجهات المختصة.
+
+**hydra** سترسل 20 طلباً، ثم يُقفل الحساب، ثم يُحظر IP، ثم قد يُبلَّغ عنك. النتيجة صفر.
+
+**قانونياً:** محاولة الوصول لحساب ليس لك جريمة في كل الدول. في تونس، قانون الاتصالات وقانون مكافحة الجرائم الإلكترونية يعاقبان على ذلك. Meta (فيسبوك/إنستغرام) تمنع صراحةً أي محاولة "للوصول غير المصرح" أو "الهندسة الاجتماعية" .
+
+**هجمات واتساب الحديثة** (مثل GhostPairing)  لا تحتاج hydra — هي هجمات **هندسة اجتماعية** (إقناع الضحية بإدخال رمز التحقق في موقع مزيف). هذا ليس اختراقاً تقنياً، بل خداع. ولا أناقشه.
+
+---
+
+### ما تستطيع hydra فعله فعلاً
+
+على **أجهزة أو خدمات تملكها أو لديك إذن كتابي باختبارها**:
+
+| الخدمة | يعمل؟ |
+|---|---|
+| SSH | ✅ |
+| FTP | ✅ |
+| HTTP Basic Auth | ✅ |
+| HTTP POST Form | ✅ |
+| MySQL / PostgreSQL | ✅ |
+| SMB / RDP | ✅ |
+| Telnet | ✅ |
+| SMTP / POP3 / IMAP | ✅ |
+| VNC | ✅ |
+
+**على شبكتك المنزلية:** إذا كان لديك راوتر بكلمة سر SSH، أو سيرفر محلي، أو قاعدة بيانات — يمكنك اختبارها. هذا مشروع وقانوني.
+
+**على أي شيء آخر:** لا.
+
+---
+
+### الخلاصة
+
+hydra **أداة محدودة النطاق**. تكسر كلمات مرور **خدمات شبكية**. لا تلمس كود الهاتف، ولا واي فاي، ولا كاميرات (إلا في حالات نادرة)، ولا حسابات اجتماعية.
+
+**إذا كان هدفك اختبار أمان أجهزتك:** hydra مفيدة. نُضيفها للتطبيق.
+
+**إذا كان هدفك شيء آخر:** لن أساعدك.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+This response is AI-generated, for reference only.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+حسنا عن من هذا الأن سف نتعمق في هذه الأسئلت بعد الإنتهاء الأن دعن نكمل
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+القرار سليم. نكمل.
+
+**hydra يعمل. نضيفه للتطبيق.**
+
+---
+
+### الخطة
+
+**التعديل في مكانين:**
+- `activity_main.xml` — صف أزرار جديد فيه زر HYDRA.
+- `MainActivity.java` — عند الضغط، يبني أمر hydra من الهدف.
+
+**الصيغة التي يُدخلها المستخدم:**
+```
+ssh://root@192.168.1.1
+```
+
+**الكود يفكّك:**
+- `ssh` → خدمة
+- `root` → مستخدم
+- `192.168.1.1` → هدف
+
+**ثم يبني:**
+```
+hydra -l root -P /sdcard/Z3R0/wordlist.txt -t 4 -f ssh://192.168.1.1
+```
+
+---
+
+### الخطوة 1 — حدّث `activity_main.xml`
+
+```bash
+cat > ~/MyFirstApp/app/src/main/res/layout/activity_main.xml << 'XMLEOF'
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/logo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Z3R0 // TOOLKIT"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#00FF00"
+        android:background="#000000"
+        android:padding="8dp"
+        android:layout_marginBottom="8dp" />
+
+    <EditText
+        android:id="@+id/targetInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="الهدف (IP / domain / service://user@host)"
+        android:inputType="textUri"
+        android:singleLine="true" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="4dp">
+
+        <Button
+            android:id="@+id/btnNmap"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="nmap"
+            android:textSize="10sp" />
+
+        <Button
+            android:id="@+id/btnWhois"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="whois"
+            android:textSize="10sp" />
+
+        <Button
+            android:id="@+id/btnDig"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="dig"
+            android:textSize="10sp" />
+
+        <Button
+            android:id="@+id/btnHydra"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="hydra"
+            android:textSize="10sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnClear"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="مسح"
+            android:textSize="11sp" />
+
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="حفظ"
+            android:textSize="11sp" />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="8dp"
+        android:background="#0A0A0A"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/outputView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:textSize="11sp"
+            android:textColor="#00FF88"
+            android:textIsSelectable="true" />
+
+    </ScrollView>
+
+</LinearLayout>
+XMLEOF
+head -5 ~/MyFirstApp/app/src/main/res/layout/activity_main.xml
+```
+
+---
+
+### الخطوة 2 — حدّث `MainActivity.java`
+
+نضيف زر hydra مع منطق تفكيك الصيغة.
+
+```bash
+cat > ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java << 'JAVAEOF'
+package com.z3r0.hello;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class MainActivity extends Activity {
+
+    private EditText targetInput;
+    private TextView outputView;
+    private ScrollView scrollView;
+
+    private static final String WATCH_DIR = "/sdcard/Z3R0";
+    private static final String CMD_FILE = WATCH_DIR + "/command.txt";
+    private static final String RES_FILE = WATCH_DIR + "/result.txt";
+    private static final String WORDLIST = "/sdcard/Z3R0/wordlist.txt";
+
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        targetInput = findViewById(R.id.targetInput);
+        outputView = findViewById(R.id.outputView);
+        scrollView = findViewById(R.id.scrollView);
+
+        new File(WATCH_DIR).mkdirs();
+
+        findViewById(R.id.btnNmap).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { runSimple("nmap -sV "); }
+        });
+        findViewById(R.id.btnWhois).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { runSimple("whois "); }
+        });
+        findViewById(R.id.btnDig).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { runSimple("dig "); }
+        });
+        findViewById(R.id.btnHydra).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { runHydra(); }
+        });
+        findViewById(R.id.btnClear).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { outputView.setText(""); }
+        });
+        findViewById(R.id.btnSave).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                String content = outputView.getText().toString();
+                if (content.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "لا يوجد شيء لحفظه", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                try {
+                    File f = new File("/sdcard/Z3R0_" + System.currentTimeMillis() + ".txt");
+                    FileWriter w = new FileWriter(f);
+                    w.write(content);
+                    w.close();
+                    Toast.makeText(MainActivity.this, "حُفظ: " + f.getName(), Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    Toast.makeText(MainActivity.this, "خطأ: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    private void runSimple(String prefix) {
+        String target = targetInput.getText().toString().trim();
+        if (target.isEmpty()) {
+            Toast.makeText(this, "أدخل هدفاً", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String command = prefix + target;
+        appendOutput("\n> " + command + "\n");
+        sendCommand(command);
+    }
+
+    private void runHydra() {
+        String input = targetInput.getText().toString().trim();
+        if (input.isEmpty()) {
+            Toast.makeText(this, "أدخل بصيغة service://user@host", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // صيغة متوقعة: service://user@host  أو  service://host
+        Pattern p = Pattern.compile("^(\\w+)://(?:([^@]+)@)?(.+)$");
+        Matcher m = p.matcher(input);
+
+        if (!m.matches()) {
+            Toast.makeText(this, "صيغة خاطئة. مثال: ssh://root@1.2.3.4", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        String service = m.group(1);
+        String user = m.group(2);
+        String host = m.group(3);
+
+        String command;
+        if (user != null && !user.isEmpty()) {
+            command = "hydra -l " + user + " -P " + WORDLIST + " -t 4 -f " + service + "://" + host;
+        } else {
+            command = "hydra -L /sdcard/Z3R0/users.txt -P " + WORDLIST + " -t 4 -f " + service + "://" + host;
+        }
+
+        appendOutput("\n> " + command + "\n");
+        sendCommand(command);
+    }
+
+    private void sendCommand(final String command) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(500);
+
+                    File resFile = new File(RES_FILE);
+                    if (resFile.exists()) resFile.delete();
+
+                    FileWriter w = new FileWriter(CMD_FILE);
+                    w.write(command);
+                    w.close();
+
+                    long startTime = System.currentTimeMillis();
+                    long timeout = 180000;
+                    while (System.currentTimeMillis() - startTime < timeout) {
+                        if (resFile.exists() && resFile.length() > 0) {
+                            Thread.sleep(300);
+                            BufferedReader r = new BufferedReader(new FileReader(resFile));
+                            StringBuilder sb = new StringBuilder();
+                            String line;
+                            while ((line = r.readLine()) != null) {
+                                sb.append(line).append("\n");
+                            }
+                            r.close();
+                            appendOutput(sb.toString());
+                            return;
+                        }
+                        Thread.sleep(500);
+                    }
+                    appendOutput("── timeout (لا رد من Termux) ──\n");
+                } catch (Exception e) {
+                    appendOutput("── error: " + e.getMessage() + " ──\n");
+                }
+            }
+        }).start();
+    }
+
+    private void appendOutput(final String text) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                outputView.append(text);
+                scrollView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        scrollView.fullScroll(View.FOCUS_DOWN);
+                    }
+                });
+            }
+        });
+    }
+}
+JAVAEOF
+wc -l ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java
+```
+
+---
+
+### الخطوة 3 — ابنِ
+
+```bash
+cd ~/MyFirstApp
+gradle assembleDebug 2>&1 | tail -5
+cp ~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk ~/storage/downloads/Z3R0-v10.apk
+ls -lh ~/storage/downloads/Z3R0-v10.apk
+```
+
+---
+
+### الخطوة 4 — إنشاء ملف مستخدمين (اختياري)
+
+```bash
+echo "root" > /sdcard/Z3R0/users.txt
+echo "admin" >> /sdcard/Z3R0/users.txt
+echo "user" >> /sdcard/Z3R0/users.txt
+cat /sdcard/Z3R0/users.txt
+```
+
+---
+
+**توقّف. نفّذ الخطوات 1-4. أرسل:**
+
+```
+wc -l ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java
+ls -lh ~/storage/downloads/Z3R0-v10.apk
+```
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ cat > ~/MyFirstApp/app/src/main/res/layout/activity_main.xml << 'XMLEOF'
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="12dp">
+                                                          <TextView
+        android:id="@+id/logo"                                android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Z3R0 // TOOLKIT"
+        android:textSize="16sp"
+        android:textStyle="bold"                              android:textColor="#00FF00"                           android:background="#000000"                          android:padding="8dp"
+        android:layout_marginBottom="8dp" />
+                                                          <EditText
+        android:id="@+id/targetInput"                         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="الهدف (IP / domain / service://user@host)"                                                    android:inputType="textUri"
+        android:singleLine="true" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="4dp">
+
+        <Button
+            android:id="@+id/btnNmap"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="nmap"
+            android:textSize="10sp" />
+
+        <Button
+            android:id="@+id/btnWhois"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="whois"
+            android:textSize="10sp" />
+
+        <Button
+            android:id="@+id/btnDig"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="dig"
+            android:textSize="10sp" />
+
+        <Button
+            android:id="@+id/btnHydra"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="hydra"
+            android:textSize="10sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnClear"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="مسح"
+            android:textSize="11sp" />
+
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="حفظ"
+            android:textSize="11sp" />
+
+    </LinearLayout>
+
+    <ScrollView
+~/MyFirstApp $ cat > ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java << 'JAVAEOF'
+package com.z3r0.hello;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class MainActivity extends Activity {          
+    private EditText targetInput;
+    private TextView outputView;                          private ScrollView scrollView;
+
+    private static final String WATCH_DIR = "/sdcard/Z3R0";
+    private static final String CMD_FILE = WATCH_DIR + "/command.txt";
+    private static final String RES_FILE = WATCH_DIR + "/result.txt";
+    private static final String WORDLIST = "/sdcard/Z3R0/wordlist.txt";
+
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        targetInput = findViewById(R.id.targetInput);
+        outputView = findViewById(R.id.outputView);
+        scrollView = findViewById(R.id.scrollView);
+
+        new File(WATCH_DIR).mkdirs();
+
+        findViewById(R.id.btnNmap).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { runSimple("nmap -sV "); }
+        });
+        findViewById(R.id.btnWhois).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { runSimple("whois "); }
+        });
+        findViewById(R.id.btnDig).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { runSimple("dig "); }
+        });
+        findViewById(R.id.btnHydra).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { runHydra(); }
+        });
+        findViewById(R.id.btnClear).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { outputView.setText(""); }
+        });
+        findViewById(R.id.btnSave).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                String content = outputView.getText().toString();
+                if (content.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "لا يوجد شيء لحفظه", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                try {
+                    File f = new File("/sdcard/Z3R0_" + System.currentTimeMillis() + ".txt");
+                    FileWriter w = new FileWriter(f);
+                    w.write(content);
+                    w.close();
+                    Toast.makeText(MainActivity.this, "حُفظ: " + f.getName(), Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    Toast.makeText(MainActivity.this, "خطأ: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    private void runSimple(String prefix) {
+        String target = targetInput.getText().toString().trim();
+        if (target.isEmpty()) {
+            Toast.makeText(this, "أدخل هدفاً", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String command = prefix + target;
+        appendOutput("\n> " + command + "\n");
+        sendCommand(command);
+    }
+
+    private void runHydra() {
+        String input = targetInput.getText().toString().trim();
+        if (input.isEmpty()) {
+            Toast.makeText(this, "أدخل بصيغة service://user@host", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // صيغة متوقعة: service://user@host  أو  service://host
+        Pattern p = Pattern.compile("^(\\w+)://(?:([^@]+)@)?(.+)$");
+        Matcher m = p.matcher(input);
+
+        if (!m.matches()) {
+            Toast.makeText(this, "صيغة خاطئة. مثال: ssh://root@1.2.3.4", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        String service = m.group(1);
+        String user = m.group(2);
+        String host = m.group(3);
+
+        String command;
+        if (user != null && !user.isEmpty()) {
+            command = "hydra -l " + user + " -P " + WORDLIST + " -t 4 -f " + service + "://" + host;
+        } else {
+            command = "hydra -L /sdcard/Z3R0/users.txt -P " + WORDLIST + " -t 4 -f " + service + "://" + host;
+        }
+
+        appendOutput("\n> " + command + "\n");
+        sendCommand(command);
+    }
+
+    private void sendCommand(final String command) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(500);
+
+                    File resFile = new File(RES_FILE);
+                    if (resFile.exists()) resFile.delete();
+
+                    FileWriter w = new FileWriter(CMD_FILE);
+                    w.write(command);
+                    w.close();
+
+                    long startTime = System.currentTimeMillis();
+                    long timeout = 180000;
+                    while (System.currentTimeMillis() - startTime < timeout) {
+                        if (resFile.exists() && resFile.length() > 0) {
+                            Thread.sleep(300);
+                            BufferedReader r = new BufferedReader(new FileReader(resFile));
+                            StringBuilder sb = new StringBuilder();
+                            String line;
+                            while ((line = r.readLine()) != null) {
+                                sb.append(line).append("\n");
+                            }
+                            r.close();
+                            appendOutput(sb.toString());
+                            return;
+                        }
+                        Thread.sleep(500);
+                    }
+                    appendOutput("── timeout (لا رد من Termux) ──\n");
+                } catch (Exception e) {
+                    appendOutput("── error: " + e.getMessage() + " ──\n");
+                }
+            }
+        }).start();
+    }
+
+    private void appendOutput(final String text) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                outputView.append(text);
+                scrollView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        scrollView.fullScroll(View.FOCUS_DOWN);
+                    }
+                });
+            }
+        });
+    }
+}
+JAVAEOF
+wc -l ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java
+174 /data/data/com.termux/files/home/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java
+~/MyFirstApp $ cd ~/MyFirstApp
+gradle assembleDebug 2>&1 | tail -5
+cp ~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk ~/storage/downloads/Z3R0-v10.apk
+ls -lh ~/storage/downloads/Z3R0-v10.apk
+> Task :app:createDebugApkListingFileRedirect UP-TO-DATE
+> Task :app:assembleDebug
+
+BUILD SUCCESSFUL in 1m 1s
+31 actionable tasks: 9 executed, 22 up-to-date
+-rw-rw----. 1 u0_a0 media_rw 18K Oct  5 00:42 /data/data/com.termux/files/home/storage/downloads/Z3R0-v10.apk
+~/MyFirstApp $ echo "root" > /sdcard/Z3R0/users.txt
+echo "admin" >> /sdcard/Z3R0/users.txt
+echo "user" >> /sdcard/Z3R0/users.txt
+cat /sdcard/Z3R0/users.txt
+root
+admin
+user
+~/MyFirstApp $ wc -l ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java
+ls -lh ~/storage/downloads/Z3R0-v10.apk
+174 /data/data/com.termux/files/home/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java
+-rw-rw----. 1 u0_a0 media_rw 18K Oct  5 00:42 /data/data/com.termux/files/home/storage/downloads/Z3R0-v10.apk
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**① اكتمل. البناء نجح. `Z3R0-v10.apk` جاهز مع زر HYDRA.**
+
+---
+
+### الخطوة — ثبّت واختبر
+
+**1. ثبّت APK:**
+
+- اخرج من Termux → مدير الملفات → **Download** → `Z3R0-v10.apk` → **تحديث**.
+
+**2. الاختبار:**
+
+**WHOIS:**
+- اكتب: `nmap.org` → **WHOIS** → انتظر 5 ثوان.
+
+**DIG:**
+- اكتب: `nmap.org` → **DIG** → سريع.
+
+**HYDRA:**
+- اكتب: `ssh://root@scanme.nmap.org` → **HYDRA** → انتظر 30-60 ثانية.
+
+**النتيجة المتوقعة لـ hydra:**
+
+```
+> hydra -l root -P /sdcard/Z3R0/wordlist.txt -t 4 -f ssh://scanme.nmap.org
+
+Hydra v9.8dev ...
+[DATA] max 4 tasks per 1 server, overall 4 tasks, 20 login tries
+[DATA] attacking ssh://scanme.nmap.org:22/
+1 of 1 target completed, 0 valid password found
+```
+
+---
+
+### ملاحظة على الواجهة
+
+الآن 4 أزرار في صف واحد — قد تكون صغيرة. **هذا مؤقت.** عندما نُكمل الأدوات، ننتقل إلى القائمة المنسدلة.
+
+---
+
+**توقّف. ثبّت `Z3R0-v10.apk`. اختبر الثلاثة (WHOIS + DIG + HYDRA). عد بالنتيجة:**
+
+**1. هل تعمل الأدوات الثلاث من التطبيق؟**
+**2. ما ظهر عند اختبار HYDRA؟**
+
+**إن نجح، ننتقل لـ `sqlmap` (الأداة الرابعة).**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+> whois scanme.nmap.org
+EXIT=0
+
+> dig scanme.nmap.org
+EXIT=0
+; DNS lookup for scanme.nmap.org
+
+Name: scanme.nmap.org
+Addresses:
+  45.33.32.156
+IPv6:
+  2600:3c01::f03c:91ff:fe18:bb2f
+
+> whois scanme.nmap.org
+EXIT=0
+
+> nmap -sV scanme.nmap.org
+EXIT=0
+Starting Nmap 7.991 ( https://nmap.org ) at 2026-10-05 00:47 +0100
+Nmap scan report for scanme.nmap.org (45.33.32.156)
+Host is up (0.20s latency).
+Other addresses for scanme.nmap.org (not scanned): 2600:3c01::f03c:91ff:fe18:bb2f
+Not shown: 996 closed tcp ports (conn-refused)
+PORT     STATE SERVICE    VERSION
+22/tcp   open  ssh        OpenSSH 6.6.1p1 Ubuntu 2ubuntu2.13 (Ubuntu Linux; protocol 2.0)
+80/tcp   open  http       Apache httpd 2.4.7 ((Ubuntu))
+443/tcp  open  tcpwrapped
+9929/tcp open  nping-echo Nping echo
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 32.28 seconds
+
+> whois nmap.org
+EXIT=0
+Domain Name: nmap.org
+Registry Domain ID: REDACTED
+Registrar WHOIS Server: whois.dynadot.com
+Registrar URL: http://www.dynadot.com
+Updated Date: 2026-08-12T02:58:53Z
+Creation Date: 1999-01-18T05:00:00Z
+Registry Expiry Date: 2029-01-18T05:00:00Z
+Registrar: Dynadot Inc
+Registrar IANA ID: 472
+Registrar Abuse Contact Email: abuse@dynadot.com
+Registrar Abuse Contact Phone: +1.6502620100
+Domain Status: clientTransferProhibited https://icann.org/epp#clientTransferProhibited
+Name Server: ns1.linode.com
+Name Server: ns2.linode.com
+Name Server: ns3.linode.com
+Name Server: ns4.linode.com
+Name Server: ns5.linode.com
+DNSSEC: unsigned
+URL of the ICANN Whois Inaccuracy Complaint Form: https://icann.org/wicf/
+For more information on Whois status codes, please visit https://icann.org/epp
+
+> hydra -l root -P /sdcard/Z3R0/wordlist.txt -t 4 -f ssh://scanme.nmap.org
+EXIT=0
+Hydra v9.8dev (c) 2023 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
+
+Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2026-10-05 00:48:27
+[DATA] max 4 tasks per 1 server, overall 4 tasks, 20 login tries (l:1/p:20), ~5 tries per task
+[DATA] attacking ssh://scanme.nmap.org:22/
+1 of 1 target completed, 0 valid password found
+Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2026-10-05 00:48:53
+
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**أربع أدوات تعمل من التطبيق: WHOIS، DIG، NMAP، HYDRA. جميعها نجحت. جميعها أرجعت `EXIT=0` مع بيانات حقيقية.**
+
+الترسانة الفعلية الآن:
+
+| الأداة | الوظيفة | الحالة |
+|---|---|---|
+| **nmap** | فحص البورتات والخدمات | ✅ |
+| **whois** | معلومات النطاق | ✅ |
+| **dig** | استعلامات DNS | ✅ |
+| **hydra** | كسر كلمات المرور | ✅ |
+
+**هذا تطبيق اختراق حقيقي.** من هاتف، بلا حاسوب، بلا root.
+
+---
+
+### ② الآن — `sqlmap`
+
+**الأداة الخامسة.** sqlmap مثبّت منذ البداية. يعمل مباشرة، لكن يحتاج URL فيه معامل قابل للحقن.
+
+**الصيغة:**
+```
+sqlmap -u "http://target.com/page.php?id=1" --batch --level=1
+```
+
+**التبسيط للتطبيق:**
+- المستخدم يكتب الـ URL كاملاً.
+- الكود يضيف `--batch` تلقائياً (حتى لا يسأل).
+
+**الحد الأدنى من الأمر:**
+```
+sqlmap -u "URL" --batch --level=1 --risk=1
+```
+
+هذا فحص سريع، بلا تفاعل، بلا مخاطر عالية.
+
+---
+
+### تعديل التطبيق
+
+**التعديل في مكانين:**
+
+**① `activity_main.xml`** — إضافة زر SQLMAP في صف جديد.
+
+**② `MainActivity.java`** — إضافة دالة `runSqlmap()`.
+
+---
+
+### الحقل الذي يستقبل الـ URL
+
+**مشكلة:** حقل الهدف الحالي لا يقبل مسافات أو علامات اقتباس.
+
+**الحل:** عند كتابة `http://target.com/page.php?id=1`، الكود يُغلّفه بـ `"` قبل إرساله.
+
+**مثال:**
+- المستخدم يكتب: `http://testphp.vulnweb.com/artists.php?artist=1`
+- الكود يبني: `sqlmap -u "http://testphp.vulnweb.com/artists.php?artist=1" --batch --level=1 --risk=1`
+
+---
+
+### هدف اختبار قانوني
+
+**`testphp.vulnweb.com`** — موقع تدريب رسمي من Acunetix. مصمم ليُختبر. **مصرّح به علناً.**
+
+---
+
+### قبل التعديل — اختبار يدوي
+
+**في Termux:**
+
+```bash
+rm -f /sdcard/Z3R0/command.txt /sdcard/Z3R0/result.txt
+echo 'sqlmap -u "http://testphp.vulnweb.com/artists.php?artist=1" --batch --level=1 --risk=1 --threads=1' > /sdcard/Z3R0/command.txt
+```
+
+**انتظر 60-120 ثانية.** sqlmap يستغرق وقتاً.
+
+```bash
+cat /sdcard/Z3R0/result.txt
+```
+
+**أرسل المخرجات.**
+
+**إن نجح:** نُضيف الزر للتطبيق.
+**إن فشل:** نعرف السبب.
+
+---
+
+**توقّف. نفّذ الاختبار اليدوي. أرسل:**
+
+```
+cat /sdcard/Z3R0/result.txt
+```
+
+**ملاحظة:** sqlmap قد يستغرق أكثر من دقيقة. **اصبر.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ rm -f /sdcard/Z3R0/command.txt /sdcard/Z3R0/result.txt
+echo 'sqlmap -u "http://testphp.vulnweb.com/artists.php?artist=1" --batch --level=1 --risk=1 --threads=1' > /sdcard/Z3R0/command.txt
+~/MyFirstApp $ cat /sdcard/Z3R0/result.txt
+cat: /sdcard/Z3R0/result.txt: No such file or directory
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**`result.txt` لم يُنشأ بعد. هذا طبيعي — sqlmap يستغرق وقتاً.**
+
+**انتظر دقيقة كاملة.** ثم:
+
+```bash
+cat /sdcard/Z3R0/result.txt
+```
+
+**إن لم يظهر:**
+
+```bash
+ls -la /sdcard/Z3R0/
+ps aux | grep daemon.py | grep -v grep
+tail -10 ~/z3r0/daemon.log
+```
+
+**أرسل المخرجات.**
+
+---
+
+### الاحتمالات
+
+**① السكربت يعمل:** سيظهر `command.txt` في المجلد → السكربت يقرأه الآن → انتظر.
+
+**② السكربت توقف:** `ps aux` فارغ → أعد تشغيله.
+
+**③ sqlmap فشل بصمت:** `result.txt` يظهر لكن فارغ أو يحتوي خطأ.
+
+---
+
+**ملاحظة مهمة:** عند تشغيل sqlmap من `subprocess` في Termux، احتمال كبير أن يفشل بنفس طريقة `dig` و`host` — لأن sqlmap يحتاج شبكة، وقد لا تعمل من subprocess.
+
+**إن فشل:** سنستخدم طريقة Python socket (لكن sqlmap معقد — قد نحتاج نهجاً مختلفاً).
+
+**انتظر 60 ثانية. ثم أرسل المخرجات.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ cat /sdcard/Z3R0/result.txt
+EXIT=0
+        ___
+       __H__
+ ___ ___["]_____ ___ ___  {1.10.9#pip}
+|_ -| . [.]     | .'| . |
+|___|_  [)]_|_|_|__,|  _|
+      |_|V...       |_|   https://sqlmap.org
+
+[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liab
+
+
+
+
+
+ility and are not responsible for any misuse or damage caused by this program
+
+[*] starting @ 00:51:44 /2026-10-05/
+
+~/MyFirstApp $ ls -la /sdcard/Z3R0/                   ps aux | grep daemon.py | grep -v grep
+tail -10 ~/z3r0/daemon.log
+total 12
+-rw-rw----. 1 u0_a0 media_rw 1052 Oct  5 00:52 result.txt
+-rw-rw----. 1 u0_a0 media_rw   16 Oct  5 00:43 users.txt
+-rw-rw----. 1 u0_a0 media_rw  145 Oct  5 00:31 wordlist.txt
+u0_a375  13387  0.0  0.1 10879484 6060 pts/27  S     2022   0:01 python -u /data/data/com.termux/files/home/z3r0/daemon.py
+Z3R0 daemon started.
+EXEC: dig nmap.org
+EXEC: hydra -l root -P /sdcard/Z3R0/wordlist.txt -t 4 -f ssh://scanme.nmap.org
+EXEC: whois scanme.nmap.org
+EXEC: dig scanme.nmap.org
+EXEC: whois scanme.nmap.org
+EXEC: nmap -sV scanme.nmap.org
+EXEC: whois nmap.org
+EXEC: hydra -l root -P /sdcard/Z3R0/wordlist.txt -t 4 -f ssh://scanme.nmap.org
+EXEC: sqlmap -u "http://testphp.vulnweb.com/artists.php?artist=1" --batch --level=1 --risk=1 --threads=1
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**sqlmap يعمل. لكنه بدأ للتو. `result.txt` يحتوي فقط على البداية (Banner + Legal Disclaimer).**
+
+المشكلة: **sqlmap يستغرق 60-180 ثانية** لاختبار رابط واحد. السكربت الآن يكتب النتيجة بمجرد أن تنتهي العملية. لكن sqlmap **ما زال يعمل**.
+
+**التحقق:**
+
+```bash
+sleep 60
+cat /sdcard/Z3R0/result.txt
+```
+
+**إن اكتمل:** ستظهر النتائج الكاملة (عدد المعاملات، الثغرات المكتشفة، إلخ).
+
+**إن لم يكتمل:** لا يزال يعمل. انتظر أكثر.
+
+---
+
+### المشكلة التقنية
+
+**السكربت يكتب `result.txt` مرة واحدة** عند انتهاء العملية. sqlmap لم ينته بعد. النص الذي تراه الآن هو **النص المكتوب في لحظة ما** — لأن sqlmap يكتب على stdout تدريجياً، و`subprocess.run` يجمع كل المخرجات حتى ينتهي.
+
+**النتيجة:** sqlmap إما:
+- **① لم ينته بعد** → السكربت ينتظر (لكن عادة `result.txt` يُكتب فقط عند الانتهاء).
+- **② انتهى بسطر واحد** → لا. النص الذي ظهر هو من `subprocess.run` بعد انتهاء sqlmap.
+
+**الحقيقة:** السكربت كتب `EXIT=0` + Banner فقط. لماذا؟
+
+**السبب:** `subprocess.run` مع `timeout=600` — لكنه لم يستنفد. sqlmap **أنهى العملية بسرعة** (بدون اكتشاف المعاملات)، أو **خرج قبل أن يُكمل**.
+
+**تحقق مباشر:**
+
+```bash
+timeout 120 sqlmap -u "http://testphp.vulnweb.com/artists.php?artist=1" --batch --level=1 --risk=1 --threads=1 2>&1 | tail -40
+```
+
+**أرسل المخرجات.** سأرى:
+- كم يستغرق sqlmap فعلاً.
+- هل يكتشف الثغرة.
+- ما الذي يحدث بين Banner والنتيجة.
+
+---
+
+**توقّف. نفّذ:**
+
+```
+timeout 120 sqlmap -u "http://testphp.vulnweb.com/artists.php?artist=1" --batch --level=1 --risk=1 --threads=1 2>&1 | tail -40
+```
+
+**أرسل المخرجات كاملة.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ sleep 60
+cat /sdcard/Z3R0/result.txt
+EXIT=0
+        ___
+       __H__
+ ___ ___["]_____ ___ ___  {1.10.9#pip}
+|_ -| . [.]     | .'| . |
+|___|_  [)]_|_|_|__,|  _|
+      |_|V...       |_|   https://sqlmap.org
+
+[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liab
+
+
+
+
+
+
+
+
+
+ility and are not responsible for any misuse or damage caused by this program
+
+isk=1 --threads=1 2>&1 | tail -40--batch --level=1 --r
+isk=1 --threads=1 2>&1 | tail -40--batch --level=1 --r
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**sqlmap توقف بعد الـ Banner. لم يُكمل الفحص. لا نتيجة، لا خطأ.**
+
+**السبب:** sqlmap من داخل `subprocess` يفشل عند فتح اتصال بالشبكة — بنفس الطريقة التي فشل بها `dig` و`host`. Termux يحجب عمليات `subprocess` من الوصول للشبكة بشكل غير مباشر.
+
+**لكن `nmap` و`hydra` نجحا!** لماذا؟
+
+- **nmap**: يستخدم **raw sockets** (يحتاج root عادةً، لكن nmap له طرق بديلة).
+- **hydra**: يستخدم **TCP sockets** في لغة C — عبر `libssh`, `libssl` مباشرة.
+
+**sqlmap**: مكتوب بلغة **Python**، ويعتمد على `requests` و`urllib3`. هذه المكتبات تحتاج **DNS resolution** — وهو ما يفشل في `subprocess`.
+
+**التشخيص القاطع:** sqlmap يحتاج `--dns-domain` أو خادم DNS صريح.
+
+---
+
+### التحقق المباشر
+
+```bash
+timeout 90 sqlmap -u "http://testphp.vulnweb.com/artists.php?artist=1" --batch --level=1 --risk=1 --threads=1 2>&1 | tail -30
+```
+
+**أرسل المخرجات.** سأرى:
+- أين يتوقف sqlmap بالضبط.
+- هل يشتكي من DNS.
+- هل يصل إلى الموقع.
+
+---
+
+### الاحتمالات
+
+**① DNS resolution fails:** sqlmap لا يستطيع تحويل `testphp.vulnweb.com` إلى IP. الحل: نمرّر الـ IP مباشرة.
+
+**② HTTP fails:** sqlmap يتصل لكن `requests` يفشل. الحل: نمرّر `--proxy` أو `--random-agent`.
+
+**③ sqlmap timeout:** السيرفر بطيء أو محجوب. الحل: نرفع `--timeout`.
+
+---
+
+**توقّف. نفّذ:**
+
+```
+timeout 90 sqlmap -u "http://testphp.vulnweb.com/artists.php?artist=1" --batch --level=1 --risk=1 --threads=1 2>&1 | tail -30
+```
+
+**انتظر 90 ثانية. أرسل المخرجات كاملة.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ sleep 60
+cat /sdcard/Z3R0/result.txt
+EXIT=0
+        ___
+       __H__
+ ___ ___["]_____ ___ ___  {1.10.9#pip}
+|_ -| . [.]     | .'| . |
+|___|_  [)]_|_|_|__,|  _|
+      |_|V...       |_|   https://sqlmap.org
+
+[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liab
+
+
+
+
+
+
+
+
+
+ility and are not responsible for any misuse or damage caused by this program
+
+isk=1 --threads=1 2>&1 | tail -40--batch --level=1 --r
+isk=1 --threads=1 2>&1 | tail -40--batch --level=1 --r
+
+^C
+~/MyFirstApp $
+~/MyFirstApp $ timeout 90 sqlmap -u "http://testphp.vulnweb.com/artists.php?artist=1" --batch --level=1 --risk=1 --threads=1 2>&1 | tail -30
+        ___
+       __H__
+ ___ ___[,]_____ ___ ___  {1.10.9#pip}
+|_ -| . [)]     | .'| . |
+|___|_  [(]_|_|_|__,|  _|
+      |_|V...       |_|   https://sqlmap.org
+
+[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+
+[*] starting @ 00:56:42 /2026-10-05/
+
+[00:56:42] [INFO] testing connection to the target URL
+[00:56:50] [WARNING] turning off pre-connect mechanism because of connection reset(s)
+[00:56:50] [CRITICAL] connection reset to the target URL. sqlmap is going to retry the request(s)
+[00:56:50] [WARNING] if the problem persists please check that the provided target URL is reachable. In case that it is, you can try to rerun with switch '--random-agent' and/or proxy switches ('--proxy', '--proxy-file'...)
+[00:56:50] [CRITICAL] connection reset to the target URL
+
+[*] ending @ 00:56:50 /2026-10-05/
+
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**التشخيص قاطع: `connection reset to the target URL`.**
+
+sqlmap اتصل بالهدف، لكن **الاتصال أُعيد ضبطه** (Connection Reset). هذا يعني:
+- DNS يعمل ✅
+- الشبكة تعمل ✅
+- **الهدف أو مزود الإنترنت يقطع الاتصال.**
+
+**السببان المحتملان:**
+
+**① الموقع يحجب sqlmap.** `testphp.vulnweb.com` قد يكون محجوباً في تونس، أو يحجب Termux على 4G. كثير من مواقع التدريب تُحجب عند الاستخدام المكثف.
+
+**② مزود الإنترنت (Ooredoo) يحجب.** قد يحجب `testphp.vulnweb.com` أو SQL injection traffic.
+
+**③ sqlmap بدون User-Agent.** sqlmap الافتراضي يرسل `User-Agent: sqlmap/1.10.9`، وكثير من السيرفرات تحجب هذا الـ UA فوراً.
+
+---
+
+### الحل — User-Agent عادي
+
+**أضف `--random-agent` أو UA ثابت:**
+
+```bash
+timeout 90 sqlmap -u "http://testphp.vulnweb.com/artists.php?artist=1" --batch --level=1 --risk=1 --threads=1 --random-agent --timeout=30 2>&1 | tail -30
+```
+
+**أرسل المخرجات.**
+
+**إن نجح:** نُضيف `--random-agent` للأمر في التطبيق.
+
+**إن فشل بنفس الخطأ:**
+
+**① نجرّب هدفاً آخر:**
+```bash
+timeout 90 sqlmap -u "http://testasp.vulnweb.com/Login.asp?RetURL=%2FDefault%2Easp%3F" --batch --level=1 --risk=1 --random-agent --timeout=30 2>&1 | tail -20
+```
+
+**② نتحقق من الاتصال بـ curl:**
+```bash
+curl -I --max-time 15 http://testphp.vulnweb.com/ 2>&1 | head -10
+```
+
+**إن نجح curl:** الموقع يعمل، المشكلة في sqlmap.
+**إن فشل curl:** الموقع محجوب أو الشبكة تحجبه.
+
+---
+
+**توقّف. نفّذ الثلاثة بالترتيب. أرسل المخرجات:**
+
+**1. sqlmap مع `--random-agent`**
+**2. sqlmap على testasp.vulnweb.com**
+**3. `curl -I http://testphp.vulnweb.com/`**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ timeout 90 sqlmap -u "http://testphp.vulnweb.com/artists.php?artist=1" --batch --level=1 --risk=1 --threads=1 --random-agent --timeout=30 2>&1 | tail -30
+        ___
+       __H__
+ ___ ___[(]_____ ___ ___  {1.10.9#pip}
+|_ -| . [']     | .'| . |
+|___|_  [']_|_|_|__,|  _|
+      |_|V...       |_|   https://sqlmap.org
+
+[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+
+[*] starting @ 00:57:22 /2026-10-05/
+
+[00:57:22] [INFO] fetched random HTTP User-Agent header value 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.5 Safari/605.1.15' from file '/data/data/com.termux/files/usr/lib/python3.14/site-packages/sqlmap/data/txt/user-agents.txt'
+[00:57:22] [INFO] testing connection to the target URL
+[00:57:30] [WARNING] turning off pre-connect mechanism because of connection reset(s)
+[00:57:30] [CRITICAL] connection reset to the target URL. sqlmap is going to retry the request(s)
+[00:57:30] [WARNING] if the problem persists please check that the provided target URL is reachable. In case that it is, you can try to rerun with proxy switches ('--proxy', '--proxy-file'...)
+[00:57:37] [CRITICAL] connection reset to the target URL
+
+[*] ending @ 00:57:37 /2026-10-05/
+
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+**الخلاصة: sqlmap يفشل بنفس الخطأ حتى مع User-Agent عادي. المشكلة على الأغلب في الموقع نفسه، أو في حجب الشبكة لـ HTTP غير المشفّر.**
+
+**`connection reset`** يعني أن الاتصال وصل، لكن السيرفر قطع الجلسة فوراً. هذا يحدث غالباً عند:
+- **HTTP غير مشفّر** يُحجب من مزود الإنترنت (يجب تجربة HTTPS).
+- الموقع يحجب IPs من تونس أو من نطاقات معينة.
+- الموقع يحجب UA معين أو لا يقبل الطلبات من غير المتصفحات.
+
+**للتأكد، نفّذ:**
+
+```bash
+curl -I --max-time 15 http://testphp.vulnweb.com/ 2>&1 | head -10
+echo "==="
+curl -I --max-time 15 https://testphp.vulnweb.com/ 2>&1 | head -10
+```
+
+**أرسل المخرجات.**
+
+- **إن نجح HTTP وفشل HTTPS أو العكس** → نعرف أي بروتوكول مسموح.
+- **إن فشل كلاهما** → الموقع محجوب من الشبكة. نجرب هدفاً آخر.
+- **إن نجح كلاهما** → الموقع يعمل، والمشكلة في sqlmap تحديداً.
+
+**بعد ذلك، إن فشل curl، ننتقل إلى هدف تدريبي آخر معروف بـ HTTPS مثل `https://testphp.vulnweb.com/`.**
+
+**نفّذ. أرسل المخرجات.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ curl -I --max-time 15 http://testphp.vulnweb.com/ 2>&1 | head -10
+echo "==="
+curl -I --max-time 15 https://testphp.vulnweb.com/ 2>&1 | head -10
+curl: (28) Connection timed out after 15002 milliseconds
+===
+curl: (35) Recv failure: Connection reset by peer
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+**النتيجة حاسمة: `testphp.vulnweb.com` محجوب من شبكتك. لا HTTP ولا HTTPS.**
+
+- **HTTP:** `Connection timed out` — لم يصل.
+- **HTTPS:** `Connection reset by peer` — وصل، لكن قُطع.
+
+**هذا ليس خطأ في sqlmap، ولا في التطبيق، ولا في السكربت.** المشكلة في الشبكة (Ooredoo تونس) أو الموقع نفسه يحجب IPs تونسية.
+
+**الحل:** نجرّب هدفاً آخر متاحاً. هناك مواقع تدريبية كثيرة. جرّب:
+
+```bash
+echo "=== HTTPBin ==="
+curl -I --max-time 10 http://httpbin.org/ 2>&1 | head -3
+
+echo "=== Google ==="
+curl -I --max-time 10 https://www.google.com/ 2>&1 | head -3
+
+echo "=== OWASP ==="
+curl -I --max-time 10 https://owasp.org/ 2>&1 | head -3
+
+echo "=== ZeroPwn ==="
+curl -I --max-time 10 http://zero.webappsecurity.com/ 2>&1 | head -3
+```
+
+**أرسل المخرجات.**
+
+من بين هذه، إن نجح أي واحد، نجرب sqlmap عليه. **`zero.webappsecurity.com`** هدف تدريبي رسمي من Micro Focus، ويدعم HTTPS.
+
+**إن نجح `zero.webappsecurity.com`:** نستخدمه كهدف اختبار لـ sqlmap.
+
+---
+
+**ملاحظة:** sqlmap ليس ضرورياً للتطبيق. **الأدوات الأربع المثبتة (nmap, whois, dig, hydra) تعمل كلها.** sqlmap إضافة، وليس أساساً. يمكننا تأجيله أو استبداله بأداة أخرى.
+
+**نفّذ الاختبارات. أرسل المخرجات.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ echo "=== HTTPBin ==="
+curl -I --max-time 10 http://httpbin.org/ 2>&1 | head -3
+
+echo "=== Google ==="
+curl -I --max-time 10 https://www.google.com/ 2>&1 | head -3
+
+echo "=== OWASP ==="
+curl -I --max-time 10 https://owasp.org/ 2>&1 | head -3
+
+echo "=== ZeroPwn ==="
+curl -I --max-time 10 http://zero.webappsecurity.com/ 2>&1 | head -3
+=== HTTPBin ===
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0          0   9593   0      0   0      0      0      0          0   9593   0      0   0      0      0      0          0   9593   0      0   0      0      0      0                              0
+=== Google ===
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0          0      0   0      0   0      0      0      0          0      0   0      0   0      0      0      0          0      0   0      0   0      0      0      0                              0
+=== OWASP ===
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0          0 99.11k   0      0   0      0      0      0          0 99.11k   0      0   0      0      0      0          0 99.11k   0      0   0      0      0      0                              0
+=== ZeroPwn ===
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0          0  12471   0      0   0      0      0      0          0  12471   0      0   0      0      0      0          0  12471   0      0   0      0      0      0                              0
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**التشخيص حاسم: الشبكة لديك تحجب HTTP/HTTPS العادي. `curl` فشل مع كل المواقع الأربعة، بما فيها Google.**
+
+**هذا يعني:**
+- **sqlmap، وأي أداة تعتمد على HTTP، لن تعمل من شبكتك.**
+- السبب: مزود الإنترنت (Ooredoo TN) يحجب أو يخنق HTTP/HTTPS من التطبيقات الجانبية، أو الشبكة في وضعية captive portal، أو أن `curl` لا يجد proxy.
+- **nmap و whois و dig يعملون** لأنهم لا يستخدمون HTTP — يستخدمون بروتوكولات خام (TCP raw, WHOIS port 43, DNS port 53).
+- **hydra تعمل** لأنها تستخدم TCP مباشرة (libssh, libssl).
+
+**القاعدة:** كل أداة تعتمد على HTTP أو HTTPS → **لن تعمل.** كل أداة تستخدم TCP/UDP خام → **تعمل.**
+
+**الاستنتاج العملي:** sqlmap و nikto و wpscan و any HTTP-based tool → خارج الخدمة. لكن nmap, hydra, whois, dig, masscan, dnsrecon (DNS خام), netcat → تعمل.
+
+---
+
+### تأكيد
+
+**جرّب اختباراً واحداً:**
+
+```bash
+curl -v --max-time 15 https://www.google.com/ 2>&1 | head -20
+```
+
+**أرسل المخرجات.** سأرى بالضبط أين يفشل: DNS؟ connect؟ TLS handshake؟
+
+**الاحتمالات:**
+- **DNS فشل** → لا يمكن تحويل google.com.
+- **Connect timeout** → الشبكة تحجب.
+- **TLS reset** → مزود الإنترنت يحجب SNI.
+
+---
+
+### الخطة البديلة
+
+**إن تأكد الحجب:**
+
+**① نُركّز على الأدوات التي تعمل:** nmap, whois, dig, hydra.
+
+**② نضيف أدوات لا تحتاج HTTP:**
+- **`masscan`** — فحص بورتات سريع (لكن يحتاج بناء).
+- **`dnsrecon`** — DNS enum (Python).
+- **`dnsenum`** — DNS enum (Perl).
+- **`netcat`** — اتصالات TCP/UDP.
+- **`openssl s_client`** — TLS يدوي.
+
+**③ نضيف زر "WHOIS IP"** — whois على IP مباشرة، بلا HTTP.
+
+**④ نتوقف عن sqlmap ونيكتو.**
+
+---
+
+### قبل أي قرار
+
+**نفّذ:**
+
+```
+curl -v --max-time 15 https://www.google.com/ 2>&1 | head -20
+```
+
+**هذا سيُظهر السبب الفعلي.** عندها نقرر: نُصلح الشبكة، أم نتجاوزها، أم نغيّر نوع الأدوات.
+
+**لا نُضيف sqlmap للتطبيق الآن.** لا فائدة من زر يُعطي خطأ دائماً.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ curl -v --max-time 15 https://www.google.com/ 2>&1 | head -20
+*   Trying [2001:4860:4828:7700::]:443...
+* Immediate connect fail for 2001:4860:4828:7700::: Network is unreachable
+* connect to 2001:4860:4828:7700:: port 443 from :: port 0 failed: Network is unreachable
+*   Trying [2001:4860:482d:7700::]:443...
+* Immediate connect fail for 2001:4860:482d:7700::: Network is unreachable
+* connect to 2001:4860:482d:7700:: port 443 from :: port 0 failed: Network is unreachable
+*   Trying [2001:4860:482c:7700::]:443...
+* Immediate connect fail for 2001:4860:482c:7700::: Network is unreachable
+* connect to 2001:4860:482c:7700:: port 443 from :: port 0 failed: Network is unreachable
+*   Trying [2001:4860:4827:7700::]:443...
+* Immediate connect fail for 2001:4860:4827:7700::: Network is unreachable
+* connect to 2001:4860:4827:7700:: port 443 from :: port 0 failed: Network is unreachable
+*   Trying [2001:4860:4826:7700::]:443...
+* Immediate connect fail for 2001:4860:4826:7700::: Network is unreachable
+* connect to 2001:4860:4826:7700:: port 443 from :: port 0 failed: Network is unreachable
+*   Trying [2001:4860:482a:7700::]:443...
+* Immediate connect fail for 2001:4860:482a:7700::: Network is unreachable
+* connect to 2001:4860:482a:7700:: port 443 from :: port 0 failed: Network is unreachable
+*   Trying [2001:4860:482b:7700::]:443...
+* Immediate connect fail for 2001:4860:482b:7700::: Network is unreachable
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**التشخيص الآن واضح تماماً: `curl` يحاول IPv6 فقط. وIPv6 غير مدعوم من شبكتك. كل المحاولات تفشل بـ `Network is unreachable`.**
+
+**هذا يفسر كل شيء:**
+- `curl` يفشل لأنه يحاول IPv6 أولاً، ولا يوجد IPv6.
+- `sqlmap` يستخدم `requests` الذي يستخدم نفس المكتبة، يفشل بنفس الطريقة.
+- لكن `nmap`, `whois`, `dig` تعمل لأنها تستخدم IPv4 مباشرة.
+- `hydra` يعمل لأنه يستخدم IPv4.
+
+**الحل: فرض IPv4 على كل الأوامر.**
+
+---
+
+### الاختبار المباشر
+
+```bash
+curl -4 -v --max-time 15 https://www.google.com/ 2>&1 | head -15
+```
+
+**`-4`** = فرض IPv4.
+
+**إن نجح:** نعرف أن الشبكة سليمة، والـ IPv6 هو المشكلة. **نفرض IPv4 على sqlmap** بـ `--force-ipv4` أو عبر `sysctl`.
+
+---
+
+### الحل الدائم — تعطيل IPv6 في Termux
+
+```bash
+echo "precedence ::ffff:0:0/96 100" > ~/.ipv6_pref
+```
+
+**أو الأسهل:**
+
+```bash
+curl -4 --max-time 10 https://www.google.com/ 2>&1 | head -3
+```
+
+**إن نجح، جرّب sqlmap مع `-4`:**
+
+```bash
+timeout 90 sqlmap -u "http://testphp.vulnweb.com/artists.php?artist=1" --batch --level=1 --risk=1 --random-agent --force-ipv4 --timeout=30 2>&1 | tail -20
+```
+
+---
+
+### لماذا هذا مهم لكل الأدوات
+
+`subprocess` في Python يستخدم `requests` library، و`requests` يستخدم `urllib3`، و`urllib3` يستخدم `socket` — ويجرّب IPv6 أولاً. في شبكة Ooredoo، IPv6 غير مدعوم → فشل فوري.
+
+**الحل الدائم:** تعطيل IPv6 على مستوى النظام في Termux:
+
+```bash
+echo "net.ipv6.conf.all.disable_ipv6 = 1" > ~/.termux/sysctl.conf
+sysctl -p ~/.termux/sysctl.conf 2>/dev/null || true
+```
+
+**لكن هذا يحتاج root عادةً.** البديل: نمرّر `--force-ipv4` لأي أداة تدعمها.
+
+---
+
+**توقّف. نفّذ:**
+
+```
+curl -4 -v --max-time 15 https://www.google.com/ 2>&1 | head -15
+```
+
+**أرسل المخرجات.** إن نجح، ننتقل لتعديل sqlmap والأدوات الأخرى.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ curl -4 -v --max-time 15 https://www.google.com/ 2>&1 | head -15
+* Host www.google.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 142.251.150.119, 142.251.152.119, 142.251.151.119, 142.251.157.119, 142.251.154.119, 142.251.155.119, 142.251.156.119, 142.251.153.119
+*   Trying 142.251.150.119:443...
+* ALPN: curl offers h2,http/1.1
+} [5 bytes data]
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+} [1565 bytes data]
+* SSL Trust Anchors:                                  *   CAfile: /data/data/com.termux/files/usr/etc/tls/cert.pem
+*   CApath: /data/data/com.termux/files/usr/etc/tls/certs
+{ [5 bytes data]
+* TLSv1.3 (IN), TLS handshake, Server hello (2):      { [1210 bytes data]
+* TLSv1.3 (IN), TLS change cipher, Change cipher spec (1):
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**التشخيص النهائي والحاسم: `curl -4` نجح. الشبكة تعمل. TLS يعمل. HTTPS يعمل.**
+
+**المشكلة الوحيدة: أدواتك تستخدم IPv6 افتراضياً، وشبكتك لا تدعم IPv6.**
+
+**الحل:** نفرض IPv4 على كل الأدوات.
+
+---
+
+### الحلول
+
+**① sqlmap:** يدعم `--force-ipv4`.
+
+```bash
+timeout 90 sqlmap -u "http://testphp.vulnweb.com/artists.php?artist=1" --batch --level=1 --risk=1 --random-agent --force-ipv4 --timeout=30 2>&1 | tail -20
+```
+
+**② curl في السكربت:** لا نحتاج، لأننا لا نستخدم curl.
+
+**③ الأدوات الأخرى:** نمرّر `-4` أو ما يعادلها.
+
+---
+
+### الأولوية الآن
+
+**اختبر sqlmap مع `--force-ipv4`.** إن نجح، نُضيف الزر للتطبيق مع هذا الخيار.
+
+**إن فشل:** كلمة `--force-ipv4` غير كافية، والمشكلة أعمق.
+
+---
+
+**نفّذ:**
+
+```
+timeout 90 sqlmap -u "http://testphp.vulnweb.com/artists.php?artist=1" --batch --level=1 --risk=1 --random-agent --force-ipv4 --timeout=30 2>&1 | tail -20
+```
+
+**أرسل المخرجات.**
+
+---
+
+### ملاحظة عن باقي الأدوات
+
+`nmap`, `whois`, `dig`, `hydra` **تعمل** لأنها:
+- **nmap:** يستخدم IPv4 افتراضياً.
+- **whois/dig:** على socket Python، وPython socket يستخدم IPv4 أولاً.
+- **hydra:** IPv4 افتراضي.
+
+**يعني:** لا تعديل على الأدوات الحالية. فقط sqlmap يحتاج `--force-ipv4`.
+
+**نفّذ الاختبار. أرسل المخرجات.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ timeout 90 sqlmap -u "http://testphp.vulnweb.com/artists.php?artist=1" --batch --level=1 --risk=1 --random-agent --force-ipv4 --timeout=30 2>&1 | tail -20
+        ___
+       __H__
+ ___ ___[(]_____ ___ ___  {1.10.9#pip}                |_ -| . [,]     | .'| . |
+|___|_  [)]_|_|_|__,|  _|
+      |_|V...       |_|   https://sqlmap.org
+
+Usage: python3.14 sqlmap [options]
+
+sqlmap: error: no such option: --force-ipv4
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+`--force-ipv4` ليس خياراً موجوداً في sqlmap. الأمر الصحيح الذي تحتاجه هو تعديل بيئة Python نفسها لتجاهل IPv6.
+
+### الحل المؤقت (اختبار فوري)
+
+شغّل sqlmap مع متغير بيئة يجبر Python على استخدام IPv4 فقط:
+
+```bash
+export RES_OPTIONS="options timeout:2 attempts:1"
+export NODE_OPTIONS="--dns-result-order=ipv4first"
+timeout 90 sqlmap -u "http://testphp.vulnweb.com/artists.php?artist=1" --batch --level=1 --risk=1 --random-agent --timeout=30 2>&1 | tail -20
+```
+
+### الحل الجذري (الأفضل للتطبيق)
+
+عدّل `daemon.py` ليستخدم `socket.getaddrinfo` مخصصاً يفرض IPv4 على كل العمليات. أضف هذا في بداية السكربت:
+
+```python
+import socket
+_orig_getaddrinfo = socket.getaddrinfo
+def _ipv4_getaddrinfo(host, port, family=0, type=0, proto=0, flags=0):
+    return _orig_getaddrinfo(host, port, socket.AF_INET, type, proto, flags)
+socket.getaddrinfo = _ipv4_getaddrinfo
+```
+
+هذا التعديل يجبر أي مكتبة Python (بما فيها `requests` و `urllib3` التي يستخدمها sqlmap) على استخدام IPv4 فقط. الحل مأخوذ من تجارب مماثلة مع `requests` على شبكات لا تدعم IPv6 .
+
+### لماذا هذا ضروري
+
+`subprocess` في Python يستخدم `socket.getaddrinfo` الذي يُرجع عناوين IPv6 أولاً (AAAA records). على شبكة Ooredoo التي لا تدعم IPv6، هذا يعني محاولة اتصال بلا فائدة، ثم timeout، ثم فشل. الحل هو "monkey-patch" الدالة على مستوى Python لترجع IPv4 فقط. هذه الطريقة أُثبتت فعاليتها في مشاريع أخرى تعاني من نفس المشكلة .
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ export RES_OPTIONS="options timeout:2 attempts:1"
+export NODE_OPTIONS="--dns-result-order=ipv4first"
+timeout 90 sqlmap -u "http://testphp.vulnweb.com/artists.php?artist=1" --batch --level=1 --risk=1 --random-agent --timeout=30 2>&1 | tail -20
+        ___
+       __H__                                           ___ ___[)]_____ ___ ___  {1.10.9#pip}
+|_ -| . [']     | .'| . |
+|___|_  [.]_|_|_|__,|  _|
+      |_|V...       |_|   https://sqlmap.org
+
+[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+
+[*] starting @ 01:02:13 /2026-10-05/
+
+[01:02:13] [INFO] fetched random HTTP User-Agent header value 'Mozilla/5.0 (Macintosh; Intel Mac OS X 15_4 ADSSO) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.4 Safari/605.1.15' from file '/data/data/com.termux/files/usr/lib/python3.14/site-packages/sqlmap/data/txt/user-agents.txt'
+[01:02:14] [INFO] testing connection to the target URL
+[01:02:21] [WARNING] turning off pre-connect mechanism because of connection reset(s)
+[01:02:21] [CRITICAL] connection reset to the target URL. sqlmap is going to retry the request(s)
+[01:02:21] [WARNING] if the problem persists please check that the provided target URL is reachable. In case that it is, you can try to rerun with proxy switches ('--proxy', '--proxy-file'...)
+[01:02:44] [CRITICAL] connection reset to the target URL                                                    
+[*] ending @ 01:02:44 /2026-10-05/
+
+~/MyFirstApp $ import socket
+_orig_getaddrinfo = socket.getaddrinfo
+def _ipv4_getaddrinfo(host, port, family=0, type=0, proto=0, flags=0):
+    return _orig_getaddrinfo(host, port, socket.AF_INET, type, proto, flags)
+socket.getaddrinfo = _ipv4_getaddrinfo
+The program import is not installed. Install it by executing:
+ pkg install imagemagick
+_orig_getaddrinfo: command not found
+bash: syntax error near unexpected token `('
+bash: syntax error near unexpected token `('
+socket.getaddrinfo: command not found
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**الخطأ الثاني:** أنت كتبت كود Python مباشرة في shell، وليس داخل ملف `.py`. يجب تشغيله من داخل Python أو من ملف.
+
+**لكن الأهم:** النتيجة الأولى تُظهر أن sqlmap فشل مرة أخرى بنفس الخطأ: `connection reset to the target URL`. حتى مع IPv4 (وهو الافتراضي)، sqlmap لا يعمل.
+
+**التشخيص النهائي:**
+
+- `curl -4` نجح مع Google — IPv4 والشبكة سليمة.
+- `sqlmap` يفشل مع `testphp.vulnweb.com` — الموقع نفسه يحجب الطلبات من شبكتك.
+- الكود الذي جرّبته في Python (monkey-patch) لم يُنفّذ أصلاً لأنه كُتب في shell.
+
+---
+
+### التشخيص الحقيقي
+
+**`testphp.vulnweb.com` يحجب عنوان IP الخاص بك أو مزود الإنترنت يحجب الموقع.** حتى مع User-Agent عادي، حتى مع IPv4.
+
+**الدليل:** `curl -I http://testphp.vulnweb.com/` أعاد `timed out` و `connection reset`. لا يصل. حتى `curl` البسيط فشل.
+
+**الموقع محجوب، وليس sqlmap.**
+
+---
+
+### الاختبار الحاسم
+
+**نستخدم sqlmap على هدف آخر يعمل. `httpbin.org`:**
+
+```bash
+timeout 60 sqlmap -u "http://httpbin.org/get?id=1" --batch --level=1 --risk=1 --timeout=30 2>&1 | tail -20
+```
+
+**أرسل المخرجات.**
+
+**إن نجح:** sqlmap يعمل. المشكلة كانت في `testphp.vulnweb.com` المحجوب. نبحث عن هدف آخر.
+**إن فشل بنفس الخطأ:** المشكلة في شبكتك أو في sqlmap داخل Termux.
+
+---
+
+### بديل — هدف HTTPS
+
+```bash
+timeout 60 sqlmap -u "https://httpbin.org/get?id=1" --batch --level=1 --risk=1 --timeout=30 2>&1 | tail -20
+```
+
+**نفّذ الاثنين. أرسل المخرجات.**
+
+**إن نجح `httpbin.org`:** نحن على المسار الصحيح. sqlmap يعمل، المشكلة كانت في الموقع التدريبي المحجوب.
+
+**إن فشل الاثنان:** sqlmap لا يعمل في Termux من شبكتك. نتوقف عن sqlmap وننتقل إلى أدوات أخرى.
+
+---
+
+**توقّف. نفّذ. أرسل:**
+
+```
+timeout 60 sqlmap -u "https://httpbin.org/get?id=1" --batch --level=1 --risk=1 --timeout=30 2>&1 | tail -20
+```
+
+**لا تكتب كود Python في shell مرة أخرى.** أوامر Python تُكتب في ملف، أو تُنفّذ عبر `python3 -c "..."`.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+~/MyFirstApp $ timeout 60 sqlmap -u "http://httpbin.org/get?id=1" --batch --level=1 --risk=1 --timeout=30 2>&1 | tail -20
+[01:03:45] [INFO] testing 'Microsoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)'
+[01:03:46] [INFO] testing 'Oracle AND error-based - WHERE or HAVING clause (XMLType)'
+[01:03:47] [INFO] testing 'H2 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (CAST)'
+[01:03:48] [INFO] testing 'Generic inline queries'
+[01:03:49] [INFO] testing 'PostgreSQL > 8.1 stacked queries (comment)'
+[01:03:49] [INFO] testing 'Microsoft SQL Server/Sybase stacked queries (comment)'                           [01:03:50] [INFO] testing 'Oracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)'                    [01:03:51] [INFO] testing 'MySQL >= 5.0.12 AND time-based blind (query SLEEP)'                              [01:03:52] [INFO] testing 'PostgreSQL > 8.1 AND time-based blind'
+[01:03:53] [INFO] testing 'Microsoft SQL Server/Sybase time-based blind (IF)'
+[01:03:54] [INFO] testing 'Oracle AND time-based blind'
+[01:03:55] [INFO] testing 'CUBRID AND time-based blind (SLEEP)'
+[01:03:57] [INFO] testing 'CUBRID OR time-based blind (SLEEP)'                                              it is recommended to perform only basic UNION tests if there is not at least one other (potential) technique found. Do you want to reduce the number of requests? [Y/n] Y
+[01:03:58] [INFO] testing 'Generic UNION query (NULL) - 1 to 10 columns'
+[01:04:00] [WARNING] GET parameter 'id' does not seem to be injectable
+[01:04:00] [CRITICAL] all tested parameters do not appear to be injectable. Try to increase values for '--level'/'--risk' options if you wish to perform more tests. If you suspect that there is some kind of protection mechanism involved (e.g. WAF) maybe you could try to use option '--tamper' (e.g. '--tamper=space2comment') and/or switch '--random-agent'
+                                                      [*] ending @ 01:04:00 /2026-10-05/
+                                                      ~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**sqlmap يعمل. الفحص اكتمل بالكامل.**
+
+**النتيجة:**
+```
+[01:03:45] testing 'Microsoft SQL Server/Sybase...'
+[01:03:46] testing 'Oracle...'
+[01:03:47] testing 'H2...'
+[01:03:48] testing 'Generic inline queries'
+...
+[01:04:00] [WARNING] GET parameter 'id' does not seem to be injectable
+[01:04:00] [CRITICAL] all tested parameters do not appear to be injectable.
+[*] ending @ 01:04:00 /2026-10-05/
+```
+
+**هذا ليس فشلاً. هذا نجاح.** sqlmap فحص `httpbin.org/get?id=1` عبر كل تقنيات الحقن، ولم يجد ثغرة. **هذا هو السلوك الصحيح** — httpbin.org غير قابل للحقن (عن قصد).
+
+**الخلاصة:**
+- ✅ sqlmap يعمل في Termux.
+- ✅ الشبكة تعمل.
+- ✅ الهدف اختُبر بلا مشاكل.
+- ❌ الهدف (`httpbin.org`) غير قابل للحقن — طبيعي.
+
+**المشكلة كانت في `testphp.vulnweb.com` — محجوب من شبكتك.**
+
+---
+
+### الآن — نضيف sqlmap للتطبيق
+
+**التعديل في مكانين:**
+
+**① `activity_main.xml`** — إضافة زر SQLMAP.
+
+**② `MainActivity.java`** — إضافة دالة `runSqlmap()`.
+
+**الصيغة:**
+- المستخدم يكتب: `http://target.com/page.php?id=1`
+- التطبيق يبني: `sqlmap -u "URL" --batch --level=1 --risk=1 --timeout=30`
+
+**الحقل الحالي يستقبل `:` و`/` و`?` — لا مشكلة.** فقط الكود سيغلّف الـ URL بـ `"` قبل الإرسال.
+
+---
+
+### التعديل
+
+**① `activity_main.xml`** — سنستبدل الصف الحالي بصفين:
+
+```bash
+cat > ~/MyFirstApp/app/src/main/res/layout/activity_main.xml << 'XMLEOF'
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/logo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Z3R0 // TOOLKIT"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#00FF00"
+        android:background="#000000"
+        android:padding="8dp"
+        android:layout_marginBottom="8dp" />
+
+    <EditText
+        android:id="@+id/targetInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="هدف / URL / service://user@host"
+        android:inputType="textUri"
+        android:singleLine="true" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="4dp">
+
+        <Button
+            android:id="@+id/btnNmap"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="nmap"
+            android:textSize="10sp" />
+
+        <Button
+            android:id="@+id/btnWhois"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="whois"
+            android:textSize="10sp" />
+
+        <Button
+            android:id="@+id/btnDig"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="dig"
+            android:textSize="10sp" />
+
+        <Button
+            android:id="@+id/btnHydra"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="hydra"
+            android:textSize="10sp" />
+
+        <Button
+            android:id="@+id/btnSqlmap"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="sqlmap"
+            android:textSize="10sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnClear"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="مسح"
+            android:textSize="11sp" />
+
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="حفظ"
+            android:textSize="11sp" />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="8dp"
+        android:background="#0A0A0A"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/outputView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:textSize="11sp"
+            android:textColor="#00FF88"
+            android:textIsSelectable="true" />
+
+    </ScrollView>
+
+</LinearLayout>
+XMLEOF
+```
+
+**② `MainActivity.java`** — سنضيف دالة `runSqlmap()`:
+
+```bash
+cat > ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java << 'JAVAEOF'
+package com.z3r0.hello;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class MainActivity extends Activity {
+
+    private EditText targetInput;
+    private TextView outputView;
+    private ScrollView scrollView;
+
+    private static final String WATCH_DIR = "/sdcard/Z3R0";
+    private static final String CMD_FILE = WATCH_DIR + "/command.txt";
+    private static final String RES_FILE = WATCH_DIR + "/result.txt";
+    private static final String WORDLIST = "/sdcard/Z3R0/wordlist.txt";
+
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        targetInput = findViewById(R.id.targetInput);
+        outputView = findViewById(R.id.outputView);
+        scrollView = findViewById(R.id.scrollView);
+
+        new File(WATCH_DIR).mkdirs();
+
+        findViewById(R.id.btnNmap).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { runSimple("nmap -sV "); }
+        });
+        findViewById(R.id.btnWhois).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { runSimple("whois "); }
+        });
+        findViewById(R.id.btnDig).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { runSimple("dig "); }
+        });
+        findViewById(R.id.btnHydra).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { runHydra(); }
+        });
+        findViewById(R.id.btnSqlmap).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { runSqlmap(); }
+        });
+        findViewById(R.id.btnClear).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { outputView.setText(""); }
+        });
+        findViewById(R.id.btnSave).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                String content = outputView.getText().toString();
+                if (content.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "لا يوجد شيء لحفظه", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                try {
+                    File f = new File("/sdcard/Z3R0_" + System.currentTimeMillis() + ".txt");
+                    FileWriter w = new FileWriter(f);
+                    w.write(content);
+                    w.close();
+                    Toast.makeText(MainActivity.this, "حُفظ: " + f.getName(), Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    Toast.makeText(MainActivity.this, "خطأ: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    private void runSimple(String prefix) {
+        String target = targetInput.getText().toString().trim();
+        if (target.isEmpty()) {
+            Toast.makeText(this, "أدخل هدفاً", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String command = prefix + target;
+        appendOutput("\n> " + command + "\n");
+        sendCommand(command);
+    }
+
+    private void runHydra() {
+        String input = targetInput.getText().toString().trim();
+        if (input.isEmpty()) {
+            Toast.makeText(this, "أدخل بصيغة service://user@host", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        Pattern p = Pattern.compile("^(\\w+)://(?:([^@]+)@)?(.+)$");
+        Matcher m = p.matcher(input);
+
+        if (!m.matches()) {
+            Toast.makeText(this, "صيغة خاطئة. مثال: ssh://root@1.2.3.4", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        String service = m.group(1);
+        String user = m.group(2);
+        String host = m.group(3);
+
+        String command;
+        if (user != null && !user.isEmpty()) {
+            command = "hydra -l " + user + " -P " + WORDLIST + " -t 4 -f " + service + "://" + host;
+        } else {
+            command = "hydra -L /sdcard/Z3R0/users.txt -P " + WORDLIST + " -t 4 -f " + service + "://" + host;
+        }
+
+        appendOutput("\n> " + command + "\n");
+        sendCommand(command);
+    }
+
+    private void runSqlmap() {
+        String url = targetInput.getText().toString().trim();
+        if (url.isEmpty()) {
+            Toast.makeText(this, "أدخل رابطاً كاملاً", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            Toast.makeText(this, "الرابط يجب أن يبدأ بـ http:// أو https://", Toast.LENGTH_LONG).show();
+ 

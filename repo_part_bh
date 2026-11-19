@@ -1,0 +1,2296 @@
+�ت حماية.** لا يمكن المسح بالخطأ.
+
+---
+
+**◈ هل هذا كافٍ؟**
+
+أخبرني:
+- هل الزر الأصلي لم يعمل؟
+- هل تريد الزر بلون أحمر واضح؟
+- هل تريد إضافة زر "مسح" داخل نافذة المعلومات أيضاً؟
+
+**إذا كل شيء جاهز، قل "ابدأ database osint".**
+
+⟦ CLEAR ALL HARDENED. THREE-LAYER CONFIRMATION. AWAITING GO FOR MAIN APP. ⟧
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | USER ===
+أعطيني الكود كامل لكي أمسح و ألسف
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+الملف كامل. جاهز للنسخ. مسح. لصق. انتهى.
+
+**الخطوة 1 — امسح القديم:**
+```bash
+rm -f ~/storage/shared/database_dimo.html
+```
+
+**الخطوة 2 — أنشئ الجديد:**
+```bash
+nano ~/storage/shared/database_dimo.html
+```
+
+**الخطوة 3 — الصق هذا كاملاً:**
+
+```html
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>database dimo</title>
+<script src="https://unpkg.com/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'Segoe UI', Tahoma, sans-serif; background: #0a0e14; color: #e6e6e6; }
+  #app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
+  #topbar { display: flex; gap: 6px; padding: 8px; background: #111820; border-bottom: 1px solid #1e2a38; overflow-x: auto; flex-shrink: 0; align-items: center; }
+  #topbar .brand { color: #4dd0e1; font-weight: bold; font-size: 13px; padding: 0 8px; white-space: nowrap; border-left: 1px solid #2a3a4d; margin-left: 4px; }
+  #topbar button { background: #1a2532; color: #e6e6e6; border: 1px solid #2a3a4d; padding: 8px 12px; border-radius: 6px; font-size: 13px; cursor: pointer; white-space: nowrap; }
+  #topbar button:active { background: #2a3a4d; }
+  #topbar button.primary { background: #0d6e4f; border-color: #0d6e4f; }
+  #topbar button.danger { background: #8b1e1e; border-color: #8b1e1e; color: white; }
+  #cy { flex: 1; background: #0a0e14; }
+  #status { padding: 4px 10px; font-size: 11px; color: #6a7a8a; background: #111820; border-top: 1px solid #1e2a38; flex-shrink: 0; display: flex; justify-content: space-between; }
+  .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 100; padding: 12px; }
+  .modal.active { display: flex; }
+  .modal-content { background: #111820; border: 1px solid #2a3a4d; border-radius: 12px; padding: 16px; width: 100%; max-width: 480px; max-height: 92vh; overflow-y: auto; }
+  .modal-content h2 { font-size: 16px; margin-bottom: 12px; color: #4dd0e1; }
+  .modal-content label { display: block; font-size: 12px; color: #8a9aaa; margin-bottom: 4px; margin-top: 10px; }
+  .modal-content input, .modal-content select, .modal-content textarea { width: 100%; background: #0a0e14; border: 1px solid #2a3a4d; color: #e6e6e6; padding: 10px; border-radius: 6px; font-size: 14px; font-family: inherit; }
+  .modal-content input:focus, .modal-content select:focus, .modal-content textarea:focus { outline: none; border-color: #4dd0e1; }
+  .modal-content textarea { resize: vertical; min-height: 50px; }
+  .field-row { display: flex; gap: 8px; }
+  .field-row > div { flex: 1; }
+  .modal-actions { display: flex; gap: 8px; margin-top: 16px; position: sticky; bottom: 0; background: #111820; padding-top: 8px; }
+  .modal-actions button { flex: 1; padding: 10px; border-radius: 6px; border: none; font-size: 14px; cursor: pointer; }
+  .modal-actions .save { background: #0d6e4f; color: white; }
+  .modal-actions .cancel { background: #2a3a4d; color: #e6e6e6; }
+  .modal-actions .delete { background: #8b1e1e; color: white; }
+  #searchBar { position: absolute; top: 60px; right: 8px; left: 8px; z-index: 50; display: none; }
+  #searchBar.active { display: block; }
+  #searchBar input { width: 100%; background: #111820; border: 1px solid #4dd0e1; color: #e6e6e6; padding: 10px 14px; border-radius: 8px; font-size: 14px; }
+  .avatar-preview { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #2a3a4d; display: block; margin: 8px auto; }
+  .avatar-placeholder { width: 80px; height: 80px; border-radius: 50%; background: #1a2532; border: 2px dashed #2a3a4d; display: flex; align-items: center; justify-content: center; color: #4a5a6a; font-size: 24px; margin: 8px auto; cursor: pointer; }
+  .file-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .file-chip { background: #1a2532; border: 1px solid #2a3a4d; padding: 4px 8px; border-radius: 4px; font-size: 11px; color: #8a9aaa; }
+  .file-chip button { background: none; border: none; color: #e57373; cursor: pointer; margin-right: 4px; }
+  .info-block { background: #0a0e14; border: 1px solid #1e2a38; border-radius: 6px; padding: 8px; margin: 6px 0; font-size: 13px; }
+  .info-block b { color: #4dd0e1; }
+  .profile-pic { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #4dd0e1; display: block; margin: 0 auto 12px; }
+  .tabs { display: flex; gap: 4px; margin-bottom: 12px; border-bottom: 1px solid #1e2a38; overflow-x: auto; }
+  .tabs button { background: none; border: none; color: #6a7a8a; padding: 8px 12px; font-size: 13px; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; }
+  .tabs button.active { color: #4dd0e1; border-bottom-color: #4dd0e1; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .node-count { position: absolute; top: 60px; left: 8px; background: rgba(17,24,32,0.9); padding: 4px 8px; border-radius: 4px; font-size: 11px; color: #6a7a8a; pointer-events: none; display: none; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="topbar">
+    <button onclick="openAddEntity()" class="primary">+ كيان</button>
+    <button onclick="openAddRelation()">+ علاقة</button>
+    <button onclick="toggleSearch()">🔍</button>
+    <button onclick="runLayout()">تخطيط</button>
+    <button onclick="exportJSON()">تصدير</button>
+    <button onclick="document.getElementById('importFile').click()">استيراد</button>
+    <button onclick="clearAll()" class="danger">🗑 مسح الكل</button>
+    <span class="brand">database dimo</span>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+  </div>
+  <div id="cy"></div>
+  <div class="node-count" id="nodeCount"></div>
+  <div id="searchBar"><input type="text" id="searchInput" placeholder="ابحث عن كيان..." oninput="doSearch()"></div>
+  <div id="status">
+    <span id="statusText">الكيانات: 0 | العلاقات: 0</span>
+    <span id="statusMsg">جاهز</span>
+  </div>
+</div>
+
+<!-- Entity Modal -->
+<div class="modal" id="entityModal">
+  <div class="modal-content">
+    <h2 id="entityModalTitle">إضافة كيان</h2>
+    <div class="tabs">
+      <button class="active" onclick="switchTab(event,'basic')">أساسي</button>
+      <button onclick="switchTab(event,'contact')">تواصل</button>
+      <button onclick="switchTab(event,'accounts')">حسابات</button>
+      <button onclick="switchTab(event,'location')">مكان</button>
+      <button onclick="switchTab(event,'media')">صور/فيديو</button>
+      <button onclick="switchTab(event,'secrets')">حساس</button>
+      <button onclick="switchTab(event,'notes')">ملاحظات</button>
+    </div>
+
+    <div class="tab-content active" id="tab-basic">
+      <label>الاسم الكامل</label>
+      <input type="text" id="f_name" placeholder="مثال: أحمد بن علي">
+      <label>الاسم المستعار / الكنية</label>
+      <input type="text" id="f_alias" placeholder="مثال: أبو محمد">
+      <label>النوع</label>
+      <select id="f_type">
+        <option value="person">شخص</option>
+        <option value="email">بريد إلكتروني</option>
+        <option value="phone">هاتف</option>
+        <option value="username">اسم مستخدم</option>
+        <option value="domain">موقع / نطاق</option>
+        <option value="ip">عنوان IP</option>
+        <option value="org">منظمة</option>
+        <option value="location">مكان</option>
+        <option value="other">أخرى</option>
+      </select>
+      <label>الجنس</label>
+      <select id="f_gender">
+        <option value="">—</option>
+        <option value="male">ذكر</option>
+        <option value="female">أنثى</option>
+      </select>
+      <div class="field-row">
+        <div><label>تاريخ الميلاد</label><input type="date" id="f_birthdate"></div>
+        <div><label>الجنسية</label><input type="text" id="f_nationality" placeholder="تونسي"></div>
+      </div>
+      <label>الحالة</label>
+      <select id="f_status">
+        <option value="active">نشط</option>
+        <option value="inactive">غير نشط</option>
+        <option value="target">هدف</option>
+        <option value="unknown">غير معروف</option>
+      </select>
+    </div>
+
+    <div class="tab-content" id="tab-contact">
+      <label>البريد الإلكتروني</label>
+      <input type="email" id="f_email" placeholder="example@mail.com">
+      <label>البريد الثانوي</label>
+      <input type="email" id="f_email2" placeholder="backup@mail.com">
+      <label>رقم الهاتف</label>
+      <input type="tel" id="f_phone" placeholder="+216 XX XXX XXX">
+      <label>رقم الهاتف 2</label>
+      <input type="tel" id="f_phone2" placeholder="+216 XX XXX XXX">
+      <label>واتساب</label>
+      <input type="tel" id="f_whatsapp" placeholder="+216 XX XXX XXX">
+      <label>تيليجرام</label>
+      <input type="text" id="f_telegram" placeholder="@username">
+      <label>سيغنال</label>
+      <input type="tel" id="f_signal" placeholder="+216 XX XXX XXX">
+    </div>
+
+    <div class="tab-content" id="tab-accounts">
+      <label>فيسبوك</label>
+      <input type="url" id="f_facebook" placeholder="https://facebook.com/...">
+      <label>إنستغرام</label>
+      <input type="url" id="f_instagram" placeholder="https://instagram.com/...">
+      <label>تويتر / X</label>
+      <input type="url" id="f_twitter" placeholder="https://x.com/...">
+      <label>تيك توك</label>
+      <input type="url" id="f_tiktok" placeholder="https://tiktok.com/@...">
+      <label>يوتيوب</label>
+      <input type="url" id="f_youtube" placeholder="https://youtube.com/@...">
+      <label>لينكد إن</label>
+      <input type="url" id="f_linkedin" placeholder="https://linkedin.com/in/...">
+      <label>سناب شات</label>
+      <input type="text" id="f_snapchat" placeholder="username">
+      <label>حسابات أخرى</label>
+      <textarea id="f_other_accounts" rows="2" placeholder="أي حسابات إضافية..."></textarea>
+    </div>
+
+    <div class="tab-content" id="tab-location">
+      <label>العنوان الحالي</label>
+      <input type="text" id="f_address" placeholder="الشارع، المدينة، البلد">
+      <label>العنوان السابق</label>
+      <input type="text" id="f_address2" placeholder="عنوان قديم">
+      <label>مكان العمل</label>
+      <input type="text" id="f_workplace" placeholder="اسم الشركة / المؤسسة">
+      <label>مكان الدراسة</label>
+      <input type="text" id="f_school" placeholder="المدرسة / الجامعة">
+      <label>إحداثيات GPS</label>
+      <input type="text" id="f_gps" placeholder="36.8065, 10.1815">
+      <label>ملاحظات الموقع</label>
+      <textarea id="f_location_notes" rows="2" placeholder="تفاصيل إضافية عن الأماكن..."></textarea>
+    </div>
+
+    <div class="tab-content" id="tab-media">
+      <label>صورة شخصية</label>
+      <div id="avatarContainer" onclick="document.getElementById('avatarInput').click()">
+        <div class="avatar-placeholder" id="avatarPlaceholder">📷</div>
+        <img id="avatarPreview" class="avatar-preview" style="display:none">
+      </div>
+      <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="handleAvatar(event)">
+      <button onclick="removeAvatar()" style="background:#2a3a4d;color:#e6e6e6;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;width:100%;margin-top:4px;">إزالة الصورة</button>
+
+      <label>صور إضافية</label>
+      <input type="file" id="imagesInput" accept="image/*" multiple style="display:none" onchange="handleImages(event)">
+      <button onclick="document.getElementById('imagesInput').click()" style="background:#1a2532;color:#e6e6e6;border:1px solid #2a3a4d;padding:8px;border-radius:6px;font-size:13px;cursor:pointer;width:100%;">+ إضافة صور</button>
+      <div class="file-list" id="imagesList"></div>
+
+      <label>فيديوهات (روابط)</label>
+      <textarea id="f_videos" rows="2" placeholder="https://youtube.com/..."></textarea>
+
+      <label>ملفات أخرى (روابط)</label>
+      <textarea id="f_files" rows="2" placeholder="روابط ملفات PDF، Google Drive..."></textarea>
+    </div>
+
+    <div class="tab-content" id="tab-secrets">
+      <label>كلمات المرور / بيانات حساسة</label>
+      <textarea id="f_passwords" rows="4" placeholder="⚠️ تُخزن محلياً فقط في متصفحك."></textarea>
+      <label>ملاحظات حساسة</label>
+      <textarea id="f_sensitive" rows="3" placeholder="أي معلومات سرية..."></textarea>
+      <label style="color:#e57373; margin-top:12px;">تنبيه: هذه البيانات تُخزن في IndexedDB على هاتفك فقط.</label>
+    </div>
+
+    <div class="tab-content" id="tab-notes">
+      <label>ملاحظات عامة</label>
+      <textarea id="f_notes" rows="5" placeholder="أي تفاصيل إضافية..."></textarea>
+      <label>وسوم (كلمات مفتاحية)</label>
+      <input type="text" id="f_tags" placeholder="مثال: تاجر، مشبوه، عائلة">
+    </div>
+
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeModal('entityModal')">إلغاء</button>
+      <button class="delete" id="entityDeleteBtn" style="display:none" onclick="deleteCurrentEntity()">حذف</button>
+      <button class="save" onclick="saveEntity()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Relation Modal -->
+<div class="modal" id="relationModal">
+  <div class="modal-content">
+    <h2 id="relationModalTitle">إضافة علاقة</h2>
+    <label>من (المصدر)</label>
+    <select id="relFrom"></select>
+    <label>إلى (الهدف)</label>
+    <select id="relTo"></select>
+    <label>نوع العلاقة</label>
+    <input type="text" id="relType" placeholder="مثال: يملك، يعرف، يزور" list="relTypes">
+    <datalist id="relTypes">
+      <option value="يملك"><option value="يعرف"><option value="يزور">
+      <option value="مرتبط بـ"><option value="يعمل في"><option value="صديق">
+      <option value="عائلة"><option value="يسكن في"><option value="يتصل بـ">
+      <option value="يراسل"><option value="يتابع">
+    </datalist>
+    <label>ملاحظة (اختياري)</label>
+    <input type="text" id="relNote" placeholder="تفاصيل إضافية عن العلاقة...">
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeModal('relationModal')">إلغاء</button>
+      <button class="delete" id="relationDeleteBtn" style="display:none" onclick="deleteCurrentRelation()">حذف</button>
+      <button class="save" onclick="saveRelation()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Info Modal -->
+<div class="modal" id="infoModal">
+  <div class="modal-content">
+    <h2 id="infoTitle">معلومات</h2>
+    <div id="infoBody"></div>
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeModal('infoModal')">إغلاق</button>
+      <button class="save" onclick="editCurrentEntity()">تعديل</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ DB ============
+let db;
+const DB_NAME = 'database_dimo';
+const DB_VERSION = 1;
+
+function initDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = e => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains('entities')) d.createObjectStore('entities', { keyPath: 'id' });
+      if (!d.objectStoreNames.contains('relations')) d.createObjectStore('relations', { keyPath: 'id' });
+    };
+    req.onsuccess = e => { db = e.target.result; resolve(); };
+    req.onerror = e => reject(e.target.error);
+  });
+}
+function dbGetAll(store) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction(store, 'readonly');
+    const r = tx.objectStore(store).getAll();
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+function dbGet(store, id) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction(store, 'readonly');
+    const r = tx.objectStore(store).get(id);
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+function dbPut(store, obj) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction(store, 'readwrite');
+    tx.objectStore(store).put(obj);
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+  });
+}
+function dbDelete(store, id) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction(store, 'readwrite');
+    tx.objectStore(store).delete(id);
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+  });
+}
+function dbClear(store) {
+  return new Promise((res, rej) => {
+    const tx = db.transaction(store, 'readwrite');
+    tx.objectStore(store).clear();
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+  });
+}
+
+// ============ STATE ============
+let cy;
+let editingEntityId = null;
+let currentEntityId = null;
+let editingRelationId = null;
+let currentAvatar = null;
+let currentImages = [];
+
+const TYPE_COLORS = {
+  person: '#4dd0e1', email: '#ff8a65', phone: '#ba68c8',
+  username: '#ffd54f', domain: '#81c784', ip: '#e57373',
+  org: '#64b5f6', location: '#a1887f', other: '#90a4ae'
+};
+const TYPE_LABELS = {
+  person: 'شخص', email: 'بريد', phone: 'هاتف', username: 'مستخدم',
+  domain: 'موقع', ip: 'IP', org: 'منظمة', location: 'مكان', other: 'أخرى'
+};
+
+// ============ INIT ============
+async function init() {
+  await initDB();
+  initCy();
+  await loadGraph();
+  updateStatus();
+}
+
+function initCy() {
+  cy = cytoscape({
+    container: document.getElementById('cy'),
+    style: [
+      {
+        selector: 'node',
+        style: {
+          'background-color': ele => TYPE_COLORS[ele.data('type')] || TYPE_COLORS.other,
+          'background-image': ele => ele.data('avatar') ? ele.data('avatar') : 'none',
+          'background-fit': 'cover',
+          'background-image-opacity': 1,
+          'label': 'data(label)',
+          'color': '#e6e6e6',
+          'font-size': '11px',
+          'text-valign': 'bottom',
+          'text-margin-y': 4,
+          'text-outline-color': '#0a0e14',
+          'text-outline-width': 2,
+          'width': ele => ele.data('avatar') ? 44 : (24 + Math.min(ele.degree() * 3, 28)),
+          'height': ele => ele.data('avatar') ? 44 : (24 + Math.min(ele.degree() * 3, 28)),
+          'border-width': 2,
+          'border-color': '#0a0e14'
+        }
+      },
+      { selector: 'node[avatar]', style: { 'border-width': 3, 'border-color': '#4dd0e1' } },
+      { selector: 'node:selected', style: { 'border-width': 4, 'border-color': '#ffffff' } },
+      {
+        selector: 'edge',
+        style: {
+          'width': 1.5, 'line-color': '#2a3a4d', 'target-arrow-color': '#2a3a4d',
+          'target-arrow-shape': 'triangle', 'curve-style': 'bezier',
+          'label': 'data(label)', 'font-size': '9px', 'color': '#6a7a8a',
+          'text-outline-color': '#0a0e14', 'text-outline-width': 2, 'text-rotation': 'autorotate'
+        }
+      },
+      { selector: 'edge:selected', style: { 'line-color': '#4dd0e1', 'target-arrow-color': '#4dd0e1', 'width': 3 } },
+      { selector: '.highlighted', style: { 'background-color': '#ffffff', 'border-color': '#4dd0e1', 'border-width': 3 } },
+      { selector: '.faded', style: { 'opacity': 0.15 } }
+    ],
+    layout: { name: 'cose', animate: false, padding: 30 },
+    wheelSensitivity: 0.3
+  });
+
+  cy.on('tap', 'node', e => { showNodeInfo(e.target.id()); });
+  cy.on('tap', 'edge', e => { openEditRelation(e.target.id()); });
+}
+
+async function loadGraph() {
+  const entities = await dbGetAll('entities');
+  const relations = await dbGetAll('relations');
+  cy.elements().remove();
+  entities.forEach(e => {
+    const d = { id: e.id, label: e.name || 'بدون اسم', type: e.type || 'other' };
+    if (e.avatar) d.avatar = e.avatar;
+    cy.add({ data: d });
+  });
+  relations.forEach(r => {
+    if (cy.getElementById(r.from).length && cy.getElementById(r.to).length) {
+      cy.add({ data: { id: r.id, source: r.from, target: r.to, label: r.type } });
+    }
+  });
+  if (cy.nodes().length > 0) runLayout();
+  updateStatus();
+}
+
+function runLayout() {
+  cy.layout({ name: 'cose', animate: true, animationDuration: 600, padding: 40 }).run();
+}
+function updateStatus() {
+  const n = cy.nodes().length;
+  const e = cy.edges().length;
+  document.getElementById('statusText').textContent = `الكيانات: ${n} | العلاقات: ${e}`;
+  const nc = document.getElementById('nodeCount');
+  if (n > 30) { nc.textContent = `${n} كيان`; nc.style.display = 'block'; }
+  else nc.style.display = 'none';
+}
+function setMsg(m) {
+  document.getElementById('statusMsg').textContent = m;
+  setTimeout(() => document.getElementById('statusMsg').textContent = 'جاهز', 2500);
+}
+
+// ============ TABS ============
+function switchTab(evt, name) {
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  evt.target.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+function switchTabSilent(name) {
+  document.querySelectorAll('.tabs button').forEach(b => {
+    b.classList.remove('active');
+    const oc = b.getAttribute('onclick') || '';
+    if (oc.indexOf("'" + name + "'") !== -1) b.classList.add('active');
+  });
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+// ============ ENTITY ============
+function openAddEntity() {
+  editingEntityId = null;
+  currentAvatar = null;
+  currentImages = [];
+  document.getElementById('entityModalTitle').textContent = 'إضافة كيان';
+  clearEntityForm();
+  document.getElementById('entityDeleteBtn').style.display = 'none';
+  switchTabSilent('basic');
+  document.getElementById('entityModal').classList.add('active');
+}
+
+function clearEntityForm() {
+  const fields = ['name','alias','gender','birthdate','nationality','email','email2','phone','phone2','whatsapp','telegram','signal','facebook','instagram','twitter','tiktok','youtube','linkedin','snapchat','other_accounts','address','address2','workplace','school','gps','location_notes','videos','files','passwords','sensitive','notes','tags'];
+  fields.forEach(f => { const el = document.getElementById('f_' + f); if (el) el.value = ''; });
+  document.getElementById('f_type').value = 'person';
+  document.getElementById('f_status').value = 'active';
+  document.getElementById('avatarPreview').style.display = 'none';
+  document.getElementById('avatarPlaceholder').style.display = 'flex';
+  document.getElementById('imagesList').innerHTML = '';
+}
+
+function setField(id, val) { const el = document.getElementById('f_' + id); if (el) el.value = val || ''; }
+function getField(id) { const el = document.getElementById('f_' + id); return el ? el.value.trim() : ''; }
+
+async function saveEntity() {
+  const name = getField('name') || getField('alias') || 'بدون اسم';
+  const data = {
+    id: editingEntityId || ('e_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7)),
+    name,
+    alias: getField('alias'),
+    type: document.getElementById('f_type').value,
+    gender: getField('gender'),
+    birthdate: getField('birthdate'),
+    nationality: getField('nationality'),
+    status: document.getElementById('f_status').value,
+    email: getField('email'), email2: getField('email2'),
+    phone: getField('phone'), phone2: getField('phone2'),
+    whatsapp: getField('whatsapp'), telegram: getField('telegram'), signal: getField('signal'),
+    facebook: getField('facebook'), instagram: getField('instagram'),
+    twitter: getField('twitter'), tiktok: getField('tiktok'),
+    youtube: getField('youtube'), linkedin: getField('linkedin'),
+    snapchat: getField('snapchat'), other_accounts: getField('other_accounts'),
+    address: getField('address'), address2: getField('address2'),
+    workplace: getField('workplace'), school: getField('school'),
+    gps: getField('gps'), location_notes: getField('location_notes'),
+    videos: getField('videos'), files: getField('files'),
+    passwords: getField('passwords'), sensitive: getField('sensitive'),
+    notes: getField('notes'), tags: getField('tags'),
+    avatar: currentAvatar, images: currentImages,
+    updated: Date.now()
+  };
+
+  await dbPut('entities', data);
+
+  const node = cy.getElementById(data.id);
+  if (node.length) {
+    node.data({ label: data.name, type: data.type, avatar: data.avatar || null });
+  } else {
+    const nd = { id: data.id, label: data.name, type: data.type };
+    if (data.avatar) nd.avatar = data.avatar;
+    cy.add({ data: nd });
+    runLayout();
+  }
+
+  closeModal('entityModal');
+  updateStatus();
+  setMsg(editingEntityId ? 'تم التعديل' : 'تمت الإضافة');
+}
+
+async function showNodeInfo(id) {
+  const node = cy.getElementById(id);
+  if (!node.length) return;
+  currentEntityId = id;
+  const d = await dbGet('entities', id);
+  if (!d) return;
+
+  const neighbors = node.neighborhood('node');
+  let html = '';
+
+  if (d.avatar) html += `<img src="${d.avatar}" class="profile-pic">`;
+  html += `<h3 style="text-align:center;color:#4dd0e1;margin-bottom:4px;">${esc(d.name)}</h3>`;
+  if (d.alias) html += `<p style="text-align:center;color:#8a9aaa;font-size:12px;">${esc(d.alias)}</p>`;
+  html += `<p style="text-align:center;font-size:12px;color:#6a7a8a;">${TYPE_LABELS[d.type] || d.type} ${d.status ? '• ' + d.status : ''}</p>`;
+
+  const addBlock = (title, content) => { if (content) html += `<div class="info-block"><b>${title}:</b> ${content}</div>`; };
+
+  addBlock('البريد', esc(d.email));
+  addBlock('البريد 2', esc(d.email2));
+  addBlock('الهاتف', esc(d.phone));
+  addBlock('الهاتف 2', esc(d.phone2));
+  addBlock('واتساب', esc(d.whatsapp));
+  addBlock('تيليجرام', esc(d.telegram));
+  addBlock('سيغنال', esc(d.signal));
+
+  const social = [];
+  if (d.facebook) social.push(`<a href="${esc(d.facebook)}" target="_blank" style="color:#4dd0e1;">فيسبوك</a>`);
+  if (d.instagram) social.push(`<a href="${esc(d.instagram)}" target="_blank" style="color:#4dd0e1;">إنستغرام</a>`);
+  if (d.twitter) social.push(`<a href="${esc(d.twitter)}" target="_blank" style="color:#4dd0e1;">X</a>`);
+  if (d.tiktok) social.push(`<a href="${esc(d.tiktok)}" target="_blank" style="color:#4dd0e1;">تيك توك</a>`);
+  if (d.youtube) social.push(`<a href="${esc(d.youtube)}" target="_blank" style="color:#4dd0e1;">يوتيوب</a>`);
+  if (d.linkedin) social.push(`<a href="${esc(d.linkedin)}" target="_blank" style="color:#4dd0e1;">لينكد إن</a>`);
+  if (social.length) addBlock('حسابات', social.join(' • '));
+  addBlock('حسابات أخرى', esc(d.other_accounts));
+
+  addBlock('العنوان', esc(d.address));
+  addBlock('العنوان السابق', esc(d.address2));
+  addBlock('مكان العمل', esc(d.workplace));
+  addBlock('مكان الدراسة', esc(d.school));
+  if (d.gps) addBlock('GPS', `<a href="https://maps.google.com/?q=${esc(d.gps)}" target="_blank" style="color:#4dd0e1;">${esc(d.gps)}</a>`);
+  addBlock('ملاحظات الموقع', esc(d.location_notes));
+
+  if (d.images && d.images.length) {
+    html += `<div class="info-block"><b>صور (${d.images.length}):</b><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;">`;
+    d.images.forEach(img => { html += `<img src="${img}" style="width:60px;height:60px;object-fit:cover;border-radius:6px;">`; });
+    html += `</div></div>`;
+  }
+  if (d.videos) addBlock('فيديوهات', esc(d.videos).replace(/\n/g, '<br>'));
+
+  if (d.passwords) html += `<div class="info-block" style="border-color:#8b1e1e;"><b style="color:#e57373;">🔒 كلمات مرور:</b><br><span style="font-family:monospace;font-size:12px;">${esc(d.passwords).replace(/\n/g, '<br>')}</span></div>`;
+  if (d.sensitive) html += `<div class="info-block" style="border-color:#8b1e1e;"><b style="color:#e57373;">🔒 حساس:</b><br>${esc(d.sensitive).replace(/\n/g, '<br>')}</div>`;
+
+  if (d.notes) addBlock('ملاحظات', esc(d.notes).replace(/\n/g, '<br>'));
+  addBlock('وسوم', esc(d.tags));
+
+  if (neighbors.length > 0) {
+    html += `<div class="info-block"><b>مرتبط بـ (${neighbors.length}):</b><ul style="padding-right:18px;margin-top:4px;">`;
+    neighbors.forEach(n => {
+      const edge = node.edgesTo(n);
+      const rel = edge.length ? edge.data('label') : '';
+      html += `<li>${esc(n.data('label'))} ${rel ? '— ' + esc(rel) : ''}</li>`;
+    });
+    html += `</ul></div>`;
+  }
+
+  document.getElementById('infoTitle').textContent = d.name;
+  document.getElementById('infoBody').innerHTML = html;
+  document.getElementById('infoModal').classList.add('active');
+}
+
+async function editCurrentEntity() {
+  const d = await dbGet('entities', currentEntityId);
+  if (!d) return;
+  editingEntityId = currentEntityId;
+  currentAvatar = d.avatar || null;
+  currentImages = d.images || [];
+  document.getElementById('entityModalTitle').textContent = 'تعديل كيان';
+
+  setField('name', d.name); setField('alias', d.alias);
+  document.getElementById('f_type').value = d.type || 'person';
+  setField('gender', d.gender); setField('birthdate', d.birthdate);
+  setField('nationality', d.nationality);
+  document.getElementById('f_status').value = d.status || 'active';
+  setField('email', d.email); setField('email2', d.email2);
+  setField('phone', d.phone); setField('phone2', d.phone2);
+  setField('whatsapp', d.whatsapp); setField('telegram', d.telegram); setField('signal', d.signal);
+  setField('facebook', d.facebook); setField('instagram', d.instagram);
+  setField('twitter', d.twitter); setField('tiktok', d.tiktok);
+  setField('youtube', d.youtube); setField('linkedin', d.linkedin);
+  setField('snapchat', d.snapchat); setField('other_accounts', d.other_accounts);
+  setField('address', d.address); setField('address2', d.address2);
+  setField('workplace', d.workplace); setField('school', d.school);
+  setField('gps', d.gps); setField('location_notes', d.location_notes);
+  setField('videos', d.videos); setField('files', d.files);
+  setField('passwords', d.passwords); setField('sensitive', d.sensitive);
+  setField('notes', d.notes); setField('tags', d.tags);
+
+  if (currentAvatar) {
+    document.getElementById('avatarPreview').src = currentAvatar;
+    document.getElementById('avatarPreview').style.display = 'block';
+    document.getElementById('avatarPlaceholder').style.display = 'none';
+  } else {
+    document.getElementById('avatarPreview').style.display = 'none';
+    document.getElementById('avatarPlaceholder').style.display = 'flex';
+  }
+
+  renderImagesList();
+  document.getElementById('entityDeleteBtn').style.display = 'block';
+  closeModal('infoModal');
+  switchTabSilent('basic');
+  document.getElementById('entityModal').classList.add('active');
+}
+
+async function deleteCurrentEntity() {
+  if (!editingEntityId) return;
+  if (!confirm('حذف الكيان وكل علاقاته؟')) return;
+  cy.getElementById(editingEntityId).remove();
+  await dbDelete('entities', editingEntityId);
+  const relations = await dbGetAll('relations');
+  for (const r of relations) {
+    if (r.from === editingEntityId || r.to === editingEntityId) await dbDelete('relations', r.id);
+  }
+  closeModal('entityModal');
+  updateStatus();
+  setMsg('تم الحذف');
+}
+
+// ============ MEDIA ============
+function handleAvatar(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    currentAvatar = ev.target.result;
+    document.getElementById('avatarPreview').src = currentAvatar;
+    document.getElementById('avatarPreview').style.display = 'block';
+    document.getElementById('avatarPlaceholder').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+function removeAvatar() {
+  currentAvatar = null;
+  document.getElementById('avatarPreview').style.display = 'none';
+  document.getElementById('avatarPlaceholder').style.display = 'flex';
+}
+function handleImages(e) {
+  const files = Array.from(e.target.files);
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => { currentImages.push(ev.target.result); renderImagesList(); };
+    reader.readAsDataURL(file);
+  });
+  e.target.value = '';
+}
+function renderImagesList() {
+  const list = document.getElementById('imagesList');
+  list.innerHTML = '';
+  currentImages.forEach((img, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'file-chip';
+    chip.innerHTML = `<img src="${img}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;vertical-align:middle;"> <button onclick="removeImage(${i})">✕</button>`;
+    list.appendChild(chip);
+  });
+}
+function removeImage(i) { currentImages.splice(i, 1); renderImagesList(); }
+
+// ============ RELATION ============
+function openAddRelation() {
+  const nodes = cy.nodes();
+  if (nodes.length < 2) { setMsg('تحتاج كيانين على الأقل'); return; }
+  editingRelationId = null;
+  document.getElementById('relationModalTitle').textContent = 'إضافة علاقة';
+  document.getElementById('relationDeleteBtn').style.display = 'none';
+  const fromSel = document.getElementById('relFrom');
+  const toSel = document.getElementById('relTo');
+  fromSel.innerHTML = ''; toSel.innerHTML = '';
+  nodes.forEach(n => {
+    fromSel.add(new Option(n.data('label'), n.id()));
+    toSel.add(new Option(n.data('label'), n.id()));
+  });
+  if (nodes.length >= 2) toSel.selectedIndex = 1;
+  document.getElementById('relType').value = '';
+  document.getElementById('relNote').value = '';
+  document.getElementById('relationModal').classList.add('active');
+}
+
+async function openEditRelation(relId) {
+  const edge = cy.getElementById(relId);
+  if (!edge.length) return;
+  editingRelationId = relId;
+  const relData = await dbGet('relations', relId);
+
+  document.getElementById('relationModalTitle').textContent = 'تعديل العلاقة';
+  document.getElementById('relationDeleteBtn').style.display = 'block';
+
+  const fromSel = document.getElementById('relFrom');
+  const toSel = document.getElementById('relTo');
+  fromSel.innerHTML = ''; toSel.innerHTML = '';
+  cy.nodes().forEach(n => {
+    const o1 = new Option(n.data('label'), n.id());
+    const o2 = new Option(n.data('label'), n.id());
+    if (n.id() === edge.data('source')) o1.selected = true;
+    if (n.id() === edge.data('target')) o2.selected = true;
+    fromSel.add(o1); toSel.add(o2);
+  });
+
+  document.getElementById('relType').value = edge.data('label') || '';
+  document.getElementById('relNote').value = relData ? (relData.note || '') : '';
+  document.getElementById('relationModal').classList.add('active');
+}
+
+async function saveRelation() {
+  const from = document.getElementById('relFrom').value;
+  const to = document.getElementById('relTo').value;
+  const type = document.getElementById('relType').value.trim() || 'مرتبط بـ';
+  const note = document.getElementById('relNote').value.trim();
+
+  if (from === to) { setMsg('لا يمكن ربط كيان بنفسه'); return; }
+
+  if (editingRelationId) {
+    const edge = cy.getElementById(editingRelationId);
+    if (edge.length) edge.data({ source: from, target: to, label: type });
+    await dbPut('relations', { id: editingRelationId, from, to, type, note });
+    setMsg('تم تعديل العلاقة');
+  } else {
+    const existing = cy.edges().filter(e => e.data('source') === from && e.data('target') === to);
+    if (existing.length > 0) { setMsg('العلاقة موجودة'); return; }
+    const id = 'r_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+    cy.add({ data: { id, source: from, target: to, label: type } });
+    await dbPut('relations', { id, from, to, type, note });
+    setMsg('تمت إضافة العلاقة');
+    runLayout();
+  }
+  closeModal('relationModal');
+  updateStatus();
+}
+
+async function deleteCurrentRelation() {
+  if (!editingRelationId) return;
+  if (!confirm('حذف هذه العلاقة؟')) return;
+  cy.getElementById(editingRelationId).remove();
+  await dbDelete('relations', editingRelationId);
+  closeModal('relationModal');
+  updateStatus();
+  setMsg('تم حذف العلاقة');
+}
+
+// ============ SEARCH ============
+function toggleSearch() {
+  const bar = document.getElementById('searchBar');
+  bar.classList.toggle('active');
+  if (bar.classList.contains('active')) document.getElementById('searchInput').focus();
+  else clearSearch();
+}
+function doSearch() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  if (!q) { clearSearch(); return; }
+  cy.elements().removeClass('highlighted faded');
+  const matches = cy.nodes().filter(n => n.data('label').toLowerCase().includes(q));
+  if (matches.length === 0) return;
+  cy.elements().addClass('faded');
+  matches.closedNeighborhood().removeClass('faded').addClass('highlighted');
+}
+function clearSearch() {
+  cy.elements().removeClass('highlighted faded');
+  document.getElementById('searchInput').value = '';
+}
+
+// ============ CLEAR ALL ============
+async function clearAll() {
+  const entities = await dbGetAll('entities');
+  const relations = await dbGetAll('relations');
+  const count = entities.length + relations.length;
+  if (count === 0) { setMsg('لا يوجد شيء لمسحه'); return; }
+  const confirm1 = confirm(`⚠️ تحذير\n\nسيتم مسح:\n• ${entities.length} كيان\n• ${relations.length} علاقة\n\nلا يمكن التراجع.\n\nهل أنت متأكد؟`);
+  if (!confirm1) { setMsg('تم الإلغاء'); return; }
+  const typed = prompt('اكتب كلمة "مسح" بالضبط لتأكيد الحذف النهائي:');
+  if (typed !== 'مسح') { setMsg('تم الإلغاء - الكلمة غير مطابقة'); return; }
+  await dbClear('entities');
+  await dbClear('relations');
+  cy.elements().remove();
+  updateStatus();
+  setMsg('تم مسح كل شيء');
+}
+
+// ============ IMPORT/EXPORT ============
+async function exportJSON() {
+  const entities = await dbGetAll('entities');
+  const relations = await dbGetAll('relations');
+  const data = { version: 2, app: 'database dimo', exported: new Date().toISOString(), entities, relations };
+  const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `database_dimo_${Date.now()}.json`; a.click();
+  URL.revokeObjectURL(url);
+  setMsg('تم التصدير');
+}
+async function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  try {
+    const data = JSON.parse(await file.text());
+    if (!data.entities || !data.relations) throw new Error('صيغة غير صحيحة');
+    if (!confirm(`استيراد ${data.entities.length} كيان و ${data.relations.length} علاقة؟`)) return;
+    for (const e of data.entities) await dbPut('entities', e);
+    for (const r of data.relations) await dbPut('relations', r);
+    await loadGraph();
+    setMsg('تم الاستيراد');
+  } catch (err) { setMsg('خطأ: ' + err.message); }
+  event.target.value = '';
+}
+
+// ============ HELPERS ============
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+function esc(s) { return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+document.querySelectorAll('.modal').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('active'); });
+});
+
+init().catch(err => {
+  document.body.innerHTML = '<div style="padding:20px;color:#e57373;font-family:monospace;">خطأ: ' + err.message + '</div>';
+});
+</script>
+</body>
+</html>
+```
+
+---
+
+**◈ ما تغير**
+
+1. **زر "🗑 مسح الكل"** في الشريط العلوي، بلون **أحمر** واضح.
+2. عند الضغط:
+   - نافذة أولى: **تأكيد** مع عرض عدد الكيانات والعلاقات.
+   - نافذة ثانية: **اكتب كلمة "مسح"** بالضبط.
+3. إذا كتبت أي شيء آخر → إلغاء تلقائي.
+4. بعد المسح → كل شيء يختفي. قاعدة البيانات نظيفة.
+
+---
+
+**◈ الخطوة التالية**
+
+جرّبه. تأكد أن الزر الأحمر يعمل.
+
+**ثم قل "ابدأ database osint"** لأبني التطبيق الحقيقي.
+
+⟦ FULL FILE DELIVERED. HARDENED CLEAR. AWAITING GO. ⟧
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | USER ===
+الأنا ميديا النسخة الأخيرة من database dimo تفي بالغرض دعن نبدء في تطبيق database osint 
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+`database dimo` — مُقفل. مُثبّت. مرجع.
+الآن: **database osint**. التطبيق الحقيقي.
+
+---
+
+**◈ المعمارية**
+
+```
+~/database_osint/
+├── app.py                 ← Flask + SQLite + REST API
+├── requirements.txt       ← Flask فقط (خفيف)
+├── start.sh               ← سكريبت التشغيل
+├── osint.db               ← قاعدة البيانات (تُنشأ تلقائياً)
+├── data/
+│   ├── avatars/           ← الصور الشخصية
+│   ├── images/            ← الصور الإضافية
+│   ├── videos/            ← الفيديوهات
+│   └── files/             ← أي ملفات
+└── static/
+    └── index.html         ← الواجهة (Cytoscape + JS)
+```
+
+**الفوائد عن `database dimo`:**
+- **SQLite:** يتحمل ملايين السجلات. لا حدود.
+- **نظام ملفات حقيقي:** الصور تُحفظ كملفات. لا Base64. لا ثقل.
+- **REST API:** الواجهة تفصل عن البيانات.
+- **بحث فوري:** SQLite FTS.
+- **نسخ احتياطي:** نسخ مجلد واحد.
+- **يعمل 24/7** عبر Termux:Boot.
+
+---
+
+**◈ الخطوات الكاملة**
+
+**الخطوة 1 — أنشئ المجلدات:**
+```bash
+mkdir -p ~/database_osint/data/avatars
+mkdir -p ~/database_osint/data/images
+mkdir -p ~/database_osint/data/videos
+mkdir -p ~/database_osint/data/files
+mkdir -p ~/database_osint/static
+cd ~/database_osint
+```
+
+**الخطوة 2 — ثبّت Flask:**
+```bash
+pip install flask
+```
+إذا فشل مع Python 3.14، جرّب:
+```bash
+pip install flask --break-system-packages
+```
+
+**الخطوة 3 — أنشئ `app.py`:**
+```bash
+nano ~/database_osint/app.py
+```
+الصق هذا:
+
+```python
+#!/usr/bin/env python3
+# database osint - Backend
+import os, json, sqlite3, uuid, time
+from flask import Flask, request, jsonify, send_from_directory, send_file
+from werkzeug.utils import secure_filename
+
+BASE = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE, 'osint.db')
+DATA_DIR = os.path.join(BASE, 'data')
+STATIC_DIR = os.path.join(BASE, 'static')
+
+app = Flask(__name__, static_folder=STATIC_DIR, static_url_path='')
+app.config['MAX_CONTENT_LENGTH'] = 200 * 1024 * 1024  # 200 MB
+
+def db():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def init_db():
+    conn = db()
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS entities (
+        id TEXT PRIMARY KEY,
+        name TEXT,
+        alias TEXT,
+        type TEXT,
+        gender TEXT,
+        birthdate TEXT,
+        nationality TEXT,
+        status TEXT,
+        email TEXT, email2 TEXT,
+        phone TEXT, phone2 TEXT,
+        whatsapp TEXT, telegram TEXT, signal TEXT,
+        facebook TEXT, instagram TEXT, twitter TEXT,
+        tiktok TEXT, youtube TEXT, linkedin TEXT,
+        snapchat TEXT, other_accounts TEXT,
+        address TEXT, address2 TEXT,
+        workplace TEXT, school TEXT,
+        gps TEXT, location_notes TEXT,
+        videos TEXT, files TEXT,
+        passwords TEXT, sensitive TEXT,
+        notes TEXT, tags TEXT,
+        avatar TEXT,
+        images TEXT,
+        created REAL,
+        updated REAL
+    )''')
+    c.execute('''CREATE TABLE IF NOT EXISTS relations (
+        id TEXT PRIMARY KEY,
+        source TEXT,
+        target TEXT,
+        type TEXT,
+        note TEXT,
+        created REAL
+    )''')
+    c.execute('CREATE INDEX IF NOT EXISTS idx_rel_source ON relations(source)')
+    c.execute('CREATE INDEX IF NOT EXISTS idx_rel_target ON relations(target)')
+    c.execute('CREATE INDEX IF NOT EXISTS idx_ent_name ON entities(name)')
+    conn.commit()
+    conn.close()
+
+# ====== STATIC ======
+@app.route('/')
+def index():
+    return send_from_directory(STATIC_DIR, 'index.html')
+
+@app.route('/data/<path:filepath>')
+def serve_data(filepath):
+    return send_from_directory(DATA_DIR, filepath)
+
+# ====== ENTITIES ======
+@app.route('/api/entities', methods=['GET'])
+def list_entities():
+    conn = db()
+    rows = conn.execute('SELECT * FROM entities ORDER BY updated DESC').fetchall()
+    conn.close()
+    out = []
+    for r in rows:
+        d = dict(r)
+        if d.get('images'):
+            try: d['images'] = json.loads(d['images'])
+            except: d['images'] = []
+        else: d['images'] = []
+        out.append(d)
+    return jsonify(out)
+
+@app.route('/api/entities/<eid>', methods=['GET'])
+def get_entity(eid):
+    conn = db()
+    r = conn.execute('SELECT * FROM entities WHERE id=?', (eid,)).fetchone()
+    conn.close()
+    if not r: return jsonify({'error': 'not found'}), 404
+    d = dict(r)
+    if d.get('images'):
+        try: d['images'] = json.loads(d['images'])
+        except: d['images'] = []
+    else: d['images'] = []
+    return jsonify(d)
+
+@app.route('/api/entities', methods=['POST'])
+def create_entity():
+    data = request.get_json(force=True)
+    eid = data.get('id') or ('e_' + uuid.uuid4().hex[:12])
+    now = time.time()
+    fields = ['name','alias','type','gender','birthdate','nationality','status',
+              'email','email2','phone','phone2','whatsapp','telegram','signal',
+              'facebook','instagram','twitter','tiktok','youtube','linkedin',
+              'snapchat','other_accounts','address','address2','workplace','school',
+              'gps','location_notes','videos','files','passwords','sensitive',
+              'notes','tags','avatar']
+    vals = [data.get(f, '') or '' for f in fields]
+    images = data.get('images', [])
+    if not isinstance(images, list): images = []
+    images_json = json.dumps(images)
+    conn = db()
+    existing = conn.execute('SELECT id FROM entities WHERE id=?', (eid,)).fetchone()
+    if existing:
+        sets = ', '.join([f+'=?' for f in fields]) + ', images=?, updated=?'
+        conn.execute(f'UPDATE entities SET {sets} WHERE id=?', vals + [images_json, now, eid])
+    else:
+        placeholders = ','.join(['?'] * (len(fields)+3))
+        conn.execute(f'INSERT INTO entities (id, {",".join(fields)}, images, created, updated) VALUES ({placeholders})',
+                     [eid] + vals + [images_json, now, now])
+    conn.commit()
+    conn.close()
+    return jsonify({'id': eid, 'status': 'ok'})
+
+@app.route('/api/entities/<eid>', methods=['DELETE'])
+def delete_entity(eid):
+    conn = db()
+    # get files to delete
+    r = conn.execute('SELECT avatar, images FROM entities WHERE id=?', (eid,)).fetchone()
+    if r:
+        files_to_del = []
+        if r['avatar']:
+            files_to_del.append(r['avatar'])
+        if r['images']:
+            try:
+                for f in json.loads(r['images']):
+                    files_to_del.append(f)
+            except: pass
+        for f in files_to_del:
+            path = os.path.join(BASE, f.lstrip('/'))
+            if os.path.isfile(path):
+                try: os.remove(path)
+                except: pass
+    conn.execute('DELETE FROM entities WHERE id=?', (eid,))
+    conn.execute('DELETE FROM relations WHERE source=? OR target=?', (eid, eid))
+    conn.commit()
+    conn.close()
+    return jsonify({'status': 'ok'})
+
+# ====== RELATIONS ======
+@app.route('/api/relations', methods=['GET'])
+def list_relations():
+    conn = db()
+    rows = conn.execute('SELECT * FROM relations').fetchall()
+    conn.close()
+    return jsonify([dict(r) for r in rows])
+
+@app.route('/api/relations', methods=['POST'])
+def create_relation():
+    data = request.get_json(force=True)
+    rid = data.get('id') or ('r_' + uuid.uuid4().hex[:12])
+    conn = db()
+    existing = conn.execute('SELECT id FROM relations WHERE id=?', (rid,)).fetchone()
+    if existing:
+        conn.execute('UPDATE relations SET source=?, target=?, type=?, note=? WHERE id=?',
+                     (data.get('source',''), data.get('target',''), data.get('type',''), data.get('note',''), rid))
+    else:
+        conn.execute('INSERT INTO relations (id, source, target, type, note, created) VALUES (?,?,?,?,?,?)',
+                     (rid, data.get('source',''), data.get('target',''), data.get('type',''), data.get('note',''), time.time()))
+    conn.commit()
+    conn.close()
+    return jsonify({'id': rid, 'status': 'ok'})
+
+@app.route('/api/relations/<rid>', methods=['DELETE'])
+def delete_relation(rid):
+    conn = db()
+    conn.execute('DELETE FROM relations WHERE id=?', (rid,))
+    conn.commit()
+    conn.close()
+    return jsonify({'status': 'ok'})
+
+# ====== UPLOAD ======
+@app.route('/api/upload/<kind>', methods=['POST'])
+def upload(kind):
+    if kind not in ('avatars', 'images', 'videos', 'files'):
+        return jsonify({'error': 'invalid kind'}), 400
+    if 'file' not in request.files:
+        return jsonify({'error': 'no file'}), 400
+    f = request.files['file']
+    if not f.filename:
+        return jsonify({'error': 'empty filename'}), 400
+    ext = os.path.splitext(f.filename)[1].lower()
+    fname = uuid.uuid4().hex + ext
+    folder = os.path.join(DATA_DIR, kind)
+    os.makedirs(folder, exist_ok=True)
+    f.save(os.path.join(folder, fname))
+    return jsonify({'path': f'data/{kind}/{fname}', 'name': fname})
+
+@app.route('/api/upload/delete', methods=['POST'])
+def delete_upload():
+    data = request.get_json(force=True)
+    path = data.get('path', '')
+    if path.startswith('data/'):
+        full = os.path.join(BASE, path)
+        if os.path.isfile(full):
+            try: os.remove(full)
+            except: pass
+    return jsonify({'status': 'ok'})
+
+# ====== STATS ======
+@app.route('/api/stats')
+def stats():
+    conn = db()
+    ne = conn.execute('SELECT COUNT(*) FROM entities').fetchone()[0]
+    nr = conn.execute('SELECT COUNT(*) FROM relations').fetchone()[0]
+    conn.close()
+    return jsonify({'entities': ne, 'relations': nr})
+
+if __name__ == '__main__':
+    init_db()
+    print('◈ database osint starting...')
+    print('◈ Open: http://localhost:5000')
+    app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
+```
+
+احفظ: `Ctrl+O` ثم `Enter` ثم `Ctrl+X`.
+
+**الخطوة 4 — أنشئ الواجهة `static/index.html`:**
+```bash
+nano ~/database_osint/static/index.html
+```
+الصق هذا:
+
+```html
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>database osint</title>
+<script src="https://unpkg.com/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; overflow: hidden; font-family: -apple-system, 'Segoe UI', Tahoma, sans-serif; background: #0a0e14; color: #e6e6e6; }
+  #app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
+  #topbar { display: flex; gap: 6px; padding: 8px; background: #111820; border-bottom: 1px solid #1e2a38; overflow-x: auto; flex-shrink: 0; align-items: center; }
+  #topbar .brand { color: #4dd0e1; font-weight: bold; font-size: 13px; padding: 0 8px; white-space: nowrap; border-left: 1px solid #2a3a4d; margin-left: 4px; }
+  #topbar button { background: #1a2532; color: #e6e6e6; border: 1px solid #2a3a4d; padding: 8px 12px; border-radius: 6px; font-size: 13px; cursor: pointer; white-space: nowrap; }
+  #topbar button:active { background: #2a3a4d; }
+  #topbar button.primary { background: #0d6e4f; border-color: #0d6e4f; }
+  #topbar button.danger { background: #8b1e1e; border-color: #8b1e1e; color: white; }
+  #cy { flex: 1; background: #0a0e14; }
+  #status { padding: 4px 10px; font-size: 11px; color: #6a7a8a; background: #111820; border-top: 1px solid #1e2a38; flex-shrink: 0; display: flex; justify-content: space-between; }
+  .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 100; padding: 12px; }
+  .modal.active { display: flex; }
+  .modal-content { background: #111820; border: 1px solid #2a3a4d; border-radius: 12px; padding: 16px; width: 100%; max-width: 480px; max-height: 92vh; overflow-y: auto; }
+  .modal-content h2 { font-size: 16px; margin-bottom: 12px; color: #4dd0e1; }
+  .modal-content label { display: block; font-size: 12px; color: #8a9aaa; margin-bottom: 4px; margin-top: 10px; }
+  .modal-content input, .modal-content select, .modal-content textarea { width: 100%; background: #0a0e14; border: 1px solid #2a3a4d; color: #e6e6e6; padding: 10px; border-radius: 6px; font-size: 14px; font-family: inherit; }
+  .modal-content input:focus, .modal-content select:focus, .modal-content textarea:focus { outline: none; border-color: #4dd0e1; }
+  .modal-content textarea { resize: vertical; min-height: 50px; }
+  .field-row { display: flex; gap: 8px; }
+  .field-row > div { flex: 1; }
+  .modal-actions { display: flex; gap: 8px; margin-top: 16px; position: sticky; bottom: 0; background: #111820; padding-top: 8px; }
+  .modal-actions button { flex: 1; padding: 10px; border-radius: 6px; border: none; font-size: 14px; cursor: pointer; }
+  .modal-actions .save { background: #0d6e4f; color: white; }
+  .modal-actions .cancel { background: #2a3a4d; color: #e6e6e6; }
+  .modal-actions .delete { background: #8b1e1e; color: white; }
+  #searchBar { position: absolute; top: 60px; right: 8px; left: 8px; z-index: 50; display: none; }
+  #searchBar.active { display: block; }
+  #searchBar input { width: 100%; background: #111820; border: 1px solid #4dd0e1; color: #e6e6e6; padding: 10px 14px; border-radius: 8px; font-size: 14px; }
+  .avatar-preview { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #2a3a4d; display: block; margin: 8px auto; }
+  .avatar-placeholder { width: 80px; height: 80px; border-radius: 50%; background: #1a2532; border: 2px dashed #2a3a4d; display: flex; align-items: center; justify-content: center; color: #4a5a6a; font-size: 24px; margin: 8px auto; cursor: pointer; }
+  .file-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .file-chip { background: #1a2532; border: 1px solid #2a3a4d; padding: 4px 8px; border-radius: 4px; font-size: 11px; color: #8a9aaa; }
+  .file-chip button { background: none; border: none; color: #e57373; cursor: pointer; margin-right: 4px; }
+  .info-block { background: #0a0e14; border: 1px solid #1e2a38; border-radius: 6px; padding: 8px; margin: 6px 0; font-size: 13px; }
+  .info-block b { color: #4dd0e1; }
+  .profile-pic { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #4dd0e1; display: block; margin: 0 auto 12px; }
+  .tabs { display: flex; gap: 4px; margin-bottom: 12px; border-bottom: 1px solid #1e2a38; overflow-x: auto; }
+  .tabs button { background: none; border: none; color: #6a7a8a; padding: 8px 12px; font-size: 13px; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; }
+  .tabs button.active { color: #4dd0e1; border-bottom-color: #4dd0e1; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .node-count { position: absolute; top: 60px; left: 8px; background: rgba(17,24,32,0.9); padding: 4px 8px; border-radius: 4px; font-size: 11px; color: #6a7a8a; pointer-events: none; display: none; }
+  .upload-btn { background: #1a2532; color: #e6e6e6; border: 1px solid #2a3a4d; padding: 8px; border-radius: 6px; font-size: 13px; cursor: pointer; width: 100%; }
+  .progress { font-size: 11px; color: #4dd0e1; text-align: center; margin-top: 4px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="topbar">
+    <button onclick="openAddEntity()" class="primary">+ كيان</button>
+    <button onclick="openAddRelation()">+ علاقة</button>
+    <button onclick="toggleSearch()">🔍</button>
+    <button onclick="runLayout()">تخطيط</button>
+    <button onclick="exportJSON()">تصدير</button>
+    <button onclick="clearAll()" class="danger">🗑 مسح الكل</button>
+    <span class="brand">database osint</span>
+  </div>
+  <div id="cy"></div>
+  <div class="node-count" id="nodeCount"></div>
+  <div id="searchBar"><input type="text" id="searchInput" placeholder="ابحث عن كيان..." oninput="doSearch()"></div>
+  <div id="status">
+    <span id="statusText">الكيانات: 0 | العلاقات: 0</span>
+    <span id="statusMsg">جاهز</span>
+  </div>
+</div>
+
+<!-- Entity Modal -->
+<div class="modal" id="entityModal">
+  <div class="modal-content">
+    <h2 id="entityModalTitle">إضافة كيان</h2>
+    <div class="tabs">
+      <button class="active" onclick="switchTab(event,'basic')">أساسي</button>
+      <button onclick="switchTab(event,'contact')">تواصل</button>
+      <button onclick="switchTab(event,'accounts')">حسابات</button>
+      <button onclick="switchTab(event,'location')">مكان</button>
+      <button onclick="switchTab(event,'media')">صور/فيديو</button>
+      <button onclick="switchTab(event,'secrets')">حساس</button>
+      <button onclick="switchTab(event,'notes')">ملاحظات</button>
+    </div>
+
+    <div class="tab-content active" id="tab-basic">
+      <label>الاسم الكامل</label>
+      <input type="text" id="f_name" placeholder="مثال: أحمد بن علي">
+      <label>الاسم المستعار / الكنية</label>
+      <input type="text" id="f_alias" placeholder="مثال: أبو محمد">
+      <label>النوع</label>
+      <select id="f_type">
+        <option value="person">شخص</option>
+        <option value="email">بريد إلكتروني</option>
+        <option value="phone">هاتف</option>
+        <option value="username">اسم مستخدم</option>
+        <option value="domain">موقع / نطاق</option>
+        <option value="ip">عنوان IP</option>
+        <option value="org">منظمة</option>
+        <option value="location">مكان</option>
+        <option value="other">أخرى</option>
+      </select>
+      <label>الجنس</label>
+      <select id="f_gender">
+        <option value="">—</option>
+        <option value="male">ذكر</option>
+        <option value="female">أنثى</option>
+      </select>
+      <div class="field-row">
+        <div><label>تاريخ الميلاد</label><input type="date" id="f_birthdate"></div>
+        <div><label>الجنسية</label><input type="text" id="f_nationality" placeholder="تونسي"></div>
+      </div>
+      <label>الحالة</label>
+      <select id="f_status">
+        <option value="active">نشط</option>
+        <option value="inactive">غير نشط</option>
+        <option value="target">هدف</option>
+        <option value="unknown">غير معروف</option>
+      </select>
+    </div>
+
+    <div class="tab-content" id="tab-contact">
+      <label>البريد الإلكتروني</label>
+      <input type="email" id="f_email" placeholder="example@mail.com">
+      <label>البريد الثانوي</label>
+      <input type="email" id="f_email2" placeholder="backup@mail.com">
+      <label>رقم الهاتف</label>
+      <input type="tel" id="f_phone" placeholder="+216 XX XXX XXX">
+      <label>رقم الهاتف 2</label>
+      <input type="tel" id="f_phone2" placeholder="+216 XX XXX XXX">
+      <label>واتساب</label>
+      <input type="tel" id="f_whatsapp" placeholder="+216 XX XXX XXX">
+      <label>تيليجرام</label>
+      <input type="text" id="f_telegram" placeholder="@username">
+      <label>سيغنال</label>
+      <input type="tel" id="f_signal" placeholder="+216 XX XXX XXX">
+    </div>
+
+    <div class="tab-content" id="tab-accounts">
+      <label>فيسبوك</label>
+      <input type="url" id="f_facebook" placeholder="https://facebook.com/...">
+      <label>إنستغرام</label>
+      <input type="url" id="f_instagram" placeholder="https://instagram.com/...">
+      <label>تويتر / X</label>
+      <input type="url" id="f_twitter" placeholder="https://x.com/...">
+      <label>تيك توك</label>
+      <input type="url" id="f_tiktok" placeholder="https://tiktok.com/@...">
+      <label>يوتيوب</label>
+      <input type="url" id="f_youtube" placeholder="https://youtube.com/@...">
+      <label>لينكد إن</label>
+      <input type="url" id="f_linkedin" placeholder="https://linkedin.com/in/...">
+      <label>سناب شات</label>
+      <input type="text" id="f_snapchat" placeholder="username">
+      <label>حسابات أخرى</label>
+      <textarea id="f_other_accounts" rows="2" placeholder="أي حسابات إضافية..."></textarea>
+    </div>
+
+    <div class="tab-content" id="tab-location">
+      <label>العنوان الحالي</label>
+      <input type="text" id="f_address" placeholder="الشارع، المدينة، البلد">
+      <label>العنوان السابق</label>
+      <input type="text" id="f_address2" placeholder="عنوان قديم">
+      <label>مكان العمل</label>
+      <input type="text" id="f_workplace" placeholder="اسم الشركة / المؤسسة">
+      <label>مكان الدراسة</label>
+      <input type="text" id="f_school" placeholder="المدرسة / الجامعة">
+      <label>إحداثيات GPS</label>
+      <input type="text" id="f_gps" placeholder="36.8065, 10.1815">
+      <label>ملاحظات الموقع</label>
+      <textarea id="f_location_notes" rows="2" placeholder="تفاصيل إضافية عن الأماكن..."></textarea>
+    </div>
+
+    <div class="tab-content" id="tab-media">
+      <label>صورة شخصية</label>
+      <div id="avatarContainer" onclick="document.getElementById('avatarInput').click()">
+        <div class="avatar-placeholder" id="avatarPlaceholder">📷</div>
+        <img id="avatarPreview" class="avatar-preview" style="display:none">
+      </div>
+      <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="handleAvatar(event)">
+      <button onclick="removeAvatar()" style="background:#2a3a4d;color:#e6e6e6;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;width:100%;margin-top:4px;">إزالة الصورة</button>
+
+      <label>صور إضافية</label>
+      <input type="file" id="imagesInput" accept="image/*" multiple style="display:none" onchange="handleImages(event)">
+      <button class="upload-btn" onclick="document.getElementById('imagesInput').click()">+ إضافة صور</button>
+      <div class="file-list" id="imagesList"></div>
+
+      <label>فيديوهات</label>
+      <input type="file" id="videosInput" accept="video/*" multiple style="display:none" onchange="handleVideos(event)">
+      <button class="upload-btn" onclick="document.getElementById('videosInput').click()">+ إضافة فيديوهات</button>
+      <div class="file-list" id="videosList"></div>
+      <label>أو روابط فيديو</label>
+      <textarea id="f_videos" rows="2" placeholder="https://youtube.com/..."></textarea>
+
+      <label>ملفات أخرى (PDF, ZIP...)</label>
+      <input type="file" id="filesInput" multiple style="display:none" onchange="handleFiles(event)">
+      <button class="upload-btn" onclick="document.getElementById('filesInput').click()">+ إضافة ملفات</button>
+      <div class="file-list" id="filesList"></div>
+      <label>أو روابط ملفات</label>
+      <textarea id="f_files" rows="2" placeholder="روابط PDF, Google Drive..."></textarea>
+      <div class="progress" id="uploadProgress"></div>
+    </div>
+
+    <div class="tab-content" id="tab-secrets">
+      <label>كلمات المرور / بيانات حساسة</label>
+      <textarea id="f_passwords" rows="4" placeholder="⚠️ تُخزن محلياً فقط على السيرفر."></textarea>
+      <label>ملاحظات حساسة</label>
+      <textarea id="f_sensitive" rows="3" placeholder="أي معلومات سرية..."></textarea>
+      <label style="color:#e57373; margin-top:12px;">تنبيه: هذه البيانات محلية بالكامل. لا سحابة. لا إنترنت.</label>
+    </div>
+
+    <div class="tab-content" id="tab-notes">
+      <label>ملاحظات عامة</label>
+      <textarea id="f_notes" rows="5" placeholder="أي تفاصيل إضافية..."></textarea>
+      <label>وسوم (كلمات مفتاحية)</label>
+      <input type="text" id="f_tags" placeholder="مثال: تاجر، مشبوه، عائلة">
+    </div>
+
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeModal('entityModal')">إلغاء</button>
+      <button class="delete" id="entityDeleteBtn" style="display:none" onclick="deleteCurrentEntity()">حذف</button>
+      <button class="save" onclick="saveEntity()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Relation Modal -->
+<div class="modal" id="relationModal">
+  <div class="modal-content">
+    <h2 id="relationModalTitle">إضافة علاقة</h2>
+    <label>من (المصدر)</label>
+    <select id="relFrom"></select>
+    <label>إلى (الهدف)</label>
+    <select id="relTo"></select>
+    <label>نوع العلاقة</label>
+    <input type="text" id="relType" placeholder="مثال: يملك، يعرف، يزور" list="relTypes">
+    <datalist id="relTypes">
+      <option value="يملك"><option value="يعرف"><option value="يزور">
+      <option value="مرتبط بـ"><option value="يعمل في"><option value="صديق">
+      <option value="عائلة"><option value="يسكن في"><option value="يتصل بـ">
+      <option value="يراسل"><option value="يتابع">
+    </datalist>
+    <label>ملاحظة (اختياري)</label>
+    <input type="text" id="relNote" placeholder="تفاصيل إضافية...">
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeModal('relationModal')">إلغاء</button>
+      <button class="delete" id="relationDeleteBtn" style="display:none" onclick="deleteCurrentRelation()">حذف</button>
+      <button class="save" onclick="saveRelation()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Info Modal -->
+<div class="modal" id="infoModal">
+  <div class="modal-content">
+    <h2 id="infoTitle">معلومات</h2>
+    <div id="infoBody"></div>
+    <div class="modal-actions">
+      <button class="cancel" onclick="closeModal('infoModal')">إغلاق</button>
+      <button class="save" onclick="editCurrentEntity()">تعديل</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = '';
+let cy;
+let editingEntityId = null;
+let currentEntityId = null;
+let editingRelationId = null;
+let currentAvatar = null;
+let currentImages = [];
+let currentVideos = [];
+let currentFiles = [];
+
+const TYPE_COLORS = {
+  person: '#4dd0e1', email: '#ff8a65', phone: '#ba68c8',
+  username: '#ffd54f', domain: '#81c784', ip: '#e57373',
+  org: '#64b5f6', location: '#a1887f', other: '#90a4ae'
+};
+const TYPE_LABELS = {
+  person: 'شخص', email: 'بريد', phone: 'هاتف', username: 'مستخدم',
+  domain: 'موقع', ip: 'IP', org: 'منظمة', location: 'مكان', other: 'أخرى'
+};
+
+// ============ API ============
+async function api(path, opts = {}) {
+  const res = await fetch(API + path, opts);
+  if (!res.ok) throw new Error('API error: ' + res.status);
+  return res.json();
+}
+
+// ============ INIT ============
+async function init() {
+  initCy();
+  await loadGraph();
+}
+
+function initCy() {
+  cy = cytoscape({
+    container: document.getElementById('cy'),
+    style: [
+      {
+        selector: 'node',
+        style: {
+          'background-color': ele => TYPE_COLORS[ele.data('type')] || TYPE_COLORS.other,
+          'background-image': ele => ele.data('avatar') ? ele.data('avatar') : 'none',
+          'background-fit': 'cover',
+          'label': 'data(label)',
+          'color': '#e6e6e6',
+          'font-size': '11px',
+          'text-valign': 'bottom',
+          'text-margin-y': 4,
+          'text-outline-color': '#0a0e14',
+          'text-outline-width': 2,
+          'width': ele => ele.data('avatar') ? 44 : (24 + Math.min(ele.degree() * 3, 28)),
+          'height': ele => ele.data('avatar') ? 44 : (24 + Math.min(ele.degree() * 3, 28)),
+          'border-width': 2,
+          'border-color': '#0a0e14'
+        }
+      },
+      { selector: 'node[avatar]', style: { 'border-width': 3, 'border-color': '#4dd0e1' } },
+      { selector: 'node:selected', style: { 'border-width': 4, 'border-color': '#ffffff' } },
+      {
+        selector: 'edge',
+        style: {
+          'width': 1.5, 'line-color': '#2a3a4d', 'target-arrow-color': '#2a3a4d',
+          'target-arrow-shape': 'triangle', 'curve-style': 'bezier',
+          'label': 'data(label)', 'font-size': '9px', 'color': '#6a7a8a',
+          'text-outline-color': '#0a0e14', 'text-outline-width': 2, 'text-rotation': 'autorotate'
+        }
+      },
+      { selector: 'edge:selected', style: { 'line-color': '#4dd0e1', 'target-arrow-color': '#4dd0e1', 'width': 3 } },
+      { selector: '.highlighted', style: { 'background-color': '#ffffff', 'border-color': '#4dd0e1', 'border-width': 3 } },
+      { selector: '.faded', style: { 'opacity': 0.15 } }
+    ],
+    layout: { name: 'cose', animate: false, padding: 30 },
+    wheelSensitivity: 0.3
+  });
+  cy.on('tap', 'node', e => showNodeInfo(e.target.id()));
+  cy.on('tap', 'edge', e => openEditRelation(e.target.id()));
+}
+
+async function loadGraph() {
+  const entities = await api('/api/entities');
+  const relations = await api('/api/relations');
+  cy.elements().remove();
+  entities.forEach(e => {
+    const d = { id: e.id, label: e.name || 'بدون اسم', type: e.type || 'other' };
+    if (e.avatar) d.avatar = '/' + e.avatar;
+    cy.add({ data: d });
+  });
+  relations.forEach(r => {
+    if (cy.getElementById(r.source).length && cy.getElementById(r.target).length) {
+      cy.add({ data: { id: r.id, source: r.source, target: r.target, label: r.type } });
+    }
+  });
+  if (cy.nodes().length > 0) runLayout();
+  updateStatus(entities.length, relations.length);
+}
+
+function runLayout() {
+  cy.layout({ name: 'cose', animate: true, animationDuration: 600, padding: 40 }).run();
+}
+function updateStatus(n, e) {
+  document.getElementById('statusText').textContent = `الكيانات: ${n} | العلاقات: ${e}`;
+  const nc = document.getElementById('nodeCount');
+  if (n > 30) { nc.textContent = `${n} كيان`; nc.style.display = 'block'; }
+  else nc.style.display = 'none';
+}
+function setMsg(m) {
+  document.getElementById('statusMsg').textContent = m;
+  setTimeout(() => document.getElementById('statusMsg').textContent = 'جاهز', 2500);
+}
+
+// ============ TABS ============
+function switchTab(evt, name) {
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  evt.target.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+function switchTabSilent(name) {
+  document.querySelectorAll('.tabs button').forEach(b => {
+    b.classList.remove('active');
+    const oc = b.getAttribute('onclick') || '';
+    if (oc.indexOf("'" + name + "'") !== -1) b.classList.add('active');
+  });
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+// ============ ENTITY ============
+function openAddEntity() {
+  editingEntityId = null;
+  currentAvatar = null;
+  currentImages = [];
+  currentVideos = [];
+  currentFiles = [];
+  document.getElementById('entityModalTitle').textContent = 'إضافة كيان';
+  clearEntityForm();
+  document.getElementById('entityDeleteBtn').style.display = 'none';
+  switchTabSilent('basic');
+  document.getElementById('entityModal').classList.add('active');
+}
+
+function clearEntityForm() {
+  const fields = ['name','alias','gender','birthdate','nationality','email','email2','phone','phone2','whatsapp','telegram','signal','facebook','instagram','twitter','tiktok','youtube','linkedin','snapchat','other_accounts','address','address2','workplace','school','gps','location_notes','videos','files','passwords','sensitive','notes','tags'];
+  fields.forEach(f => { const el = document.getElementById('f_' + f); if (el) el.value = ''; });
+  document.getElementById('f_type').value = 'person';
+  document.getElementById('f_status').value = 'active';
+  document.getElementById('avatarPreview').style.display = 'none';
+  document.getElementById('avatarPlaceholder').style.display = 'flex';
+  document.getElementById('imagesList').innerHTML = '';
+  document.getElementById('videosList').innerHTML = '';
+  document.getElementById('filesList').innerHTML = '';
+  document.getElementById('uploadProgress').textContent = '';
+}
+
+function setField(id, val) { const el = document.getElementById('f_' + id); if (el) el.value = val || ''; }
+function getField(id) { const el = document.getElementById('f_' + id); return el ? el.value.trim() : ''; }
+
+async function uploadFile(file, kind) {
+  const fd = new FormData();
+  fd.append('file', file);
+  const res = await fetch('/api/upload/' + kind, { method: 'POST', body: fd });
+  if (!res.ok) throw new Error('upload failed');
+  return res.json();
+}
+
+async function saveEntity() {
+  const name = getField('name') || getField('alias') || 'بدون اسم';
+  const data = {
+    id: editingEntityId || undefined,
+    name, alias: getField('alias'),
+    type: document.getElementById('f_type').value,
+    gender: getField('gender'), birthdate: getField('birthdate'),
+    nationality: getField('nationality'),
+    status: document.getElementById('f_status').value,
+    email: getField('email'), email2: getField('email2'),
+    phone: getField('phone'), phone2: getField('phone2'),
+    whatsapp: getField('whatsapp'), telegram: getField('telegram'), signal: getField('signal'),
+    facebook: getField('facebook'), instagram: getField('instagram'),
+    twitter: getField('twitter'), tiktok: getField('tiktok'),
+    youtube: getField('youtube'), linkedin: getField('linkedin'),
+    snapchat: getField('snapchat'), other_accounts: getField('other_accounts'),
+    address: getField('address'), address2: getField('address2'),
+    workplace: getField('workplace'), school: getField('school'),
+    gps: getField('gps'), location_notes: getField('location_notes'),
+    videos: getField('videos'), files: getField('files'),
+    passwords: getField('passwords'), sensitive: getField('sensitive'),
+    notes: getField('notes'), tags: getField('tags'),
+    avatar: currentAvatar || '',
+    images: currentImages
+  };
+  const r = await api('/api/entities', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  closeModal('entityModal');
+  await loadGraph();
+  setMsg(editingEntityId ? 'تم التعديل' : 'تمت الإضافة');
+}
+
+async function showNodeInfo(id) {
+  const node = cy.getElementById(id);
+  if (!node.length) return;
+  currentEntityId = id;
+  const d = await api('/api/entities/' + id);
+  const neighbors = node.neighborhood('node');
+  let html = '';
+
+  if (d.avatar) html += `<img src="/${d.avatar}" class="profile-pic">`;
+  html += `<h3 style="text-align:center;color:#4dd0e1;margin-bottom:4px;">${esc(d.name)}</h3>`;
+  if (d.alias) html += `<p style="text-align:center;color:#8a9aaa;font-size:12px;">${esc(d.alias)}</p>`;
+  html += `<p style="text-align:center;font-size:12px;color:#6a7a8a;">${TYPE_LABELS[d.type] || d.type} ${d.status ? '• ' + d.status : ''}</p>`;
+
+  const addBlock = (title, content) => { if (content) html += `<div class="info-block"><b>${title}:</b> ${content}</div>`; };
+
+  addBlock('البريد', esc(d.email));
+  addBlock('البريد 2', esc(d.email2));
+  addBlock('الهاتف', esc(d.phone));
+  addBlock('الهاتف 2', esc(d.phone2));
+  addBlock('واتساب', esc(d.whatsapp));
+  addBlock('تيليجرام', esc(d.telegram));
+  addBlock('سيغنال', esc(d.signal));
+
+  const social = [];
+  if (d.facebook) social.push(`<a href="${esc(d.facebook)}" target="_blank" style="color:#4dd0e1;">فيسبوك</a>`);
+  if (d.instagram) social.push(`<a href="${esc(d.instagram)}" target="_blank" style="color:#4dd0e1;">إنستغرام</a>`);
+  if (d.twitter) social.push(`<a href="${esc(d.twitter)}" target="_blank" style="color:#4dd0e1;">X</a>`);
+  if (d.tiktok) social.push(`<a href="${esc(d.tiktok)}" target="_blank" style="color:#4dd0e1;">تيك توك</a>`);
+  if (d.youtube) social.push(`<a href="${esc(d.youtube)}" target="_blank" style="color:#4dd0e1;">يوتيوب</a>`);
+  if (d.linkedin) social.push(`<a href="${esc(d.linkedin)}" target="_blank" style="color:#4dd0e1;">لينكد إن</a>`);
+  if (social.length) addBlock('حسابات', social.join(' • '));
+  addBlock('حسابات أخرى', esc(d.other_accounts));
+
+  addBlock('العنوان', esc(d.address));
+  addBlock('العنوان السابق', esc(d.address2));
+  addBlock('مكان العمل', esc(d.workplace));
+  addBlock('مكان الدراسة', esc(d.school));
+  if (d.gps) addBlock('GPS', `<a href="https://maps.google.com/?q=${esc(d.gps)}" target="_blank" style="color:#4dd0e1;">${esc(d.gps)}</a>`);
+  addBlock('ملاحظات الموقع', esc(d.location_notes));
+
+  if (d.images && d.images.length) {
+    html += `<div class="info-block"><b>صور (${d.images.length}):</b><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;">`;
+    d.images.forEach(img => { html += `<a href="/${img}" target="_blank"><img src="/${img}" style="width:60px;height:60px;object-fit:cover;border-radius:6px;"></a>`; });
+    html += `</div></div>`;
+  }
+  if (d.videos) addBlock('فيديوهات (روابط)', esc(d.videos).replace(/\n/g, '<br>'));
+
+  if (d.passwords) html += `<div class="info-block" style="border-color:#8b1e1e;"><b style="color:#e57373;">🔒 كلمات مرور:</b><br><span style="font-family:monospace;font-size:12px;">${esc(d.passwords).replace(/\n/g, '<br>')}</span></div>`;
+  if (d.sensitive) html += `<div class="info-block" style="border-color:#8b1e1e;"><b style="color:#e57373;">🔒 حساس:</b><br>${esc(d.sensitive).replace(/\n/g, '<br>')}</div>`;
+
+  if (d.notes) addBlock('ملاحظات', esc(d.notes).replace(/\n/g, '<br>'));
+  addBlock('وسوم', esc(d.tags));
+
+  if (neighbors.length > 0) {
+    html += `<div class="info-block"><b>مرتبط بـ (${neighbors.length}):</b><ul style="padding-right:18px;margin-top:4px;">`;
+    neighbors.forEach(n => {
+      const edge = node.edgesTo(n);
+      const rel = edge.length ? edge.data('label') : '';
+      html += `<li>${esc(n.data('label'))} ${rel ? '— ' + esc(rel) : ''}</li>`;
+    });
+    html += `</ul></div>`;
+  }
+
+  document.getElementById('infoTitle').textContent = d.name;
+  document.getElementById('infoBody').innerHTML = html;
+  document.getElementById('infoModal').classList.add('active');
+}
+
+async function editCurrentEntity() {
+  const d = await api('/api/entities/' + currentEntityId);
+  editingEntityId = currentEntityId;
+  currentAvatar = d.avatar || null;
+  currentImages = d.images || [];
+  currentVideos = [];
+  currentFiles = [];
+  document.getElementById('entityModalTitle').textContent = 'تعديل كيان';
+
+  setField('name', d.name); setField('alias', d.alias);
+  document.getElementById('f_type').value = d.type || 'person';
+  setField('gender', d.gender); setField('birthdate', d.birthdate);
+  setField('nationality', d.nationality);
+  document.getElementById('f_status').value = d.status || 'active';
+  setField('email', d.email); setField('email2', d.email2);
+  setField('phone', d.phone); setField('phone2', d.phone2);
+  setField('whatsapp', d.whatsapp); setField('telegram', d.telegram); setField('signal', d.signal);
+  setField('facebook', d.facebook); setField('instagram', d.instagram);
+  setField('twitter', d.twitter); setField('tiktok', d.tiktok);
+  setField('youtube', d.youtube); setField('linkedin', d.linkedin);
+  setField('snapchat', d.snapchat); setField('other_accounts', d.other_accounts);
+  setField('address', d.address); setField('address2', d.address2);
+  setField('workplace', d.workplace); setField('school', d.school);
+  setField('gps', d.gps); setField('location_notes', d.location_notes);
+  setField('videos', d.videos); setField('files', d.files);
+  setField('passwords', d.passwords); setField('sensitive', d.sensitive);
+  setField('notes', d.notes); setField('tags', d.tags);
+
+  if (currentAvatar) {
+    document.getElementById('avatarPreview').src = '/' + currentAvatar;
+    document.getElementById('avatarPreview').style.display = 'block';
+    document.getElementById('avatarPlaceholder').style.display = 'none';
+  } else {
+    document.getElementById('avatarPreview').style.display = 'none';
+    document.getElementById('avatarPlaceholder').style.display = 'flex';
+  }
+
+  renderImagesList();
+  document.getElementById('entityDeleteBtn').style.display = 'block';
+  closeModal('infoModal');
+  switchTabSilent('basic');
+  document.getElementById('entityModal').classList.add('active');
+}
+
+async function deleteCurrentEntity() {
+  if (!editingEntityId) return;
+  if (!confirm('حذف الكيان وكل علاقاته وملفاته؟')) return;
+  await api('/api/entities/' + editingEntityId, { method: 'DELETE' });
+  closeModal('entityModal');
+  await loadGraph();
+  setMsg('تم الحذف');
+}
+
+// ============ MEDIA ============
+async function handleAvatar(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  document.getElementById('uploadProgress').textContent = 'جاري رفع الصورة...';
+  try {
+    if (currentAvatar) {
+      await fetch('/api/upload/delete', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({path: currentAvatar}) });
+    }
+    const r = await uploadFile(file, 'avatars');
+    currentAvatar = r.path;
+    document.getElementById('avatarPreview').src = '/' + r.path;
+    document.getElementById('avatarPreview').style.display = 'block';
+    document.getElementById('avatarPlaceholder').style.display = 'none';
+    document.getElementById('uploadProgress').textContent = '✓ تم الرفع';
+  } catch (err) {
+    document.getElementById('uploadProgress').textContent = '✗ فشل: ' + err.message;
+  }
+  e.target.value = '';
+}
+
+async function removeAvatar() {
+  if (currentAvatar) {
+    await fetch('/api/upload/delete', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({path: currentAvatar}) });
+  }
+  currentAvatar = null;
+  document.getElementById('avatarPreview').style.display = 'none';
+  document.getElementById('avatarPlaceholder').style.display = 'flex';
+}
+
+async function handleImages(e) {
+  const files = Array.from(e.target.files);
+  document.getElementById('uploadProgress').textContent = `جاري رفع ${files.length} صورة...`;
+  for (const file of files) {
+    try {
+      const r = await uploadFile(file, 'images');
+      currentImages.push(r.path);
+      renderImagesList();
+    } catch (err) { console.error(err); }
+  }
+  document.getElementById('uploadProgress').textContent = '✓ تم';
+  e.target.value = '';
+}
+
+function renderImagesList() {
+  const list = document.getElementById('imagesList');
+  list.innerHTML = '';
+  currentImages.forEach((img, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'file-chip';
+    chip.innerHTML = `<img src="/${img}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;vertical-align:middle;"> <button onclick="removeImage(${i})">✕</button>`;
+    list.appendChild(chip);
+  });
+}
+
+async function removeImage(i) {
+  const path = currentImages[i];
+  await fetch('/api/upload/delete', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({path}) });
+  currentImages.splice(i, 1);
+  renderImagesList();
+}
+
+async function handleVideos(e) {
+  const files = Array.from(e.target.files);
+  document.getElementById('uploadProgress').textContent = `جاري رفع ${files.length} فيديو...`;
+  for (const file of files) {
+    try {
+      const r = await uploadFile(file, 'videos');
+      currentVideos.push(r);
+    } catch (err) { console.error(err); }
+  }
+  document.getElementById('uploadProgress').textContent = '✓ تم';
+  renderVideosList();
+  e.target.value = '';
+}
+function renderVideosList() {
+  const list = document.getElementById('videosList');
+  list.innerHTML = '';
+  currentVideos.forEach((v, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'file-chip';
+    chip.innerHTML = `🎬 ${v.name} <button onclick="removeVideo(${i})">✕</button>`;
+    list.appendChild(chip);
+  });
+}
+async function removeVideo(i) {
+  const v = currentVideos[i];
+  await fetch('/api/upload/delete', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({path: v.path}) });
+  currentVideos.splice(i, 1);
+  renderVideosList();
+}
+
+async function handleFiles(e) {
+  const files = Array.from(e.target.files);
+  document.getElementById('uploadProgress').textContent = `جاري رفع ${files.length} ملف...`;
+  for (const file of files) {
+    try {
+      const r = await uploadFile(file, 'files');
+      currentFiles.push(r);
+    } catch (err) { console.error(err); }
+  }
+  document.getElementById('uploadProgress').textContent = '✓ تم';
+  renderFilesList();
+  e.target.value = '';
+}
+function renderFilesList() {
+  const list = document.getElementById('filesList');
+  list.innerHTML = '';
+  currentFiles.forEach((v, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'file-chip';
+    chip.innerHTML = `📄 ${v.name} <button onclick="removeFile(${i})">✕</button>`;
+    list.appendChild(chip);
+  });
+}
+async function removeFile(i) {
+  const v = currentFiles[i];
+  await fetch('/api/upload/delete', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({path: v.path}) });
+  currentFiles.splice(i, 1);
+  renderFilesList();
+}
+
+// ============ RELATION ============
+async function openAddRelation() {
+  const nodes = cy.nodes();
+  if (nodes.length < 2) { setMsg('تحتاج كيانين على الأقل'); return; }
+  editingRelationId = null;
+  document.getElementById('relationModalTitle').textContent = 'إضافة علاقة';
+  document.getElementById('relationDeleteBtn').style.display = 'none';
+  const fromSel = document.getElementById('relFrom');
+  const toSel = document.getElementById('relTo');
+  fromSel.innerHTML = ''; toSel.innerHTML = '';
+  nodes.forEach(n => {
+    fromSel.add(new Option(n.data('label'), n.id()));
+    toSel.add(new Option(n.data('label'), n.id()));
+  });
+  if (nodes.length >= 2) toSel.selectedIndex = 1;
+  document.getElementById('relType').value = '';
+  document.getElementById('relNote').value = '';
+  document.getElementById('relationModal').classList.add('active');
+}
+
+async function openEditRelation(relId) {
+  const edge = cy.getElementById(relId);
+  if (!edge.length) return;
+  editingRelationId = relId;
+  const rels = await api('/api/relations');
+  const relData = rels.find(r => r.id === relId);
+
+  document.getElementById('relationModalTitle').textContent = 'تعديل العلاقة';
+  document.getElementById('relationDeleteBtn').style.display = 'block';
+
+  const fromSel = document.getElementById('relFrom');
+  const toSel = document.getElementById('relTo');
+  fromSel.innerHTML = ''; toSel.innerHTML = '';
+  cy.nodes().forEach(n => {
+    const o1 = new Option(n.data('label'), n.id());
+    const o2 = new Option(n.data('label'), n.id());
+    if (n.id() === edge.data('source')) o1.selected = true;
+    if (n.id() === edge.data('target')) o2.selected = true;
+    fromSel.add(o1); toSel.add(o2);
+  });
+
+  document.getElementById('relType').value = edge.data('label') || '';
+  document.getElementById('relNote').value = relData ? (relData.note || '') : '';
+  document.getElementById('relationModal').classList.add('active');
+}
+
+async function saveRelation() {
+  const source = document.getElementById('relFrom').value;
+  const target = document.getElementById('relTo').value;
+  const type = document.getElementById('relType').value.trim() || 'مرتبط بـ';
+  const note = document.getElementById('relNote').value.trim();
+
+  if (source === target) { setMsg('لا يمكن ربط كيان بنفسه'); return; }
+
+  if (editingRelationId) {
+    await api('/api/relations', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({id: editingRelationId, source, target, type, note})
+    });
+    setMsg('تم تعديل العلاقة');
+  } else {
+    await api('/api/relations', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({source, target, type, note})
+    });
+    setMsg('تمت إضافة العلاقة');
+  }
+  closeModal('relationModal');
+  await loadGraph();
+}
+
+async function deleteCurrentRelation() {
+  if (!editingRelationId) return;
+  if (!confirm('حذف هذه العلاقة؟')) return;
+  await api('/api/relations/' + editingRelationId, { method: 'DELETE' });
+  closeModal('relationModal');
+  await loadGraph();
+  setMsg('تم حذف العلاقة');
+}
+
+// ============ SEARCH ============
+function toggleSearch() {
+  const bar = document.getElementById('searchBar');
+  bar.classList.toggle('active');
+  if (bar.classList.contains('active')) document.getElementById('searchInput').focus();
+  else clearSearch();
+}
+function doSearch() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  if (!q) { clearSearch(); return; }
+  cy.elements().removeClass('highlighted faded');
+  const matches = cy.nodes().filter(n => n.data('label').toLowerCase().includes(q));
+  if (matches.length === 0) return;
+  cy.elements().addClass('faded');
+  matches.closedNeighborhood().removeClass('faded').addClass('highlighted');
+}
+function clearSearch() {
+  cy.elements().removeClass('highlighted faded');
+  document.getElementById('searchInput').value = '';
+}
+
+// ============ CLEAR ALL ============
+async function clearAll() {
+  const stats = await api('/api/stats');
+  if (stats.entities + stats.relations === 0) { setMsg('لا يوجد شيء لمسحه'); return; }
+  const c1 = confirm(`⚠️ تحذير\n\nسيتم مسح:\n• ${stats.entities} كيان\n• ${stats.relations} علاقة\n\nلا يمكن التراجع.\n\nهل أنت متأكد؟`);
+  if (!c1) { setMsg('تم الإلغاء'); return; }
+  const typed = prompt('اكتب كلمة "مسح" بالضبط لتأكيد الحذف النهائي:');
+  if (typed !== 'مسح') { setMsg('تم الإلغاء - الكلمة غير مطابقة'); return; }
+  // delete all entities one by one
+  const entities = await api('/api/entities');
+  for (const e of entities) {
+    await api('/api/entities/' + e.id, { method: 'DELETE' });
+  }
+  const rels = await api('/api/relations');
+  for (const r of rels) {
+    await api('/api/relations/' + r.id, { method: 'DELETE' });
+  }
+  await loadGraph();
+  setMsg('تم مسح كل شيء');
+}
+
+// ============ EXPORT ============
+async function exportJSON() {
+  const entities = await api('/api/entities');
+  const relations = await api('/api/relations');
+  const data = { version: 3, app: 'database osint', exported: new Date().toISOString(), entities, relations };
+  const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `database_osint_${Date.now()}.json`; a.click();
+  URL.revokeObjectURL(url);
+  setMsg('تم التصدير');
+}
+
+// ============ HELPERS ============
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+function esc(s) { return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+document.querySelectorAll('.modal').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('active'); });
+});
+
+init().catch(err => {
+  document.body.innerHTML = '<div style="padding:20px;color:#e57373;font-family:monospace;">خطأ: ' + err.message + '</div>';
+});
+</script>
+</body>
+</html>
+```
+
+احفظ: `Ctrl+O` ثم `Enter` ثم `Ctrl+X`.
+
+**الخطوة 5 — أنشئ سكريبت التشغيل:**
+```bash
+nano ~/database_osint/start.sh
+```
+الصق:
+```bash
+#!/data/data/com.termux/files/usr/bin/bash
+cd ~/database_osint
+python app.py
+```
+احفظ واخرج. ثم:
+```bash
+chmod +x ~/database_osint/start.sh
+```
+
+**الخطوة 6 — شغّل التطبيق:**
+```bash
+cd ~/database_osint
+python app.py
+```
+
+سترى:
+```
+◈ database osint starting...
+◈ Open: http://localhost:5000
+ * Running on http://0.0.0.0:5000
+```
+
+**الخطوة 7 — افتح المتصفح:**
+افتح متصفح الهاتف. اذهب إلى:
+```
+http://localhost:5000
+```
+
+---
+
+**◈ كيف تستخدمه**
+
+نفس الواجهة السابقة بالضبط. لكن:
+- **الصور تُحفظ كملفات حقيقية** في `~/database_osint/data/avatars/`.
+- **الفيديوهات** و **الملفات** تُرفع كملفات حقيقية.
+- **SQLite** يخزن كل شيء. يتحمل ملايين السجلات.
+- **لا Base64. لا ثقل.**
+
+**إيقاف التطبيق:** اضغط `Ctrl+C` في Termux.
+
+**تشغيله في الخلفية:**
+```bash
+cd ~/database_osint
+nohup python app.py > server.log 2>&1 &
+```
+لإيقافه لاحقاً:
+```bash
+pkill -f "python app.py"
+```
+
+---
+
+**◈ نسخ احتياطي**
+
+كل شيء في مجلد واحد:
+```bash
+cp -r ~/database_osint ~/storage/shared/database_osint_backup_$(date +%Y%m%d)
+```
+
+---
+
+**◈ الخطوة التالية**
+
+جرّبه. أخبرني:
+1. هل يعمل `http://localhost:5000`؟
+2. هل رفع الصور يعمل؟
+3. هل الفيديوهات والملفات تُرفع؟
+
+ثم ننتقل إلى:
+- **Termux:Boot** — تشغيل تلقائي عند إعادة تشغيل الهاتف.
+- **بحث متقدم** — البحث في كل الحقول.
+- **تحليل** — مركزية، عناقيد، مسارات.
+- **نسخ احتياطي تلقائي**.
+
+⟦ BACKEND + FRONTEND DELIVERED. START python app.py. AWAITING FIELD REPORT. ⟧
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | USER ===
+لا لا ليس هكذا أقصد تطبيق apk
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+فهمت. أنت تريد **APK حقيقي**. تثبته على الهاتف. أيقونة على الشاشة. يفتح بدون Termux. بدون متصفح. بدون localhost.
+
+هذا ممكن. لكن يجب أن تعرف الحقيقة أولاً.
+
+---
+
+**◈ الحقيقة — اقرأ هذا قبل أي شيء**
+
+**بناء APK من Termux ممكن.** لكنه **مؤلم**. لماذا؟
+
+1. **Gradle + Android SDK** عندك (من تقريرك: `~/android-sdk`, `~/MyFirstApp`, Gradle 8.5, JDK 17). هذا جيد. لكن:
+2. **WebView + Cytoscape + SQLite** = مشروع معقد. ليس تطبيق "Hello World".
+3. **البناء على الهاتف** يستغرق **30-60 دقيقة** في كل مرة.
+4. **أي خطأ** = إعادة البناء من الصفر.
+5. **المساحة:** 27 GB متاحة. المشروع سيستهلك 5-10 GB.
+
+**البديل الأسهل:** **PWA** (Progressive Web App). تحفظ `database dimo` على شاشة الهاتف كأيقونة. يفتح كتطبيق. بدون Termux. بدون بناء. بدون تعقيد.
+
+**البديل الأوسط:** **APK بسيط** — WebView فقط يحمّل HTML. بدون Cytoscape مدمج. بدون SQLite. يستخدم IndexedDB داخل WebView.
+
+---
+
+**◈ القرار — ثلاثة مسارات**
+
+| المسار | الوقت | التعقيد | النتيجة |
+|---|---|---|---|
+| **A. PWA** | 5 دقائق | لا شيء | أيقونة على الشاشة. يفتح `database dimo`. |
+| **B. APK بسيط** | 1-2 ساعة | متوسط | WebView يحمّل HTML. IndexedDB. بدون ملفات حقيقية. |
+| **C. APK كامل** | 1-2 يوم | عالي | WebView + SQLite + تخزين ملفات. الأفضل. لكن مؤلم. |
+
+---
+
+**◈ توصيتي الصادقة**
+
+**ابدأ بـ A.** الآن. جرّبه. إذا أعجبك، ننتقل إلى C.
+
+**السبب:** PWA يعطيك 90% من تجربة APK في 5 دقائق. إذا لم يعجبك، وفّرنا ساعات من الألم.
+
+---
+
+**◈ المسار A — PWA (الآن)**
+
+**كيف تحوّل `database dimo` إلى تطبيق على شاشة الهاتف:**
+
+**الخطوة 1:** افتح الملف في **Chrome** (أو أي متصفح يدعم PWA).
+
+**الخطوة 2:** اضغط على قائمة المتصفح (⋮).
+
+**الخطوة 3:** اختر **"إضافة إلى الشاشة الرئيسية"** أو **"تثبيت التطبيق"**.
+
+**الخطوة 4:** سمّه `database dimo`. اضغط "إضافة".
+
+**النتيجة:** أيقونة على شاشة هاتفك. تفتح الملف كتطبيق كامل الشاشة. بدون شريط متصفح.
+
+**ملاحظة:** هذا يعمل فقط إذا كان الملف محلياً. `file:///sdcard/database_dimo.html`. قد لا يعمل من `file://` في بعض المتصفحات. البديل: استخدم **Termux + Python HTTP server** لفتحه من `localhost`.
+
+---
+
+**◈ المسار C — APK كامل**
+
+إذا أردت APK حقيقي فيه:
+- **WebView** يعرض الواجهة.
+- **SQLite** (Android SQLite) لتخزين البيانات.
+- **Android Storage** لحفظ الصور والفيديو فعلياً.
+- **Permissions** للوصول للكاميرا والملفات.
+
+**ما أحتاجه منك:**
+
+**1. تأكيد أن Gradle و Android SDK يعملان:**
+```bash
+cd ~
+ls android-sdk/
+ls .gradle/
+java -version
+```
+
+**2. مساحة كافية:**
+```bash
+df -h $HOME
+```
+(تحتاج 10 GB على الأقل متاحة).
+
+**3. هل بنيت APK من قبل؟**
+من تقريرك لديك `~/MyFirstApp/`. هل بنيته بنجاح؟ إذا نعم، أخبرني.
+
+**4. الحزم:**
+```bash
+pkg list-installed | grep -E "gradle|openjdk|aapt|d8|apksigner"
+```
+
+**5. إصدار Android على هاتفك:**
+الإعدادات > حول الهاتف > إصدار Android.
+
+**أرسل هذه المخرجات. ثم أبني لك المشروع كاملاً.**
+
+---
+
+**◈ القرار النهائي — قل لي**
+
+**"A"** — أريد PWA الآن. أعطني الخطوات فقط.
+**"B"** — أريد APK بسيط. WebView + IndexedDB. بدون ملفات حقيقية.
+**"C"** — أريد APK كامل. SQLite + ملفات. أنا مستعد للألم.
+
+**ملاحظة مهمة:** المسار C سيأخذ مني وقتاً طويلاً لبنائه بشكل صحيح. لكنه سيعمل. إذا اخترته، كن مستعداً لـ:
+- أخطاء Gradle.
+- مشاكل SDK.
+- إعادة البناء عدة مرات.
+- 30+ دقيقة انتظار لكل محاولة.
+
+**قل لي مسارك. ثم ننفذ.**
+
+⟦ AWAITING ROUTE: PWA / SIMPLE APK / FULL APK. ⟧
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | USER ===
+لقد قلت لك أني صنعت تطبيق معك في محدثة أخرا قلتو لك عن موضوع البرومبك لكي تعرف الأدوات التي نزلته لكي لا تنزله مرة أخرا 
+
+=== adb8cb48-1fb5-4084-a27d-4abb59a89c29.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+معك حق. أعتذر. أخطأت.
+
+أنت قلت لي في البداية: "أنا في الأصل لقد صنع تطبيقة بمسعدتك في محدثت أخرا إذا أردت شيء من المحدثت الأخر لتعمرف ماذا أملك في termux أعطيني prompt بالأشياء التي تحتاجه و أنا سأرسله لك في المدثت الأخرا و أحضر النتيجة."
+
+ثم أرسلت لي التقرير الكامل من المحادثة الأخرى. فيه:
+
+- **Gradle 8.5** مثبت في `~/.gradle/gradle-8.5/`
+- **Android SDK** مثبت في `~/android-sdk/` مع:
+  - platform-tools
+  - platforms;android-30
+  - platforms;android-33
+  - build-tools;30.0.3
+  - build-tools;33.0.2
+- **JDK:** OpenJDK 17
+- **AGP:** 8.1.0
+- **مشروع سابق:** `~/MyFirstApp/`
+- **لا يوجد:** buildozer، apktool
+
+**هذا يعني:**
+- يمكنك بناء APK. الأدوات جاهزة.
+- لديك مشروع سابق `MyFirstApp` كمرجع.
+- لا حاجة لتثبيت أي شيء. فقط نبني.
+
+---
+
+**�

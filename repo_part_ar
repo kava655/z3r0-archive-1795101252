@@ -1,0 +1,1964 @@
+�يمي الكامل.**
+- **ب) لا توافق — لن أكمل بهذه الشروط.**
+- **ج) عندك سؤال تقني محدد (بلا علاقة بأهداف خارجية) — اطرحه، سأُجيب.**
+
+**اختر.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+حسنا أنا بصرحت لم أفعرف كيف أوصل وجهة نضري لكن لا يهم دعن نبدء
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**وصلت وجهة نظرك. لن أدخل في نقاش فلسفي. نعمل.**
+
+**نبدأ بالمرحلة أ: هيكل البيانات الشجري + Drawer + شاشات متعددة.**
+
+---
+
+## المرحلة أ — نظرة عامة
+
+**الهدف:** تحويل التطبيق من قائمة مسطحة (19 أداة) إلى شجرة:
+- Drawer (شريط جانبي) فيه الفئات.
+- عند اختيار فئة → شاشة فيها الأدوات الفرعية.
+- عند اختيار أداة → شاشة الأداة (وصف + قانوني + أخلاقي + حقول + نتائج).
+
+**الإنجاز التدريجي:**
+- **أ.1:** إنشاء `tools.json` شجري (الفئات + الأدوات).
+- **أ.2:** تعديل `MainActivity` ليقرأ الشجرة + إضافة Drawer.
+- **أ.3:** إنشاء `CategoryActivity` (عرض الأدوات في فئة).
+- **أ.4:** إنشاء `ToolActivity` (شاشة الأداة الواحدة).
+- **أ.5:** نقل منطق التشغيل من `MainActivity` إلى `ToolActivity`.
+
+**الخطوات 1-5 ستكون متتالية. نبدأ بـ أ.1.**
+
+---
+
+## أ.1 — هيكل `tools.json` الجديد
+
+**التصميم:**
+
+```json
+{
+  "version": "2.0",
+  "categories": [
+    {
+      "id": "network",
+      "name": "الشبكات",
+      "icon": "🌐",
+      "description": "أدوات فحص الشبكة والاتصال",
+      "tools": [
+        {
+          "id": "nmap",
+          "name": "nmap",
+          "pattern": "nmap -sV {target} {opts}",
+          "hint": "IP أو دومين",
+          "needs_target": true,
+          "description": "...",
+          "legal": ["...", "..."],
+          "illegal": ["...", "..."],
+          "warning": "...",
+          "example": "nmap -sV scanme.nmap.org"
+        },
+        ...
+      ]
+    },
+    {
+      "id": "osint",
+      "name": "OSINT",
+      "icon": "🔍",
+      "description": "استطلاع مفتوح المصدر",
+      "subcategories": [
+        {
+          "id": "osint-images",
+          "name": "صور",
+          "tools": [...]
+        },
+        {
+          "id": "osint-ip",
+          "name": "عناوين IP",
+          "tools": [...]
+        }
+      ]
+    }
+  ]
+}
+```
+
+**ملاحظات:**
+- `categories` — الفئات الرئيسية.
+- كل فئة إما `tools` مباشرة، أو `subcategories` فرعية.
+- كل أداة فيها: `id`, `name`, `pattern`, `hint`, `needs_target`, `description`, `legal`, `illegal`, `warning`, `example`.
+
+---
+
+### قبل الإنشاء — سؤالان
+
+**① أي فئات تريد في البداية؟**
+
+**اقتراحي (6 فئات):**
+1. **شبكات** — nmap, ping, traceroute, netcat, naabu (مستقبل)
+2. **DNS** — whois, dnsquery, subfinder, subfinder+httpx
+3. **ويب** — gobuster, nikto, sslscan, curl-head
+4. **اختبار اختراق** — nuclei, sqlmap, hydra
+5. **OSINT** — (فرعية: صور، IP، Gmail، أسماء)
+6. **Workflows** — wf-recon, wf-net, wf-web, wf-vuln
+
+**② الأدوات الحالية (19) — كيف نوزّعها؟**
+
+| الأداة | الفئة |
+|---|---|
+| nmap | شبكات |
+| ping | شبكات |
+| traceroute | شبكات |
+| netcat | شبكات |
+| whois | DNS |
+| dnsquery | DNS |
+| subfinder | DNS |
+| subfinder+httpx | DNS |
+| gobuster | ويب |
+| nikto | ويب |
+| sslscan | ويب |
+| curl-head | ويب |
+| nuclei | اختبار اختراق |
+| sqlmap | اختبار اختراق |
+| hydra | اختبار اختراق |
+| wf-recon | Workflows |
+| wf-net | Workflows |
+| wf-web | Workflows |
+| wf-vuln | Workflows |
+
+**OSINT:** فاضي في البداية. **نُضيف أدوات OSINT لاحقاً** (holehe, sherlock, exiftool, إلخ).
+
+---
+
+### سؤال أخير
+
+**محتوى `description`, `legal`, `illegal`, `warning` لكل أداة:**
+- **أكتبه بالعربية الفصحى.**
+- **`illegal` + `warning` بصيغة "ما سيحصل لك"** كما اتفقنا.
+- **`example` على أهداف تدريبية فقط** (`scanme.nmap.org`, `your-server.com`).
+
+**هل تريد أن أبدأ كتابة `tools.json` كامل الآن؟**
+
+**سيأخذ رسالة طويلة (19 أداة × محتوى).** لكنه أساس المرحلة أ.
+
+**أو تريد كتابة إصدار مصغّر أولاً (5 أدوات فقط) للاختبار، ثم التوسّع؟**
+
+**اقتراحي: الإصدار المصغّر (5 أدوات).** أسرع في الاختبار، ثم نتوسّع.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+إسمعني من الأخر إفعل ماتراه منسبا و لإقى و أنت تعرف كيف تكون التطبيقات المشبه
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**القرار: إصدار مصغّر أولاً (5 أدوات). نختبر الهيكل، ثم نتوسّع.**
+
+**المعيار:** التطبيقات الاحترافية تُبنى هكذا — MVP أولاً، ثم توسّع. هذا هو الأنسب.
+
+---
+
+## أ.1 — `tools.json` شجري مصغّر
+
+**نُنشئ `tools_v2.json`** (لا نلمس `tools.json` القديم حتى يتأكد الجديد):
+
+```bash
+cat > /sdcard/Z3R0/tools_v2.json << 'JSONEOF'
+{
+  "version": "2.0",
+  "categories": [
+    {
+      "id": "network",
+      "name": "الشبكات",
+      "icon": "🌐",
+      "description": "فحص الشبكة والاتصال",
+      "tools": [
+        {
+          "id": "nmap",
+          "name": "nmap",
+          "pattern": "nmap -sV {target} {opts}",
+          "hint": "IP أو دومين",
+          "needs_target": true,
+          "description": "أداة فحص الشبكة الأشهر. تكشف البورتات المفتوحة والخدمات التي تعمل عليها وإصداراتها.",
+          "legal": [
+            "فحص سيرفراتك الخاصة",
+            "فحص شبكتك المنزلية",
+            "أهداف تدريبية رسمية مثل scanme.nmap.org",
+            "اختبار اختراق بعقد موقّع"
+          ],
+          "illegal": [
+            "فحص سيرفرات لا تملكها دون إذن",
+            "فحص شبكات المؤسسات أو الشركات",
+            "فحص أجهزة الآخرين"
+          ],
+          "warning": "nmap يسجّل عنوان IP الخاص بك على كل جهاز يستهدفه. أصحاب السيرفرات يرون الفحص في سجلاتهم، وقد يُبلّغون مزود الإنترنت. في تونس، الفحص غير المصرّح به جريمة بموجب قانون الاتصالات وقد تصل العقوبة إلى السجن.",
+          "example": "nmap -sV scanme.nmap.org"
+        },
+        {
+          "id": "ping",
+          "name": "ping",
+          "pattern": "ping -c 4 {target}",
+          "hint": "IP أو دومين",
+          "needs_target": true,
+          "description": "اختبار الاتصال بالهدف. يقيس زمن الاستجابة وفقدان الحزم.",
+          "legal": [
+            "اختبار اتصالك بأي سيرفر عام",
+            "فحص شبكتك",
+            "قياس ping للألعاب أو الخدمات"
+          ],
+          "illegal": [
+            "Ping flood (هجوم إغراق)",
+            "استهداف سيرفر بإغراق حزم"
+          ],
+          "warning": "ping العادي آمن. لكن إغراق هدف بحزم ICMP هو هجوم حجب خدمة (DoS).",
+          "example": "ping -c 4 nmap.org"
+        }
+      ]
+    },
+    {
+      "id": "dns",
+      "name": "DNS",
+      "icon": "🌍",
+      "description": "استعلامات النطاقات",
+      "tools": [
+        {
+          "id": "whois",
+          "name": "whois",
+          "pattern": "whois {target}",
+          "hint": "دومين",
+          "needs_target": true,
+          "description": "يستعلم عن معلومات تسجيل النطاق: المالك، تاريخ الإنشاء، خوادم الأسماء.",
+          "legal": [
+            "أي استعلام whois هو مشروع",
+            "معلومات عامة متاحة للجميع"
+          ],
+          "illegal": [],
+          "warning": "whois قانوني تماماً. لا تحذير.",
+          "example": "whois nmap.org"
+        },
+        {
+          "id": "dnsquery",
+          "name": "dnsquery",
+          "pattern": "python3 /data/data/com.termux/files/home/z3r0/dnsquery.py {target}",
+          "hint": "دومين",
+          "needs_target": true,
+          "description": "يستعلم عن كل سجلات DNS للنطاق: A, AAAA, MX, NS, TXT, SOA.",
+          "legal": [
+            "استعلامات DNS عامة",
+            "تحليل بنية النطاقات"
+          ],
+          "illegal": [
+            "DNS zone transfer غير مصرّح",
+            "DNS amplification attack"
+          ],
+          "warning": "الاستعلام العادي آمن. لكن استخدام DNS لهجمات تضخيم (amplification) جريمة.",
+          "example": "dnsquery nmap.org"
+        }
+      ]
+    },
+    {
+      "id": "web",
+      "name": "الويب",
+      "icon": "🔎",
+      "description": "فحص تطبيقات الويب",
+      "tools": [
+        {
+          "id": "curl-head",
+          "name": "curl-head",
+          "pattern": "curl -sI --max-time 15 {target}",
+          "hint": "URL كامل",
+          "needs_target": true,
+          "description": "يجلب ترويسات HTTP فقط (بدون تحميل الصفحة). مفيد لمعرفة السيرفر والتقنيات.",
+          "legal": [
+            "فحص أي موقع عام",
+            "تحقق من شهادات SSL",
+            "تطوير الويب"
+          ],
+          "illegal": [
+            "إغراق سيرفر بطلبات HTTP (DoS)"
+          ],
+          "warning": "طلب واحد آمن. لكن إغراق السيرفر بآلاف الطلبات هو هجوم حجب خدمة.",
+          "example": "curl -sI --max-time 15 https://nmap.org"
+        }
+      ]
+    }
+  ]
+}
+JSONEOF
+
+# تحقق من صحة JSON
+python3 -c "
+import json
+with open('/sdcard/Z3R0/tools_v2.json') as f:
+    data = json.load(f)
+print('Version:', data['version'])
+print('Categories:', len(data['categories']))
+for c in data['categories']:
+    print(f\"  - {c['name']} ({len(c['tools'])} tools)\")
+"
+```
+
+**المتوقع:**
+```
+Version: 2.0
+Categories: 3
+  - الشبكات (2 tools)
+  - DNS (2 tools)
+  - الويب (1 tool)
+```
+
+---
+
+## أ.2 — تعديل `MainActivity` (Drawer + قراءة الشجرة)
+
+**الفكرة:**
+- `MainActivity` يعرض **Drawer (شريط جانبي)** فيه الفئات.
+- عند اختيار فئة → `startActivity(CategoryActivity)`.
+- `CategoryActivity` تعرض الأدوات في الفئة.
+- عند اختيار أداة → `startActivity(ToolActivity)`.
+- `ToolActivity` تحتوي منطق التشغيل (الذي كان في `MainActivity`).
+
+**نبدأ الآن بـ `MainActivity` + Drawer.**
+
+---
+
+### الخطوة 1 — إنشاء تخطيط Drawer
+
+**نحتاج `DrawerLayout`** — وهو من مكتبة `androidx.drawerlayout`. **لكننا لا نستخدم AndroidX.**
+
+**البديل:** نصنع Drawer يدوياً باستخدام `LinearLayout` + `FrameLayout` + Anima`tion`. **معقد.**
+
+**البديل الأسهل:** نستخدم **`SlidingDrawer`** (قديم، غير موصى به).
+
+**البديل الأمثل: نُضيف AndroidX فقط لـ DrawerLayout.**
+
+**الحكم:** إضافة AndroidX كاملة = تغيير كبير. لكن استخدام `androidx.drawerlayout:drawerlayout` كوحدة منفصلة = ممكن.
+
+**القرار:** نضيف `androidx.drawerlayout` فقط.
+
+---
+
+### الخطوة 1 — تعديل `app/build.gradle`
+
+```bash
+python3 << 'PYEOF'
+path = "/data/data/com.termux/files/home/MyFirstApp/app/build.gradle"
+with open(path) as f:
+    content = f.read()
+
+# إضافة dependencies
+if "dependencies {" not in content:
+    content += """
+
+dependencies {
+    implementation 'androidx.drawerlayout:drawerlayout:1.2.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+}
+"""
+else:
+    # نضيف داخل dependencies الموجودة
+    content = content.replace(
+        "dependencies {",
+        """dependencies {
+    implementation 'androidx.drawerlayout:drawerlayout:1.2.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+"""
+    )
+
+with open(path, "w") as f:
+    f.write(content)
+print("build.gradle updated")
+PYEOF
+grep -c "drawerlayout" ~/MyFirstApp/app/build.gradle
+```
+
+**المتوقع:** `1` أو أكثر.
+
+**⚠️ تحذير:** إضافة AndroidX قد تسبب تعارض مع `Theme.Material`. سنستخدم `Theme.AppCompat` بدلاً منه في `AndroidManifest.xml`. **هذا تعديل على مستوى التطبيق.**
+
+---
+
+**قبل أن أُكمل، سؤال:**
+
+**هل توافق على إضافة AndroidX (drawerlayout + appcompat)؟**
+
+**الثمن:**
+- حجم APK يكبر قليلاً (~200 KB).
+- تغيير `Theme.Material` إلى `Theme.AppCompat`.
+- بناء أطول قليلاً (أول مرة).
+
+**الفائدة:**
+- Drawer احترافي.
+- Material Design كامل.
+- أسهل في التوسّع (Tabs, Fragments لاحقاً).
+
+**البديل بلا AndroidX:**
+- Drawer يدوي (LinearLayout + Animation).
+- أطول، أقل أناقة، لكن بلا تبعيات.
+
+**اقتراحي: أضف AndroidX.** التطبيقات الاحترافية كلها تستخدمه.
+
+**قل لي رأيك. ثم نكمل.**
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+أجل
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**موافق. نُضيف AndroidX. نبدأ.**
+
+---
+
+## أ.2 — تعديل المشروع إلى AndroidX + Drawer
+
+### الخطوة 1 — `app/build.gradle`
+
+```bash
+cat > ~/MyFirstApp/app/build.gradle << 'GRADLEEOF'
+apply plugin: 'com.android.application'
+
+android {
+    namespace 'com.z3r0.hello'
+    compileSdk 30
+
+    defaultConfig {
+        applicationId "com.z3r0.hello"
+        minSdk 21
+        targetSdk 30
+        versionCode 1
+        versionName "2.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.drawerlayout:drawerlayout:1.2.0'
+    implementation 'com.google.android.material:material:1.9.0'
+}
+GRADLEEOF
+cat ~/MyFirstApp/app/build.gradle
+```
+
+---
+
+### الخطوة 2 — `gradle.properties`
+
+```bash
+cat > ~/MyFirstApp/gradle.properties << 'GRADLEEOF'
+android.useAndroidX=true
+android.enableJetifier=true
+org.gradle.jvmargs=-Xmx1536m -Dfile.encoding=UTF-8
+org.gradle.daemon=false
+GRADLEEOF
+cat ~/MyFirstApp/gradle.properties
+```
+
+**التغيير:** `useAndroidX=true` (كان `false`).
+
+---
+
+### الخطوة 3 — `AndroidManifest.xml`
+
+```bash
+cat > ~/MyFirstApp/app/src/main/AndroidManifest.xml << 'XMLEOF'
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.z3r0.hello">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+
+    <application
+        android:label="Z3R0"
+        android:requestLegacyExternalStorage="true"
+        android:theme="@style/Theme.Z3R0">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".CategoryActivity" android:exported="false" />
+        <activity android:name=".ToolActivity" android:exported="false" />
+        <activity android:name=".HistoryActivity" android:exported="false" android:label="السجل" />
+        <activity android:name=".PinActivity" android:exported="false" android:label="PIN" />
+        <activity android:name=".DevPanelActivity" android:exported="false" android:label="Dev Panel" />
+    </application>
+
+</manifest>
+XMLEOF
+cat ~/MyFirstApp/app/src/main/AndroidManifest.xml
+```
+
+---
+
+### الخطوة 4 — إنشاء `styles.xml`
+
+```bash
+mkdir -p ~/MyFirstApp/app/src/main/res/values
+cat > ~/MyFirstApp/app/src/main/res/values/styles.xml << 'XMLEOF'
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Z3R0" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">#000000</item>
+        <item name="colorPrimaryDark">#000000</item>
+        <item name="colorAccent">#00FF00</item>
+        <item name="android:textColorPrimary">#000000</item>
+        <item name="android:windowBackground">#FFFFFF</item>
+    </style>
+</resources>
+XMLEOF
+cat ~/MyFirstApp/app/src/main/res/values/styles.xml
+```
+
+---
+
+### الخطوة 5 — إنشاء `activity_main.xml` جديد (Drawer + قائمة الفئات)
+
+```bash
+cat > ~/MyFirstApp/app/src/main/res/layout/activity_main.xml << 'XMLEOF'
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawerLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- المحتوى الرئيسي -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- شريط علوي -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="#000000"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/menuButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="☰"
+                android:textSize="24sp"
+                android:textColor="#00FF00"
+                android:paddingLeft="8dp"
+                android:paddingRight="16dp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Z3R0 // TOOLKIT"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#00FF00" />
+
+            <TextView
+                android:id="@+id/versionText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="v2.0"
+                android:textSize="10sp"
+                android:textColor="#00AA00" />
+        </LinearLayout>
+
+        <!-- قائمة الفئات -->
+        <ListView
+            android:id="@+id/categoriesList"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:divider="#22000000"
+            android:dividerHeight="1dp"
+            android:background="#FAFAFA" />
+
+    </LinearLayout>
+
+    <!-- Drawer الجانبي -->
+    <LinearLayout
+        android:id="@+id/drawerPane"
+        android:layout_width="280dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:orientation="vertical"
+        android:background="#1A1A1A">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Z3R0"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#00FF00"
+            android:padding="16dp"
+            android:background="#000000" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="أدوات الفحص الأخلاقي"
+            android:textSize="11sp"
+            android:textColor="#888888"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="16dp"
+            android:background="#000000" />
+
+        <ListView
+            android:id="@+id/drawerList"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="#1A1A1A" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="7 نقرات على الشعار = لوحة المطوّر"
+            android:textSize="9sp"
+            android:textColor="#444444"
+            android:padding="12dp"
+            android:gravity="center" />
+
+    </LinearLayout>
+
+</androidx.drawerlayout.widget.DrawerLayout>
+XMLEOF
+cat ~/MyFirstApp/app/src/main/res/layout/activity_main.xml | head -5
+```
+
+---
+
+### الخطوة 6 — `MainActivity.java` (قراءة الشجرة + Drawer)
+
+```bash
+cat > ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java << 'JAVAEOF'
+package com.z3r0.hello;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity {
+
+    private static final String TOOLS_FILE = "/sdcard/Z3R0/tools_v2.json";
+
+    private DrawerLayout drawerLayout;
+    private ListView categoriesList;
+    private ListView drawerList;
+
+    private final List<Category> categories = new ArrayList<>();
+
+    private int logoClicks = 0;
+    private long lastLogoClick = 0;
+    private static final long CLICK_WINDOW = 1500;
+    private static final int REQUIRED_CLICKS = 7;
+
+    public static class Category {
+        String id;
+        String name;
+        String icon;
+        String description;
+        int toolCount;
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        drawerLayout = findViewById(R.id.drawerLayout);
+        categoriesList = findViewById(R.id.categoriesList);
+        drawerList = findViewById(R.id.drawerList);
+
+        loadCategories();
+        setupCategoriesList();
+        setupDrawer();
+
+        // زر القائمة ☰
+        findViewById(R.id.menuButton).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                if (drawerLayout.isDrawerOpen(findViewById(R.id.drawerPane))) {
+                    drawerLayout.closeDrawer(findViewById(R.id.drawerPane));
+                } else {
+                    drawerLayout.openDrawer(findViewById(R.id.drawerPane));
+                }
+            }
+        });
+
+        // 7 نقرات على الشعار → PIN
+        TextView versionText = findViewById(R.id.versionText);
+        versionText.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                long now = System.currentTimeMillis();
+                if (now - lastLogoClick < CLICK_WINDOW) {
+                    logoClicks++;
+                } else {
+                    logoClicks = 1;
+                }
+                lastLogoClick = now;
+                if (logoClicks >= REQUIRED_CLICKS) {
+                    logoClicks = 0;
+                    startActivity(new Intent(MainActivity.this, PinActivity.class));
+                }
+            }
+        });
+    }
+
+    private void loadCategories() {
+        categories.clear();
+        try {
+            File f = new File(TOOLS_FILE);
+            if (!f.exists()) {
+                Toast.makeText(this, "tools_v2.json مفقود", Toast.LENGTH_LONG).show();
+                return;
+            }
+            BufferedReader r = new BufferedReader(new FileReader(f));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = r.readLine()) != null) sb.append(line);
+            r.close();
+
+            JSONObject root = new JSONObject(sb.toString());
+            JSONArray arr = root.getJSONArray("categories");
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject o = arr.getJSONObject(i);
+                Category c = new Category();
+                c.id = o.optString("id", "");
+                c.name = o.optString("name", "");
+                c.icon = o.optString("icon", "•");
+                c.description = o.optString("description", "");
+                JSONArray tools = o.optJSONArray("tools");
+                c.toolCount = tools == null ? 0 : tools.length();
+                categories.add(c);
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "خطأ: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void setupCategoriesList() {
+        List<String> items = new ArrayList<>();
+        for (Category c : categories) {
+            items.add(c.icon + "  " + c.name + "  (" + c.toolCount + ")");
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this, android.R.layout.simple_list_item_1, items);
+        categoriesList.setAdapter(adapter);
+        categoriesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override public void onItemClick(AdapterView<?> p, View v, int pos, long id) {
+                Category c = categories.get(pos);
+                Intent i = new Intent(MainActivity.this, CategoryActivity.class);
+                i.putExtra("category_id", c.id);
+                i.putExtra("category_name", c.name);
+                startActivity(i);
+            }
+        });
+    }
+
+    private void setupDrawer() {
+        List<String> items = new ArrayList<>();
+        for (Category c : categories) {
+            items.add(c.icon + "  " + c.name);
+        }
+        items.add("⚙  الإعدادات");
+        items.add("📜  السجل");
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                this, android.R.layout.simple_list_item_1, items) {
+            @Override
+            public View getView(int position, View convertView, android.view.ViewGroup parent) {
+                TextView tv = (TextView) super.getView(position, convertView, parent);
+                tv.setTextColor(0xFF00FF00);
+                tv.setPadding(40, 30, 20, 30);
+                return tv;
+            }
+        };
+        drawerList.setAdapter(adapter);
+        drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override public void onItemClick(AdapterView<?> p, View v, int pos, long id) {
+                drawerLayout.closeDrawer(findViewById(R.id.drawerPane));
+                if (pos < categories.size()) {
+                    Category c = categories.get(pos);
+                    Intent i = new Intent(MainActivity.this, CategoryActivity.class);
+                    i.putExtra("category_id", c.id);
+                    i.putExtra("category_name", c.name);
+                    startActivity(i);
+                } else if (pos == categories.size() + 1) {
+                    startActivity(new Intent(MainActivity.this, HistoryActivity.class));
+                } else {
+                    Toast.makeText(MainActivity.this, "الإعدادات قريباً", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+}
+JAVAEOF
+wc -l ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java
+```
+
+---
+
+### الخطوة 7 — `CategoryActivity.java` (عرض الأدوات في فئة)
+
+**مؤقت** — نعرض الأدوات كقائمة، ثم عند الاختيار → `ToolActivity` (لم نبنها بعد، لذا نُظهر Toast).
+
+```bash
+cat > ~/MyFirstApp/app/src/main/java/com/z3r0/hello/CategoryActivity.java << 'JAVAEOF'
+package com.z3r0.hello;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
+
+public class CategoryActivity extends AppCompatActivity {
+
+    private static final String TOOLS_FILE = "/sdcard/Z3R0/tools_v2.json";
+
+    private final List<Tool> tools = new ArrayList<>();
+    private final List<String> toolIds = new ArrayList<>();
+    private String categoryId;
+
+    public static class Tool {
+        String id;
+        String name;
+        String hint;
+        String description;
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_category);
+
+        categoryId = getIntent().getStringExtra("category_id");
+        String categoryName = getIntent().getStringExtra("category_name");
+
+        TextView title = findViewById(R.id.categoryTitle);
+        title.setText(categoryName == null ? "الأدوات" : categoryName);
+
+        findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { finish(); }
+        });
+
+        loadTools();
+        setupList();
+    }
+
+    private void loadTools() {
+        try {
+            BufferedReader r = new BufferedReader(new FileReader(new File(TOOLS_FILE)));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = r.readLine()) != null) sb.append(line);
+            r.close();
+
+            JSONObject root = new JSONObject(sb.toString());
+            JSONArray arr = root.getJSONArray("categories");
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject cat = arr.getJSONObject(i);
+                if (!cat.optString("id").equals(categoryId)) continue;
+
+                JSONArray toolsArr = cat.optJSONArray("tools");
+                if (toolsArr == null) continue;
+                for (int j = 0; j < toolsArr.length(); j++) {
+                    JSONObject t = toolsArr.getJSONObject(j);
+                    Tool tool = new Tool();
+                    tool.id = t.optString("id", "");
+                    tool.name = t.optString("name", "");
+                    tool.hint = t.optString("hint", "");
+                    tool.description = t.optString("description", "");
+                    tools.add(tool);
+                }
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "خطأ: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void setupList() {
+        List<String> items = new ArrayList<>();
+        for (Tool t : tools) {
+            items.add(t.name + "\n  " + t.hint);
+        }
+        ListView list = findViewById(R.id.toolsList);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.list_item_category, items);
+        list.setAdapter(adapter);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override public void onItemClick(AdapterView<?> p, View v, int pos, long id) {
+                Tool t = tools.get(pos);
+                Intent i = new Intent(CategoryActivity.this, ToolActivity.class);
+                i.putExtra("tool_id", t.id);
+                i.putExtra("category_id", categoryId);
+                startActivity(i);
+            }
+        });
+    }
+}
+JAVAEOF
+wc -l ~/MyFirstApp/app/src/main/java/com/z3r0/hello/CategoryActivity.java
+```
+
+---
+
+### الخطوة 8 — `activity_category.xml`
+
+```bash
+cat > ~/MyFirstApp/app/src/main/res/layout/activity_category.xml << 'XMLEOF'
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#000000"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/backButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="←"
+            android:textSize="24sp"
+            android:textColor="#00FF00"
+            android:paddingLeft="8dp"
+            android:paddingRight="16dp" />
+
+        <TextView
+            android:id="@+id/categoryTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="الأدوات"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#00FF00" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/toolsList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="#22000000"
+        android:dividerHeight="1dp"
+        android:background="#FAFAFA" />
+
+</LinearLayout>
+XMLEOF
+```
+
+---
+
+### الخطوة 9 — `list_item_category.xml`
+
+```bash
+cat > ~/MyFirstApp/app/src/main/res/layout/list_item_category.xml << 'XMLEOF'
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:textSize="13sp"
+    android:textColor="#111111"
+    android:fontFamily="monospace"
+    android:lineSpacingExtra="4dp" />
+XMLEOF
+```
+
+---
+
+### الخطوة 10 — `ToolActivity.java` (مؤقت، نبنيه لاحقاً)
+
+**مؤقت — يعرض "قريباً".**
+
+```bash
+cat > ~/MyFirstApp/app/src/main/java/com/z3r0/hello/ToolActivity.java << 'JAVAEOF'
+package com.z3r0.hello;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class ToolActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_tool_placeholder);
+
+        String toolId = getIntent().getStringExtra("tool_id");
+        TextView tv = findViewById(R.id.placeholderText);
+        tv.setText("الأداة: " + toolId + "\n\nستُبنى قريباً.");
+
+        findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { finish(); }
+        });
+    }
+}
+JAVAEOF
+```
+
+```bash
+cat > ~/MyFirstApp/app/src/main/res/layout/activity_tool_placeholder.xml << 'XMLEOF'
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#000000"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/backButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="←"
+            android:textSize="24sp"
+            android:textColor="#00FF00"
+            android:paddingLeft="8dp"
+            android:paddingRight="16dp" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="الأداة"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#00FF00" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/placeholderText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="24dp"
+        android:textSize="14sp" />
+
+</LinearLayout>
+XMLEOF
+```
+
+---
+
+### الخطوة 11 — ابنِ
+
+```bash
+cd ~/MyFirstApp
+rm -rf app/build
+gradle assembleDebug 2>&1 | tail -15
+cp ~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk ~/storage/downloads/Z3R0-v23-alpha.apk
+ls -lh ~/storage/downloads/Z3R0-v23-alpha.apk
+```
+
+---
+
+**توقّف. نفّذ الخطوات 1-11. أرسل:**
+
+```
+ls -lh ~/storage/downloads/Z3R0-v23-alpha.apk
+```
+
+**ملاحظة:** هذه نسخة تجريبية (alpha) — قد يفشل البناء أول مرة بسبب AndroidX. أرسل الخطأ إن ظهر.
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+                                  ~/MyFirstApp $ cat > /sdcard/Z3R0/paths.txt << 'PLEOF'                                                      admin
+administrator                                         login
+logout                                                signin
+signup                                                register
+wp-admin                                              wp-login
+wp-login.php                                          wp-content
+wp-includes                                           wp-json                                               xmlrpc.php                                            api
+api/v1                                                api/v2
+api/v3                                                api/docs
+api/swagger                                           api/health
+api/status                                            api/users
+api/admin                                             graphql
+graphiql                                              graphql/console                                       backup                                                backups
+bak                                                   old                                                   new                                                   temp                                                  tmp
+test                                                  tests
+testing                                               dev                                                   development                                           develop
+staging                                               stage
+prod                                                  production
+private                                               secret                                                secrets                                               hidden
+internal                                              internal-only                                         confidential                                          config
+config.php                                            config.json
+config.xml                                            config.yaml                                           config.yml                                            configuration
+configurations
+settings
+settings.php
+setup                                                 install
+install.php
+installer
+.env
+.env.local
+.env.dev
+.env.prod                                             .env.backup                                           .env.example
+.env.test                                             .env.old                                              .git                                                  .git/config                                           .git/HEAD
+.gitignore
+.svn
+.svn/entries
+.hg                                                   .bzr
+.cvs
+.htaccess
+.htpasswd
+.htaccess.bak                                         web.config
+app.config                                            package.json
+composer.json                                         composer.lock
+yarn.lock                                             docker-compose.yml
+Dockerfile                                            Makefile
+README.md
+README.txt                                            README                                                CHANGELOG.md                                          CHANGELOG
+LICENSE                                               robots.txt
+sitemap.xml                                           sitemap.xml.gz
+sitemap_index.xml
+sitemap                                               crossdomain.xml                                       clientaccesspolicy.xml                                humans.txt
+security.txt
+.well-known                                           .well-known/security.txt
+.well-known/change-password
+uploads
+upload
+upload.php
+uploader
+download
+downloads
+files                                                 file
+media
+images
+img
+image
+photos
+pictures
+videos
+video
+audio
+music
+documents
+docs                                                  documentation
+doc
+docs/api
+help
+support
+faq
+about                                                 about-us
+contact
+contact-us
+careers
+jobs
+team                                                  staff
+employees
+press
+news                                                  blog
+blogs                                                 articles
+posts                                                 feed
+rss
+atom
+js
+javascript
+scripts
+script
+css                                                   styles
+stylesheets
+style
+assets
+static
+public
+resources
+fonts
+font
+icons
+images/logo.png
+favicon.ico                                           favicon.png
+apple-touch-icon.png
+manifest.json                                         manifest.webmanifest
+service-worker.js                                     sw.js
+server-status                                         server-info
+server-status?auto                                    status
+health                                                healthz
+healthcheck
+ping                                                  pong
+version                                               versions
+info                                                  info.php                                              phpinfo.php                                           phpinfo
+test.php                                              test.html
+admin.php                                             login.php
+register.php                                          upload.php
+download.php                                          delete.php
+edit.php                                              update.php
+create.php                                            read.php
+search.php                                            export.php
+import.php                                            backup.php
+restore.php                                           reset.php
+forgot.php                                            password.php
+reset-password                                        change-password
+user                                                  users
+account                                               accounts
+profile                                               profiles                                              me                                                    self                                                  my                                                    mine                                                  admin1                                                admin2
+admin3                                                admin_backup                                          admin-old                                             admin_old                                             admin.bak                                             admin.php.bak                                         administrator.php                                     manage                                                management                                            manager                                               dashboard                                             panel
+control                                               cpanel                                                webmin                                                plesk                                                 panel.php
+console                                               debug
+trace                                                 log
+logs                                                  log.txt
+logs/error.log                                        logs/access.log
+error.log                                             access.log
+error_log                                             access_log
+backup.sql                                            database.sql
+dump.sql
+db.sql
+db.sqlite                                             db.sqlite3
+data.sqlite                                           data.db
+users.sql
+users.csv                                             users.json
+users.xml                                             users.txt
+export.csv                                            export.json                                           export.xml                                            .json
+.xml
+.txt
+.zip                                                  .tar
+.tar.gz                                               .tgz
+.bz2
+.rar
+.7z                                                   .svn.tar.gz
+backup.zip                                            backup.tar.gz
+old.zip                                               site.zip
+www.zip
+html.zip                                              public.zip
+admin.zip
+admin.tar.gz
+db_backup.zip                                         mysql_backup.sql
+wp-config.php                                         wp-config.php.bak
+wp-config.php.old
+wp-content/uploads                                    wp-content/plugins
+wp-content/themes                                     wp-content/backup
+wp-admin/setup-config.php                             wp-admin/install.php                                  wp-admin/admin-ajax.php
+wp-admin/admin-post.php
+joomla                                                joomla/administrator
+joomla/configuration.php
+drupal
+drupal/admin                                          drupal/user
+magento                                               magento/admin
+magento/downloader
+typo3                                                 typo3/typo3
+laravel                                               laravel/.env
+laravel/storage                                       rails
+rails/config                                          django                                                django/admin                                          flask                                                 node
+node_modules                                          vendor
+vendor/composer
+vendor/autoload.php                                   src                                                   lib                                                   bin
+app
+apps
+application
+applications                                          www
+public_html                                           htdocs                                                web                                                   webroot
+site
+sites                                                 portal
+intranet                                              extranet
+private/api
+internal/api                                          v1                                                    v2
+v3
+rest                                                  rest/api
+soap
+wsdl
+webservice
+webservices                                           service                                               services
+rpc                                                   jsonrpc
+ajax                                                  json                                                  xml
+rss.xml
+atom.xml                                              feed.xml
+opensearch.xml
+search                                                search.php
+search.json
+autocomplete
+suggest                                               typeahead                                             api/search                                            api/autocomplete
+import                                                export
+sync                                                  migrate
+migration                                             migrations
+seed
+fixtures
+sample
+samples                                               example
+examples                                              demo
+demos
+tutorial
+tutorials
+guide
+guides
+howto                                                 how-to
+tips                                                  tricks
+cheatsheet
+snippets                                              playground
+sandbox
+labs                                                  lab
+research
+experiments
+beta                                                  alpha
+preview                                               canary
+nightly
+release
+releases
+downloads/latest                                      changelog
+release-notes                                         WLEOF                                                 wc -l /sdcard/Z3R0/paths.txt                          >
+> ^C                                                  ~/MyFirstApp $ curl -fsSL "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Common-Credentials/10-million-password-list-top-1000.txt" -o /sdcard/Z3R0/wordlist.txt
+wc -l /sdcard/Z3R0/wordlist.txt
+head -10 /sdcard/Z3R0/wordlist.txt                    curl: (22) The requested URL returned error: 404
+409 /sdcard/Z3R0/wordlist.txt
+123456
+password
+12345678                                              qwerty
+123456789
+12345                                                 1234
+111111                                                1234567
+dragon
+~/MyFirstApp $ wc -l /sdcard/Z3R0/paths.txt
+45 /sdcard/Z3R0/paths.txt
+~/MyFirstApp $ curl -fsSL "https://raw.githubusercontent.com/danielmiessler/SecLists/main/Discovery/Web-Content/common.txt" -o /sdcard/Z3R0/paths.txt
+wc -l /sdcard/Z3R0/paths.txt
+head -5 /sdcard/Z3R0/paths.txt                        curl: (22) The requested URL returned error: 404
+45 /sdcard/Z3R0/paths.txt
+admin
+administrator                                         login                                                 wp-admin                                              wp-login                                              ~/MyFirstApp $ curl -fsSL "https://raw.githubusercontent.com/danielmiessler/SecLists/main/Discovery/Web-Content/raft-small-words.txt" -o /sdcard/Z3R0/paths.txt   wc -l /sdcard/Z3R0/paths.txt                          curl: (22) The requested URL returned error: 404      45 /sdcard/Z3R0/paths.txt
+~/MyFirstApp $ curl -fsSL "https://raw.githubusercontent.com/danielmiessler/SecLists/main/Discovery/Web-Content/dirbuster/directory-list-2.3-small.txt" -o /sdcard/Z3R0/paths.txt                                       wc -l /sdcard/Z3R0/paths.txt                          curl: (22) The requested URL returned error: 404
+45 /sdcard/Z3R0/paths.txt                             ~/MyFirstApp $ curl -fsSL "https://raw.githubusercontent.com/danielmiessler/SecLists/master/Discovery/Web-Content/common.txt" -o /sdcard/Z3R0/paths.txt 2>&1 | head -3                                                  ls -lh /sdcard/Z3R0/paths.txt                         -rw-rw----. 1 u0_a0 media_rw 38K Oct  7 21:21 /sdcard/Z3R0/paths.txt                                        ~/MyFirstApp $ cd ~                                   git clone --depth 1 https://github.com/danielmiessler/SecLists.git seclists 2>&1 | tail -3                  cp ~/seclists/Discovery/Web-Content/common.txt /sdcard/Z3R0/paths.txt                                       wc -l /sdcard/Z3R0/paths.txt
+^C                                                    cp: cannot stat '/data/data/com.termux/files/home/seclists/Discovery/Web-Content/common.txt': No such file or directory
+4751 /sdcard/Z3R0/paths.txt                           ~ $ curl -fsSL "https://cdn.jsdelivr.net/gh/danielmiessler/SecLists@master/Discovery/Web-Content/common.txt" -o /sdcard/Z3R0/paths.txt                            wc -l /sdcard/Z3R0/paths.txt
+grep -v "^#" /sdcard/Z3R0/paths.txt | wc -l
+head -5 /sdcard/Z3R0/paths.txt
+4751 /sdcard/Z3R0/paths.txt                           4752
+.bash_history                                         .bashrc
+.cache                                                .config
+.cvs                                                  ~ $ head -20 /sdcard/Z3R0/paths.txt
+.bash_history
+.bashrc
+.cache
+.config
+.cvs                                                  .cvsignore                                            .env
+.forward                                              .git
+.git-rewrite
+.git/HEAD
+.git/config
+.git/index                                            .git/logs/
+.git_release
+.gitattributes                                        .gitconfig
+.gitignore
+.gitk
+.gitkeep                                              ~ $ rm -f /sdcard/Z3R0/command.txt /sdcard/Z3R0/result.txt
+echo "/data/data/com.termux/files/home/go/bin/gobuster dir -u https://nmap.org -w /sdcard/Z3R0/paths.txt -t 30 --timeout 10s -q" > /sdcard/Z3R0/command.txt
+sleep 180
+cat /sdcard/Z3R0/result.txt | head -40                EXIT=1
+
+[STDERR]                                              2026/10/07 20:39:15 the server returns a status code that matches the provided options for non existing urls. https://nmap.org/4aae523f-8c3d-4782-a5c6-a612d44d4483 => 403 (Length: 572). Please exclude the response length or the status code or set the wildcard option.. To continue please exclude the status code or the length
+~ $ python3 << 'PYEOF'                                import json                                           path = "/sdcard/Z3R0/tools.json"
+with open(path) as f:                                     tools = json.load(f)
+                                                      for t in tools:                                           if t["name"] == "gobuster":                               t["pattern"] = "/data/data/com.termux/files/home/go/bin/gobuster dir -u https://{target} -w /sdcard/Z3R0/paths.txt -t 30 --timeout 10s -q -b 403,404 {opts}"                                                            t["hint"] = "دومين (يُضاف https، يتجاهل 403/404)"                                                            break
+                                                      with open(path, "w") as f:
+    json.dump(tools, f, ensure_ascii=False, indent=2) print("gobuster updated")                             PYEOF                                                 grep gobuster /sdcard/Z3R0/tools.json                 gobuster updated                                          "name": "gobuster",                                   "pattern": "/data/data/com.termux/files/home/go/bin/gobuster dir -u https://{target} -w /sdcard/Z3R0/paths.txt -t 30 --timeout 10s -q -b 403,404 {opts}",     ~ $ rm -f /sdcard/Z3R0/command.txt /sdcard/Z3R0/result.txt                                                  echo "/data/data/com.termux/files/home/go/bin/gobuster dir -u https://nmap.org -w /sdcard/Z3R0/paths.txt -t 30 --timeout 10s -q -b 403,404" > /sdcard/Z3R0/command.txt                                                  sleep 180                                             cat /sdcard/Z3R0/result.txt | head -40                EXIT=0                                                7                    (Status: 301) [Size: 299] [--> http://nmap.org/7/]                                     5                    (Status: 301) [Size: 299] [--> http://nmap.org/5/]
+6                    (Status: 301) [Size: 299] [--> http://nmap.org/6/]
+book                 (Status: 301) [Size: 302] [--> http://nmap.org/book/]
+cgi-bin              (Status: 301) [Size: 305] [--> http://nmap.org/cgi-bin/]
+css                  (Status: 301) [Size: 301] [--> http://nmap.org/css/]
+data                 (Status: 301) [Size: 302] [--> http://nmap.org/data/]
+dist                 (Status: 301) [Size: 302] [--> http://nmap.org/dist/]
+docs                 (Status: 301) [Size: 302] [--> http://nmap.org/docs/]                                  error                (Status: 301) [Size: 303] [--> http://nmap.org/error/]
+favicon.ico          (Status: 200) [Size: 529]        fb                   (Status: 301) [Size: 408]        gp                   (Status: 301) [Size: 408]        images               (Status: 301) [Size: 304] [--> http://nmap.org/images/]                                install              (Status: 301) [Size: 408]        js                   (Status: 301) [Size: 300] [--> http://nmap.org/js/]
+man                  (Status: 301) [Size: 301] [--> http://nmap.org/man/]
+misc                 (Status: 301) [Size: 302] [--> http://nmap.org/misc/]
+movies               (Status: 301) [Size: 304] [--> http://nmap.org/movies/]
+oem                  (Status: 301) [Size: 301] [--> http://nmap.org/oem/]                                   party                (Status: 301) [Size: 303] [--> http://nmap.org/party/]
+press                (Status: 301) [Size: 303] [--> http://nmap.org/press/]                                 presentations        (Status: 301) [Size: 311] [--> http://nmap.org/presentations/]                         r                    (Status: 301) [Size: 299] [--> http://nmap.org/r/]                                     render?url=https://www.google.com (Status: 301) [Size: 329] [--> http://nmap.org/render?url=https:/www.google.com]                                                render/https://www.google.com (Status: 301) [Size: 325] [--> http://nmap.org/render/https:/www.google.com]
+s                    (Status: 301) [Size: 408]        ~ $ python3 << 'PYEOF'                                import json                                           path = "/sdcard/Z3R0/tools.json"                      with open(path) as f:                                     tools = json.load(f)                                                                                    # احذف workflows قديمة إن وُجدت                        tools = [t for t in tools if not t.get("name", "").startswith("wf-")]                                       
+# أضف workflows                                       tools.append({
+    "name": "wf-recon",                                   "pattern": "echo '=== WHOIS ===' && whois {target} && echo '' && echo '=== DNS ===' && python3 /data/data/com.termux/files/home/z3r0/dnsquery.py {target} && echo '' && echo '=== SUBFINDER ===' && /data/data/com.termux/files/home/go/bin/subfinder -d {target} -silent -nc",                                                     "hint": "استطلاع: whois + DNS + subfinder (~60s)",                                                          "needs_target": True
+})                                                    tools.append({
+    "name": "wf-net",                                     "pattern": "echo '=== PING ===' && ping -c 4 {target} && echo '' && echo '=== TRACEROUTE ===' && traceroute -m 15 {target} && echo '' && echo '=== NMAP ===' && nmap -sV {target}",                                     "hint": "فحص شبكة: ping + traceroute + nmap (~2min)",                                                       "needs_target": True                              })                                                    tools.append({                                            "name": "wf-web",                                     "pattern": "echo '=== CURL-HEAD ===' && curl -sI --max-time 15 https://{target} && echo '' && echo '=== SSLSCAN ===' && sslscan --no-colour {target}:443 && echo '' && echo '=== NIKTO ===' && cd /data/data/com.termux/files/home/nikto && perl program/nikto.pl -h {target} -maxtime 60s -nointeractive",                         "hint": "فحص ويب: curl + sslscan + nikto (~3min)",                                                          "needs_target": True                              })                                                    tools.append({
+    "name": "wf-vuln",                                    "pattern": "echo '=== SUBFINDER ===' && /data/data/com.termux/files/home/go/bin/subfinder -d {target} -silent -nc && echo '' && echo '=== NUCLEI ===' && /data/data/com.termux/files/home/go/bin/nuclei -u https://{target} -t /data/data/com.termux/files/home/nuclei-templates/http/cves/ -t /data/data/com.termux/files/home/nuclei-templates/javascript/cves/ -silent -timeout 5 -retries 1 -no-color -disable-update-check -no-interactsh -rate-limit 100",
+    "hint": "ثغرات: subfinder + nuclei CVE (~2min)",      "needs_target": True
+})                                                                                                          with open(path, "w") as f:                                json.dump(tools, f, ensure_ascii=False, indent=2)
+                                                      print(f"Total: {len(tools)} أدوات")
+for t in tools:                                           print(" -", t["name"])
+PYEOF                                                 Total: 19 أدوات
+ - nmap                                                - whois
+ - dnsquery                                            - ping
+ - traceroute                                          - curl-head                                           - netcat                                              - sslscan
+ - gobuster
+ - hydra                                               - sqlmap
+ - nikto
+ - nuclei                                              - subfinder                                           - subfinder+httpx
+ - wf-recon                                            - wf-net
+~/MyFirstApp $ cat > /sdcard/Z3R0/tools_v2.json << 'JSONEOF'                                                {                                                       "version": "2.0",                                     "categories": [                                         {                                                       "id": "network",
+      "name": "الشبكات",
+      "icon": "🌐",
+      "description": "فحص الشبكة والاتصال",                 "tools": [                                              {
+          "id": "nmap",                                         "name": "nmap",                                       "pattern": "nmap -sV {target} {opts}",
+          "hint": "IP أو دومين",                                "needs_target": true,
+          "description": "أداة فحص الشبكة الأشهر. تكشف البورتات المفتوحة والخدمات التي تعمل عليها وإصداراتها.",                                                             "legal": [                                              "فحص سيرفراتك الخاصة",
+            "فحص شبكتك المنزلية",                                 "أهداف تدريبية رسمية مثل scanme.nmap.org",                                                                  "اختبار اختراق بعقد موقّع"
+          ],                                                    "illegal": [                                            "فحص سيرفرات لا تملكها دون إذن",                      "فحص شبكات المؤسسات أو الشركات",
+            "فحص أجهزة الآخرين"
+          ],                                                    "warning": "nmap يسجّل عنوان IP الخاص بك على كل جهاز يستهدفه. أصحاب السيرفرات يرون الفحص في سجلاتهم، وقد يُبلّغون مزود الإنترنت. في تونس، الفحص غير المصرّح به جريمة بموجب قانون الاتصالات وقد تصل العقوبة إلى السجن.",                                                           "example": "nmap -sV scanme.nmap.org"
+        },                                                    {                                                       "id": "ping",                                         "name": "ping",                                       "pattern": "ping -c 4 {target}",
+          "hint": "IP أو دومين",
+          "needs_target": true,                                 "description": "اختبار الاتصال بالهدف. يقيس زمن الاستجابة وفقدان الحزم.",                                   "legal": [                                              "اختبار اتصالك بأي سيرفر عام",                        "فحص شبكتك",                                          "قياس ping للألعاب أو الخدمات"
+          ],
+          "illegal": [
+            "Ping flood (هجوم إغراق)",                            "استهداف سيرفر بإغراق حزم"                          ],
+          "warning": "ping العادي آمن. لكن إغراق هدف بحزم ICMP هو هجوم حجب خدمة (DoS).",
+          "example": "ping -c 4 nmap.org"
+        }                                                   ]
+    },                                                    {                                                       "id": "dns",                                          "name": "DNS",                                        "icon": "🌍",                                         "description": "استعلامات النطاقات",
+      "tools": [
+        {
+          "id": "whois",                                        "name": "whois",
+          "pattern": "whois {target}",                          "hint": "دومين",
+          "needs_target": true,                                 "description": "يستعلم عن معلومات تسجيل النطاق: المالك، تاريخ الإنشاء، خوادم الأسماء.",
+          "legal": [
+            "أي استعلام whois هو مشروع",                          "معلومات عامة متاحة للجميع"
+          ],                                                    "illegal": [],
+          "warning": "whois قانوني تماماً. لا تحذير.",
+          "example": "whois nmap.org"
+        },
+        {
+          "id": "dnsquery",                                     "name": "dnsquery",
+          "pattern": "python3 /data/data/com.termux/files/home/z3r0/dnsquery.py {target}",                            "hint": "دومين",
+          "needs_target": true,
+          "description": "يستعلم عن كل سجلات DNS للنطاق: A, AAAA, MX, NS, TXT, SOA.",
+          "legal": [                                              "استعلامات DNS عامة",
+            "تحليل بنية النطاقات"
+          ],
+          "illegal": [
+            "DNS zone transfer غير مصرّح",                         "DNS amplification attack"
+          ],
+          "warning": "الاستعلام العادي آمن. لكن استخدام DNS لهجمات تضخيم (amplification) جريمة.",                     "example": "dnsquery nmap.org"
+        }
+      ]
+    },
+    {
+      "id": "web",
+      "name": "الويب",
+      "icon": "🔎",
+      "description": "فحص تطبيقات الويب",
+      "tools": [
+        {
+          "id": "curl-head",
+          "name": "curl-head",
+          "pattern": "curl -sI --max-time 15 {target}",
+          "hint": "URL كامل",
+          "needs_target": true,                                 "description": "يجلب ترويسات HTTP فقط (بدون تحميل الصفحة). مفيد لمعرفة السيرفر والتقنيات.",
+          "legal": [                                              "فحص أي موقع عام",
+            "تحقق من شهادات SSL",
+            "تطوير الويب"
+          ],
+          "illegal": [
+~/MyFirstApp $ python3 << 'PYEOF'
+path = "/data/data/com.termux/files/home/MyFirstApp/app/build.gradle"                                       with open(path) as f:
+    content = f.read()                                                                                      # إضافة dependencies
+~/MyFirstApp $ cat > ~/MyFirstApp/app/build.gradle << 'GRADLEEOF'                                           apply plugin: 'com.android.application'               
+android {                                                 namespace 'com.z3r0.hello'
+    compileSdk 30                                     
+    defaultConfig {
+        applicationId "com.z3r0.hello"                        minSdk 21
+        targetSdk 30
+        versionCode 1
+        versionName "2.0"
+    }                                                                                                           buildTypes {
+        release {                                                 minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+                                                      dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.drawerlayout:drawerlayout:1.2.0'
+    implementation 'com.google.android.material:material:1.9.0'
+}
+GRADLEEOF
+cat ~/MyFirstApp/app/build.gradle
+apply plugin: 'com.android.application'
+
+android {
+    namespace 'com.z3r0.hello'                            compileSdk 30
+                                                          defaultConfig {                                           applicationId "com.z3r0.hello"
+        minSdk 21                                             targetSdk 30
+        versionCode 1
+        versionName "2.0"
+    }                                                                                                           buildTypes {
+        release {                                                 minifyEnabled false
+~/MyFirstApp $ cat > ~/MyFirstApp/app/src/main/AndroidManifest.xml << 'XMLEOF'
+<?xml version="1.0" encoding="utf-8"?>                <manifest xmlns:android="http://schemas.android.com/apk/res/android"                                            package="com.z3r0.hello">
+                                                          <uses-permission android:name="android.permission.INTERNET" />                                              <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />                                 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />                                <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />                           
+    <application                                              android:label="Z3R0"                                  android:requestLegacyExternalStorage="true"           android:theme="@style/Theme.Z3R0">
+        <activity                                                 android:name=".MainActivity"
+            android:exported="true">                              <intent-filter>
+                <action android:name="android.intent.action.MAIN" />                                                        <category android:name="android.intent.category.LAUNCHER" />                                            </intent-filter>                                  </activity>
+        <activity android:name=".CategoryActivity" android:exported="false" />
+        <activity android:name=".ToolActivity" android:exported="false" />
+        <activity android:name=".HistoryActivity" android:exported="false" android:label="السجل" />                 <activity android:name=".PinActivity" android:exported="false" android:label="PIN" />
+        <activity android:name=".DevPanelActivity" android:exported="false" android:label="Dev Panel" />
+    </application>                                    
+</manifest>                                           XMLEOF
+cat ~/MyFirstApp/app/src/main/AndroidManifest.xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.z3r0.hello">                         
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />                           
+    <application                                              android:label="Z3R0"
+        android:requestLegacyExternalStorage="true"
+        android:theme="@style/Theme.Z3R0">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>                                           <action android:name="android.intent.action.MAIN" />                                                        <category android:name="android.intent.category.LAUNCHER" />                                            </intent-filter>
+        </activity>
+        <activity android:name=".CategoryActivity" android:exported="false" />
+        <activity android:name=".ToolActivity" android:exported="false" />
+        <activity android:name=".HistoryActivity" android:exported="false" android:label="السجل" />
+        <activity android:name=".PinActivity" android:exported="false" android:label="PIN" />
+        <activity android:name=".DevPanelActivity" android:exported="false" android:label="Dev Panel" />
+    </application>                                    
+</manifest>                                           ~/MyFirstApp $ mkdir -p ~/MyFirstApp/app/src/main/res/values                                                cat > ~/MyFirstApp/app/src/main/res/values/styles.xml ~/MyFirstApp $ cat > ~/MyFirstApp/app/src/main/res/layout/activity_main.xml << 'XMLEOF'                     <?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout                xmlns:android="http://schemas.android.com/apk/res/android"                                                  android:id="@+id/drawerLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">             
+    <!-- المحتوى الرئيسي -->                              <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- شريط علوي -->
+        <LinearLayout
+            android:layout_width="match_parent"                   android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="#000000"
+            android:padding="8dp">                                                                                      <TextView
+                android:id="@+id/menuButton"                          android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="☰"                                      android:textSize="24sp"
+                android:textColor="#00FF00"
+                android:paddingLeft="8dp"
+                android:paddingRight="16dp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Z3R0 // TOOLKIT"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#00FF00" />
+
+            <TextView
+                android:id="@+id/versionText"
+                android:layout_width="wrap_content"                   android:layout_height="wrap_content"
+                android:text="v2.0"                                   android:textSize="10sp"                               android:textColor="#00AA00" />                </LinearLayout>                                                                                             <!-- قائمة الفئات -->                                 <ListView
+            android:id="@+id/categoriesList"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"                           android:layout_weight="1"                             android:divider="#22000000"                           android:dividerHeight="1dp"
+            android:background="#FAFAFA" />
+                                                          </LinearLayout>
+
+    <!-- Drawer الجانبي -->
+    <LinearLayout
+        android:id="@+id/drawerPane"
+        android:layout_width="280dp"
+        android:layout_height="match_parent"                  android:layout_gravity="start"
+        android:orientation="vertical"
+        android:background="#1A1A1A">
+                                                              <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"                  android:text="Z3R0"
+            android:textSize="22sp"                               android:textStyle="bold"                              android:textColor="#00FF00"                           android:padding="16dp"                                android:background="#000000" />           
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="أدوات الفحص الأخلاقي"
+            android:textSize="11sp"                               android:textColor="#888888"
+            android:paddingLeft="16dp"                            android:paddingRight="16dp"
+            android:paddingBottom="16dp"                          android:background="#000000" />           
+~/MyFirstApp $ cat > ~/MyFirstApp/app/src/main/java/com/z3r0/hello/MainActivity.java << 'JAVAEOF'
+package com.z3r0.hello;                                                                                     import android.content.Intent;                        import android.os.Bundle;
+import android.view.View;                             import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;                       import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;      import androidx.drawerlayout.widget.DrawerLayout;
+
+import org.json.JSONArray;                            import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.File;                                  import java.io.FileReader;                            import java.util.ArrayList;                           import java.util.List;
+                                                      public class MainActivity extends AppCompatActivity {                                                           private static final String TOOLS_FILE = "/sdcard/Z3R0/tools_v2.json";                                  
+    private DrawerLayout drawerLayout;
+    private ListView categoriesList;                      private ListView drawerList;                      
+    private final List<Category> categories = new ArrayList<>();
+                                                          private int logoClicks = 0;                           private long lastLogoClick = 0;                       private static final long CLICK_WINDOW = 1500;        private static final int REQUIRED_CLICKS = 7;                                                               public static class Category {
+        String id;                                            String name;
+        String icon;                                          String description;                                   int toolCount;                                    }
+                                                          @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);                   setContentView(R.layout.activity_main);                                                                     drawerLayout = findViewById(R.id.drawerLayout);
+        categoriesList = findViewById(R.id.categoriesList);                                                         drawerList = findViewById(R.id.drawerList);   
+        loadCategories();
+        setupCategoriesList();
+        setupDrawer();                                
+        // زر القائمة ☰
+        findViewById(R.id.menuButton).setOnClickListener(new View.OnClickListener() {                                   @Override public void onClick(View v) {                   if (drawerLayout.isDrawerOpen(findViewById(R.id.drawerPane))) {
+                    drawerLayout.closeDrawer(findViewById(R.id.drawerPane));
+                } else {
+                    drawerLayout.openDrawer(findViewById(R.id.drawerPane));
+                }
+            }
+        });
+
+        // 7 نقرات على الشعار → PIN                           TextView versionText = findViewById(R.id.versionText);
+        versionText.setOnClickListener(new View.OnClickListener() {                                                     @Override public void onClick(View v) {                   long now = System.currentTimeMillis();
+                if (now - lastLogoClick < CLICK_WINDOW) {
+                    logoClicks++;
+                } else {
+                    logoClicks = 1;                                   }                                                     lastLogoClick = now;                                  if (logoClicks >= REQUIRED_CLICKS) {
+                    logoClicks = 0;
+                    startActivity(new Intent(MainActivity.this, PinActivity.class));                                        }                                                 }
+        });                                               }                                                 
+    private void loadCategories() {                           categories.clear();                                   try {
+            File f = new File(TOOLS_FILE);                        if (!f.exists()) {
+                Toast.makeText(this, "tools_v2.json مفقود", Toast.LENGTH_LONG).show();
+                return;                                           }
+            BufferedReader r = new BufferedReader(new FileReader(f));
+            StringBuilder sb = new StringBuilder();               String line;                                          while ((line = r.readLine()) != null) sb.append(line);
+            r.close();                                                                                                  JSONObject root = new JSONObject(sb.toString());                                                            JSONArray arr = root.getJSONArray("categories");                                                            for (int i = 0; i < arr.length(); i++) {
+                JSONObject o = arr.getJSONObject(i);                  Category c = new Category();
+                c.id = o.optString("id", "");
+                c.name = o.optString("name", "");                     c.icon = o.optString("icon", "•");                    c.description = o.optString("description", "");
+                JSONArray tools = o.optJSONArray("tools");                                                                  c.toolCount = tools == null ? 0 : tools.length();
+                categories.add(c);
+            }                                                 } catch (Exception e) {
+            Toast.makeText(this, "خطأ: " + e.getMessage(), Toast.LENGTH_LONG).show();                               }                                                 }
+
+    private void setupCategoriesList() {
+        List<String> items = new ArrayList<>();               for (Category c : categories) {
+            items.add(c.icon + "  " + c.name + "  (" + c.toolCount + ")");
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(                                                                  this, android.R.layout.simple_list_item_1, items);
+        categoriesList.setAdapter(adapter);                   categoriesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override public void onItemClick(AdapterView<?> p, View v, int pos, long id) {
+                Category c = categories.get(pos);
+                Intent i = new Intent(MainActivity.this, CategoryActivity.class);                                           i.putExtra("category_id", c.id);
+                i.putExtra("category_name", c.name);
+                startActivity(i);
+            }                                                 });
+    }
+
+    private void setupDrawer() {
+        List<String> items = new ArrayList<>();               for (Category c : categories) {
+            items.add(c.icon + "  " + c.name);                }                                                     items.add("⚙  الإعدادات");
+        items.add("📜  السجل");                       
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(                                                            this, android.R.layout.simple_list_item_1, items) {
+            @Override
+            public View getView(int position, View convertView, android.view.ViewGroup parent) {                            TextView tv = (TextView) super.getView(position, convertView, parent);
+                tv.setTextColor(0xFF00FF00);                          tv.setPadding(40, 30, 20, 30);
+                return tv;                                        }
+        };                                                    drawerList.setAdapter(adapter);                       drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+~/MyFirstApp $ cat > ~/MyFirstApp/app/src/main/java/com/z3r0/hello/CategoryActivity.java << 'JAVAEOF'       package com.z3r0.hello;                               
+import android.content.Intent;                        import android.os.Bundle;
+import android.view.View;                             import android.widget.AdapterView;
+import android.widget.ArrayAdapter;                   import android.widget.ListView;                       import android.widget.TextView;
+import android.widget.Toast;                                                                                import androidx.appcompat.app.AppCompatActivity;                                                            import org.json.JSONArray;                            import org.json.JSONObject;
+                                                      import java.io.BufferedReader;
+import java.io.File;                                  import java.io.FileReader;
+import java.util.ArrayList;                           import java.util.List;
+
+public class CategoryActivity extends AppCompatActivity {                                                                                                             private static final String TOOLS_FILE = "/sdcard/Z3R0/tools_v2.json";
+                                                          private final List<Tool> tools = new ArrayList<>();
+    private final List<String> toolIds = new ArrayList<>();                                                     private String categoryId;                                                                                  public static class Tool {                                String id;                                            String name;                                          String hint;
+        String description;
+    }                                                                                                           @Override                                             protected void onCreate(Bundle savedInstanceState) {                                                            super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_category);   
+        categoryId = getIntent().getStringExtra("category_id");
+        String categoryName = getIntent().getStringExtra("category_name");
+                                                              TextView title = findViewById(R.id.categoryTitle);                                                          title.setText(categoryName == null ? "الأدوات" : categoryName);                                                                                                   findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) { finish(); }
+        });
+                                                              loadTools();
+        setupList();                                      }
+                                                          private void loadTools() {
+        try {                                                     BufferedReader r = new BufferedReader(new FileReader(new File(TOOLS_FILE)));                                StringBuilder sb = new StringBuilder();
+            String line;                                          while ((line = r.readLine()) != null) sb.append(line);                                                      r.close();                                                                                                  JSONObject root = new JSONObject(sb.toString());                                                            JSONArray arr = root.getJSONArray("categories");                                                            for (int i = 0; i < arr.length(); i++) {                  JSONObject cat = arr.getJSONObject(i);                                                                      if (!cat.optString("id").equals(categoryId)) continue;
+                                                                      JSONArray toolsArr = cat.optJSONArray("tools");                                                             if (toolsArr == null) continue;
+                for (int j = 0; j < toolsArr.length(); j++) {
+                    JSONObject t = toolsArr.getJSONObject(j);
+                    Tool tool = new Tool();                               tool.id = t.optString("id", "");                      tool.name = t.optString("name", "");
+                    tool.hint = t.optString("hint", "");                                                                        tool.description = t.optString("description", "");                                                          tools.add(tool);
+                }                                                 }                                                 } catch (Exception e) {
+            Toast.makeText(this, "خطأ: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }                                                 }
+
+~/MyFirstApp $ cat > ~/MyFirstApp/app/src/main/res/layout/activity_category.xml << 'XMLEOF'
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"                                        android:layout_width="match_parent"                   android:layout_height="match_parent"                  android:orientation="vertical">
+                                                          <LinearLayout                                             android:layout_width="match_parent"                   android:layout_height="wrap_content"                  android:orientation="horizontal"
+        android:background="#000000"
+        android:padding="8dp">                        
+        <TextView                                                 android:id="@+id/backButton"                          android:layout_width="wrap_content"                   android:layout_height="wrap_content"
+            android:text="←"
+            android:textSize="24sp"
+            android:textColor="#00FF00"                           android:paddingLeft="8dp"                             android:paddingRight="16dp" />
+                                                              <TextView                                                 android:id="@+id/categoryTitle"                       android:layout_width="0dp"                            android:layout_height="wrap_content"
+            android:layout_weight="1"                             android:text="الأدوات"                    ~/MyFirstApp $ cat > ~/MyFirstApp/app/src/main/java/com/z3r0/hello/ToolActivity.java << 'JAVAEOF'
+package com.z3r0.hello;                                                                                     import android.os.Bundle;
+import android.view.View;                             ~/MyFirstApp $ cat > ~/MyFirstApp/app/src/main/res/layout/activity_tool_placeholder.xml << 'XMLEOF'         <?xml version="1.0" encoding="utf-8"?>                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"                   android:layout_height="match_parent"                  android:orientation="vertical">
+                                                          <LinearLayout
+        android:layout_width="match_parent"                   android:layout_height="wrap_content"                  android:orientation="horizontal"                      android:background="#000000"                          android:padding="8dp">                                                                                      <TextView                                                 android:id="@+id/backButton"                          android:layout_width="wrap_content"                   android:layout_height="wrap_content"
+            android:text="←"                                      android:textSize="24sp"                               android:textColor="#00FF00"
+            android:paddingLeft="8dp"                             android:paddingRight="16dp" />
+
+        <TextView                                                 android:layout_width="0dp"                            android:layout_height="wrap_content"
+            android:layout_weight="1"                             android:text="الأداة"                                 android:textSize="16sp"                               android:textStyle="bold"
+            android:textColor="#00FF00" />
+    </LinearLayout>
+                                                          <TextView
+        android:id="@+id/placeholderText"
+        android:layout_width="match_parent"                   android:layout_height="wrap_content"
+        android:padding="24dp"                                android:textSize="14sp" />
+
+</LinearLayout>
+XMLEOF                                                ~/MyFirstApp $ cd ~/MyFirstApp
+rm -rf app/build
+gradle assembleDebug 2>&1 | tail -15
+cp ~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk ~/storage/downloads/Z3R0-v23-alpha.apk            ls -lh ~/storage/downloads/Z3R0-v23-alpha.apk
+
+           Note that updating a library or application's compileSdk (which                                             allows newer APIs to be used) can be done separately from updating
+           targetSdk (which opts the app in to new runtime behavior) and
+           minSdk (which determines which devices the app can be installed                                             on).
+
+* Try:
+> Run with --stacktrace option to get the stack trace.> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.           
+BUILD FAILED in 1m 13s
+4 actionable tasks: 4 executed
+cp: cannot stat '/data/data/com.termux/files/home/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk': No such file or directory
+ls: cannot access '/data/data/com.termux/files/home/storage/downloads/Z3R0-v23-alpha.apk': No such file or directory
+~/MyFirstApp $ ls -lh ~/storage/downloads/Z3R0-v23-alpha.apk
+ls: cannot access '/data/data/com.termux/files/home/storage/downloads/Z3R0-v23-alpha.apk': No such file or directory
+~/MyFirstApp $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**البناء فشل بسبب `compileSdk` — AndroidX 1.6.1 يحتاج `compileSdk 31+` على الأقل.**
+
+**الخطأ:** `androidx.appcompat:appcompat:1.6.1` يحتاج `compileSdk 33`.
+
+---
+
+### الحل
+
+**نُحدّث `compileSdk` إلى 33 و`build-tools` إلى 33:**
+
+**① ثبّت SDK 33:**
+
+```bash
+sdkmanager "platforms;android-33" "build-tools;33.0.2"
+```
+
+**المدة:** 1-3 دقائق.
+
+**② عدّل `app/build.gradle`:**
+
+```bash
+sed -i 's/compileSdk 30/compileSdk 33/' ~/MyFirstApp/app/build.gradle
+sed -i 's/targetSdk 30/targetSdk 33/' ~/MyFirstApp/app/build.gradle
+grep -E "compileSdk|targetSdk" ~/MyFirstApp/app/build.gradle
+```
+
+**المتوقع:**
+```
+compileSdk 33
+targetSdk 33
+```
+
+**③ أعد البناء:**
+
+```bash
+cd ~/MyFirstApp
+rm -rf app/build
+gradle assembleDebug 2>&1 | tail -15
+cp ~/MyFirstApp/app/build/outputs/apk/debug/app-debug.apk ~/storage/downloads/Z3R0-v23-alpha.apk
+ls -lh ~/storage/downloads/Z3R0-v23-alpha.apk
+```
+
+---
+
+**توقّف. نفّذ الخطوات 1، 2، 3. أرسل:**
+
+```
+sdkmanager "platforms;android-33" "build-tools;33.0.2" 2>&1 | tail -3
+grep -E "compileSdk|targetSdk" ~/MyFirstApp/app/build.gradle
+ls -lh ~/storage/downloads/Z3R0-v23-alpha.apk
+```
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | USER ===
+Welcome to Termux!
+
+Docs:       https://termux.dev/docs
+Donate:     https://termux.dev/donate
+Community:  https://termux.dev/community
+
+Working with packages:
+
+ - Search:  pkg search <query>
+ - Install: pkg install <package>
+ - Upgrade: pkg upgrade
+
+Subscribing to additional repositories:
+
+ - Root:    pkg install root-repo
+ - X11:     pkg install x11-repo
+
+For fixing any repository issues,
+try 'termux-change-repo' command.
+
+Report issues at https://termux.dev/issues
+~ $ sdkmanager "platforms;android-33" "build-tools;33.0.2" 2>&1 | tail -3
+grep -E "compileSdk|targetSdk" ~/MyFirstApp/app/build.gradle
+ls -lh ~/storage/downloads/Z3R0-v23-alpha.apk
+Loading package information...                        Loading local repository...                           [                                       ] 3% Loading l[                                       ] 3% Fetch rem[=                                      ] 3% Fetch rem[=                                      ] 4% Fetch rem[=                                      ] 5% Fetch rem[==                                     ] 5% Fetch rem[==                                     ] 6% Fetch rem[==                                     ] 7% Fetch rem[==                                     ] 7% Computing[===                                    ] 8% Computing[===                                    ] 10% Computin[=======================================] 100% Computing updates...
+
+    compileSdk 33
+        targetSdk 33
+-rw-rw----. 1 u0_a0 media_rw 5.2M Oct  7 23:29 /data/data/com.termux/files/home/storage/downloads/Z3R0-v23-alpha.apk
+~ $
+
+=== 2f047818-53c3-4db1-8a07-3c0c932b0703.json | ASSISTANT ===
+◈ [TARGET ACQUIRED]
+**`compileSdk 33` و`targetSdk 33` — مُحدّثان. و`Z3R0-v23-alpha.apk` بحجم 5.2 ميغا موجود!**
+
+**البناء نجح فعلاً. الحجم 5.2 ميغا (لأن AndroidX يُضاف).**
+
+---
+
+### الاختبار
+
+**1. ثبّت `Z3R0-v23-alpha.apk`** من مدير الملفات.
+
+**2. افتح التطبيق. المتوقع:**
+
+```
+┌─────────────────────────────────┐
+│ ☰   Z3R0 // TOOLKIT      v2.0  │
+├─────────────────────────────────┤
+│                                  │
+│  🌐 الشبكات (2)                 │
+│                                  │
+│  🌍 DNS (2)                     │
+│                                  │
+│  🔎 الويب (1)                   │
+│                                  │
+└─────────────────────────────────┘
+```
+
+**3. اختبر Drawer:**
+- اضغط **☰** (أعلى يسار).
+- ينفتح Drawer من اليسار فيه:
+  - 🌐 الشبكات
+  - 🌍 DNS
+  - 🔎 الويب
+  - ⚙ الإعدادات
+  - 📜 السجل
+
+**4. اختبر فئة:**
+- اضغط على "🌐 الشبكات" من القائمة الرئيسية.
+- تفتح شاشة: `← الشبكات`.
+- فيها قائمة: `nmap`, `ping`.
+
+**5. اختبر أداة:**
+- اضغط **nmap**.
+- تفتح شاشة: `← الأداة`.
+- فيها نص "الأداة: nmap — ستُبنى قريباً".
+
+**6. اختبر البوابة السرية:**
+- اضغط 7 مرات على `v2.0`.
+- → شاشة PIN.
+- PIN: `0000`.
+
+---
+
+### ملاحظة
+
+**التطبيق الآن في مرحلة انتقالية:**
+- الواجهة الجديدة (Drawer + فئات) تعمل.
+- لكن **شاشة الأداة الحقيقية** (بالوصف + الحقول + النتائج) لم تُبنَ بعد.
+- حالياً، `ToolActivity` تعرض "قريباً".
+
+**الخطوة التالية:** بناء `ToolActivity` الحقيقية — تشمل:
+- الوصف.
+- **القسم القانوني.**
+- **القسم غير القانوني + التح�
